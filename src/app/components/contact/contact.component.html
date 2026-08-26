@@ -1,0 +1,87 @@
+<section class="page-stage">
+  <div class="arin-wrap page-stage-copy">
+    <p class="film-kicker">{{ 'CONTACT_PAGE.EYEBROW' | translate }}</p>
+    <h1 class="film-display max-w-3xl">{{ 'CONTACT_PAGE.TITLE' | translate }}</h1>
+  </div>
+</section>
+
+<section class="page-panel bg-cream">
+  <div class="arin-wrap grid gap-16 lg:grid-cols-[0.82fr_1.18fr]">
+    <div>
+      <p class="max-w-md text-base leading-8 text-olive">{{ 'CONTACT_PAGE.LEAD' | translate }}</p>
+      <ul class="mt-12 space-y-8 text-sm">
+        <li class="page-fact">
+          <p class="film-kicker">{{ 'FOOTER.OPS' | translate }}</p>
+          <b class="block font-display text-lg text-forest">{{ site.contact.address[lang] }}</b>
+        </li>
+        <li class="page-fact">
+          <p class="film-kicker">{{ site.contact.hours[lang] }}</p>
+          <a class="block font-mono text-forest" [href]="tel" dir="ltr">{{ site.contact.phone }}</a>
+        </li>
+        <li class="page-fact">
+          <p class="film-kicker">WhatsApp</p>
+          <a class="font-mono text-forest" [href]="wa" target="_blank" rel="noreferrer" dir="ltr">{{ site.contact.whatsapp }}</a>
+        </li>
+        <li class="page-fact">
+          <p class="film-kicker">Email</p>
+          <a class="text-forest" [href]="mail">{{ site.contact.email }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <form class="page-form" [formGroup]="form" (ngSubmit)="send()" novalidate>
+      <p class="film-kicker !text-gold">{{ 'CONTACT_PAGE.FORM' | translate }}</p>
+      <h2 class="film-display text-forest">{{ 'CONTACT_PAGE.FORM_T' | translate }}</h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2">
+        <label class="grid gap-2 text-xs font-bold text-forest">
+          {{ 'CONTACT_PAGE.NAME' | translate }}
+          <input formControlName="name" />
+        </label>
+        <label class="grid gap-2 text-xs font-bold text-forest">
+          {{ 'CONTACT_PAGE.EMAIL' | translate }}
+          <input formControlName="email" dir="ltr" type="email" />
+        </label>
+        <label class="grid gap-2 text-xs font-bold text-forest">
+          {{ 'CONTACT_PAGE.COMPANY' | translate }}
+          <input formControlName="company" />
+        </label>
+        <label class="grid gap-2 text-xs font-bold text-forest">
+          {{ 'CONTACT_PAGE.INTEREST' | translate }}
+          <select formControlName="interest">
+            <option value=""></option>
+            <option *ngFor="let s of services" [value]="s.slug">{{ s.title[lang] }}</option>
+          </select>
+        </label>
+        <label class="grid gap-2 text-xs font-bold text-forest sm:col-span-2">
+          {{ 'CONTACT_PAGE.MESSAGE' | translate }}
+          <textarea class="min-h-[140px]" formControlName="message"></textarea>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-gold mt-10">{{ 'COMMON.SEND' | translate }}</button>
+      <p *ngIf="submitted" class="mt-4 text-sm text-forest">{{ 'CONTACT_PAGE.SUCCESS' | translate }}</p>
+    </form>
+  </div>
+</section>
+
+<section class="page-panel bg-sand">
+  <div class="arin-wrap">
+    <p class="film-kicker !text-gold">{{ 'CONTACT_PAGE.NEXT' | translate }}</p>
+    <div class="mt-12 grid gap-10 md:grid-cols-3">
+      <div class="page-fact">
+        <b class="film-kicker">01</b>
+        <h3 class="mt-4 font-display text-xl font-bold text-forest">{{ 'CONTACT_PAGE.N1T' | translate }}</h3>
+        <p class="mt-2 text-sm leading-7 text-olive">{{ 'CONTACT_PAGE.N1' | translate }}</p>
+      </div>
+      <div class="page-fact">
+        <b class="film-kicker">02</b>
+        <h3 class="mt-4 font-display text-xl font-bold text-forest">{{ 'CONTACT_PAGE.N2T' | translate }}</h3>
+        <p class="mt-2 text-sm leading-7 text-olive">{{ 'CONTACT_PAGE.N2' | translate }}</p>
+      </div>
+      <div class="page-fact">
+        <b class="film-kicker">03</b>
+        <h3 class="mt-4 font-display text-xl font-bold text-forest">{{ 'CONTACT_PAGE.N3T' | translate }}</h3>
+        <p class="mt-2 text-sm leading-7 text-olive">{{ 'CONTACT_PAGE.N3' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</section>

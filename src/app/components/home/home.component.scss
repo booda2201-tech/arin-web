@@ -1,0 +1,446 @@
+:host {
+  display: block;
+}
+
+.film {
+  position: relative;
+}
+
+.film-kicker {
+  margin-bottom: 0.85rem;
+  overflow: visible;
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #c3a462;
+}
+
+.film-title {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: 0;
+  color: #f3efe6;
+  font-size: clamp(2.6rem, 8vw, 6.2rem);
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.14em 0.2em;
+  padding-inline: 0.22em;
+  margin-block: -0.08em;
+  margin-inline: -0.12em;
+}
+
+.hero-line-inner {
+  display: block;
+}
+
+.film-title-sub {
+  font-size: 0.44em;
+  letter-spacing: 0;
+  color: #d5bf85;
+}
+
+.film-display {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-size: clamp(1.7rem, 3.6vw, 3.15rem);
+}
+
+.film-display em {
+  font-style: normal;
+  color: #c3a462;
+}
+
+.film-rail {
+  position: fixed;
+  top: 50%;
+  inset-inline-start: 18px;
+  z-index: 40;
+  display: none;
+  transform: translateY(-50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #c3a462;
+  pointer-events: none;
+}
+@media (min-width: 1100px) {
+  .film-rail {
+    display: flex;
+  }
+}
+.film-rail-num,
+.film-rail-total {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+.film-rail-track {
+  width: 1px;
+  height: 88px;
+  background: rgba(195, 164, 98, 0.2);
+  overflow: hidden;
+}
+.film-rail-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #c3a462;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.film-chamber {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0b0f0d;
+}
+
+.chamber-world {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.chamber-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 72%;
+  transform-origin: 50% 68%;
+  filter: saturate(0.78) contrast(1.08);
+  will-change: transform;
+}
+
+.chamber-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(11, 15, 13, 0.55) 0%, transparent 32%),
+    linear-gradient(to top, rgba(11, 15, 13, 0.72) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 58%, transparent 18%, rgba(11, 15, 13, 0.45) 100%);
+  pointer-events: none;
+}
+
+.house-plaque {
+  position: absolute;
+  bottom: 6.5rem;
+  left: 50%;
+  z-index: 3;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: rgba(195, 164, 98, 0.85);
+  pointer-events: none;
+}
+
+.chamber-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.hero-copy.arin-wrap {
+  position: relative;
+  z-index: 2;
+  width: min(1600px, calc(100% - 2.5rem));
+  padding-bottom: 5.5rem;
+  padding-top: 6rem;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 1.35rem;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: rgba(195, 164, 98, 0.8);
+  white-space: nowrap;
+}
+
+.chamber-room {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5.5rem 0 2rem;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.chamber-room > .arin-wrap,
+.chamber-room > .services-pin {
+  max-height: 100%;
+}
+.chamber-room > .services-pin {
+  width: 100%;
+}
+
+.room-origin {
+  z-index: 11;
+  background: #f3efe6;
+  color: #1a1e1c;
+}
+.room-manifesto {
+  z-index: 12;
+  background: #122b2a;
+  color: #f3efe6;
+}
+.room-reach {
+  z-index: 13;
+  background: #0b0f0d;
+  color: #f3efe6;
+}
+.room-journey {
+  z-index: 14;
+  background: #e8e0d2;
+}
+.room-capa {
+  z-index: 15;
+  background: #f3efe6;
+}
+.room-proof {
+  z-index: 16;
+  background: #122b2a;
+  color: #f3efe6;
+}
+.room-end {
+  z-index: 17;
+  overflow: hidden;
+  background: #17302d;
+  color: #f3efe6;
+}
+
+.origin-grid {
+  display: grid;
+  align-content: center;
+  gap: 0.35rem;
+}
+.origin-year {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: clamp(3.4rem, 10vw, 7.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: #17302d;
+}
+.origin-copy {
+  max-width: 36rem;
+}
+
+.manifesto-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reach-grid {
+  display: grid;
+  align-items: center;
+  gap: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .reach-grid {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 2.5rem;
+  }
+}
+
+.map-frame {
+  max-height: min(38vh, 340px);
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.journey-layout {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+.journey-stage {
+  position: relative;
+  min-height: 220px;
+}
+.journey-card {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+}
+.journey-card.is-first {
+  opacity: 1;
+  visibility: visible;
+}
+.journey-num {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(195, 164, 98, 0.28);
+}
+.journey-still {
+  display: none;
+  overflow: hidden;
+  height: 200px;
+  border-radius: 1.25rem;
+}
+.journey-still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (min-width: 1024px) {
+  .journey-stage {
+    min-height: 240px;
+  }
+  .journey-card {
+    grid-template-columns: 0.22fr 1fr 0.7fr;
+  }
+  .journey-still {
+    display: block;
+  }
+}
+
+.services-pin {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.capa-head {
+  flex-shrink: 0;
+  padding-bottom: 1rem;
+}
+.services-viewport {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.services-track {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+  gap: 1.25rem;
+}
+.service-slide {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 250px;
+  width: min(100%, 380px);
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.proof-layout,
+.end-layout {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+.proof-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+@media (min-width: 640px) {
+  .proof-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+.proof-item {
+  border-top: 1px solid rgba(195, 164, 98, 0.18);
+  padding-top: 1.1rem;
+}
+.proof-value {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+  color: #e6a15c;
+}
+
+@media (max-width: 899px) {
+  .film-title {
+    font-size: clamp(2.2rem, 12vw, 3.4rem);
+  }
+  .origin-year {
+    font-size: clamp(3rem, 16vw, 4.6rem);
+  }
+  .services-track {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+  }
+  .service-slide {
+    width: 100%;
+    min-height: 210px;
+  }
+  .map-frame {
+    max-height: 28vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-chamber {
+    height: auto;
+    overflow: visible;
+  }
+  .chamber-world {
+    position: relative;
+    height: 100svh;
+  }
+  .chamber-photo {
+    will-change: auto;
+  }
+  .chamber-hero {
+    position: absolute;
+  }
+  .chamber-room {
+    position: relative;
+    inset: auto;
+    min-height: 100svh;
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto;
+  }
+  .journey-card {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    margin-bottom: 2.5rem;
+  }
+}

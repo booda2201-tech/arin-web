@@ -1,0 +1,25 @@
+<div class="flex min-h-screen flex-col">
+  <a
+    href="#main"
+    class="sr-only focus:not-sr-only focus:absolute focus:z-[80] focus:m-3 focus:rounded-full focus:bg-gold focus:px-4 focus:py-2 focus:text-sm focus:text-ink"
+  >
+    Skip to content
+  </a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+  <div class="site-geo" aria-hidden="true">
+    <span class="site-geo-shard a"></span>
+    <span class="site-geo-shard b"></span>
+    <svg class="site-geo-compass" viewBox="0 0 120 120" fill="none">
+      <circle cx="60" cy="60" r="52" stroke="currentColor" stroke-width="0.8" />
+      <circle cx="60" cy="60" r="38" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 8" />
+      <path d="M60 8 L64 28 L56 28 Z M112 60 L92 64 L92 56 Z M60 112 L56 92 L64 92 Z M8 60 L28 56 L28 64 Z" fill="currentColor" />
+    </svg>
+  </div>
+  <app-navbar></app-navbar>
+  <main id="main" class="flex-1">
+    <router-outlet></router-outlet>
+  </main>
+  <app-footer></app-footer>
+</div>

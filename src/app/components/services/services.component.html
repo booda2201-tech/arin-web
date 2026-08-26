@@ -1,0 +1,59 @@
+<section class="page-hero relative overflow-hidden bg-forest-deep pb-16 pt-40 text-cream">
+  <div class="arin-wrap">
+    <p class="eyebrow">{{ 'SERVICES_PAGE.EYEBROW' | translate }}</p>
+    <h1 class="display-title mt-4 max-w-4xl text-4xl sm:text-6xl">{{ 'SERVICES_PAGE.TITLE' | translate }}</h1>
+    <p class="mt-6 max-w-2xl text-base leading-8 text-platinum">{{ 'SERVICES_PAGE.LEAD' | translate }}</p>
+  </div>
+</section>
+
+<section *ngFor="let s of services" [id]="s.slug" class="group relative isolate overflow-hidden border-b border-white/10 scroll-mt-24">
+  <img [src]="s.image" alt="" class="absolute inset-0 -z-20 h-full w-full scale-105 object-cover transition duration-500 group-hover:scale-100" />
+  <div class="absolute inset-0 -z-10 bg-ink/90 transition group-hover:bg-ink/65"></div>
+  <div class="arin-wrap relative grid gap-10 py-20 text-cream lg:grid-cols-[0.42fr_0.58fr] lg:items-center lg:py-28">
+    <div>
+      <span class="font-display text-6xl font-extrabold text-gold/25">{{ s.index }}</span>
+      <h2 class="mt-4 font-display text-3xl font-bold sm:text-4xl">{{ txt(s.title) }}</h2>
+      <p class="mt-2 text-sm leading-7 text-gold/80">{{ txt(s.subtitle) }}</p>
+    </div>
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:p-10">
+      <p class="text-base leading-8 text-cream/90">{{ txt(s.body) }}</p>
+      <ul class="mt-7 grid gap-3 sm:grid-cols-2">
+        <li *ngFor="let p of s.points" class="flex items-start gap-3 text-sm text-platinum">
+          <i class="bi bi-check2 text-gold"></i>
+          {{ txt(p) }}
+        </li>
+      </ul>
+      <div *ngIf="s.slug === 'shipping'" class="mt-8 flex flex-wrap gap-2">
+        <span class="rounded-full border border-gold/40 px-3 py-1 text-[11px] text-gold-light">{{ 'SERVICES_PAGE.SEA' | translate }}</span>
+        <span class="rounded-full border border-gold/40 px-3 py-1 text-[11px] text-gold-light">{{ 'SERVICES_PAGE.LAND' | translate }}</span>
+      </div>
+      <a [routerLink]="'/quote'" [queryParams]="{ service: s.slug }" class="btn btn-gold mt-8">
+        {{ 'NAV.QUOTE' | translate }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="why-band">
+  <div class="arin-wrap why-intro">
+    <p class="film-kicker">{{ 'SERVICES_PAGE.WHY' | translate }}</p>
+    <h2 class="why-title">{{ 'SERVICES_PAGE.WHY_T' | translate }}</h2>
+    <p class="why-lead">{{ 'SERVICES_PAGE.WHY_B' | translate }}</p>
+  </div>
+
+  <div class="arin-wrap why-tiles">
+    <article *ngFor="let item of reasons" class="why-tile">
+      <img [src]="item.image" alt="" />
+      <div class="why-tile-shade"></div>
+      <div class="why-tile-copy">
+        <span>{{ item.index }}</span>
+        <h3>{{ item.title | translate }}</h3>
+        <p>{{ item.body | translate }}</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="arin-wrap why-cta">
+    <a routerLink="/quote" class="btn btn-gold">{{ 'SERVICES_PAGE.WHY_CTA' | translate }}</a>
+  </div>
+</section>

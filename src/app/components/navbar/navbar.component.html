@@ -1,0 +1,74 @@
+<header
+  class="fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-200"
+  [class.nav-solid]="scrolled || open || !isHome()"
+  [class.nav-transparent]="!scrolled && !open && isHome()"
+>
+  <div class="arin-wrap flex h-24 items-center gap-6">
+    <a routerLink="/" class="flex shrink-0 items-center gap-3" (click)="open = false">
+      <span class="relative h-20 w-20 shrink-0 sm:h-[5.5rem] sm:w-[5.5rem]">
+        <img [src]="site.logo" [alt]="site.name[currentLang]" class="h-full w-full object-contain drop-shadow-[0_0_12px_rgba(195,164,98,0.35)]" />
+      </span>
+      <span class="hidden leading-tight sm:block" *ngIf="!isHome()">
+        <span class="block font-display text-lg font-bold text-cream">{{ site.name[currentLang] }}</span>
+        <span class="block font-mono text-[10px] tracking-[0.28em] text-gold">{{ site.latin }}</span>
+      </span>
+    </a>
+
+    <nav class="mx-auto hidden lg:block" [attr.aria-label]="'NAV.HOME' | translate">
+      <ul class="flex items-center gap-1">
+        <li *ngFor="let item of navItems">
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="text-gold-light"
+            [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+            class="relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-platinum transition hover:text-cream"
+          >
+            {{ label(item) }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="ms-auto flex items-center gap-2 lg:ms-0">
+      <button
+        type="button"
+        class="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold uppercase text-cream hover:border-gold/50 hover:text-gold"
+        (click)="language.toggle()"
+      >
+        {{ currentLang === 'ar' ? 'EN' : 'AR' }}
+      </button>
+      <a routerLink="/quote" class="btn btn-gold hidden !px-5 !py-2.5 !text-xs sm:inline-flex">
+        {{ 'NAV.QUOTE' | translate }}
+        <i class="bi bi-arrow-left rtl:rotate-180"></i>
+      </a>
+      <button
+        type="button"
+        class="rounded-xl border border-white/10 bg-white/5 p-2.5 text-cream lg:hidden"
+        [attr.aria-expanded]="open"
+        [attr.aria-label]="'NAV.MENU' | translate"
+        (click)="open = !open"
+      >
+        <i class="bi text-xl" [ngClass]="open ? 'bi-x-lg' : 'bi-list'"></i>
+      </button>
+    </div>
+  </div>
+
+  <nav *ngIf="open" class="border-t border-white/10 bg-ink/95 lg:hidden">
+    <ul class="arin-wrap py-4">
+      <li *ngFor="let item of navItems">
+        <a
+          [routerLink]="item.path"
+          class="block border-b border-white/5 py-3 text-base text-platinum hover:text-cream"
+          (click)="open = false"
+        >
+          {{ label(item) }}
+        </a>
+      </li>
+      <li class="pt-4">
+        <a routerLink="/quote" class="btn btn-gold w-full" (click)="open = false">
+          {{ 'NAV.QUOTE' | translate }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
