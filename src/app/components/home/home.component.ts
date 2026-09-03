@@ -34,6 +34,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   lang: Lang = this.language.current;
   private ctx?: ReturnType<typeof gsap.context>;
   private sub: Subscription;
+  private chapterFill?: HTMLElement | null;
+  private chapterText?: HTMLElement | null;
+  private lastChapter = '';
 
   constructor(public language: LanguageService, private zone: NgZone) {
     this.sub = this.language.languageChanged$.subscribe((lang) => {
@@ -82,7 +85,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     root.classList.remove('is-live');
     const chamber = this.chamber.nativeElement;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const chapterEl = root.querySelector('.film-rail-num');
+    this.chapterFill = root.querySelector('.film-rail-fill');
+    this.chapterText = root.querySelector('.film-rail-num');
+    this.lastChapter = '';
     const chapterMap: Record<string, string> = {
       open: '01',
       dive: '01',
@@ -127,13 +132,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const fill = root.querySelector('.film-rail-fill');
-            if (fill) {
-              gsap.set(fill, { scaleY: self.progress });
+            if (this.chapterFill) {
+              this.chapterFill.style.transform = `scaleY(${self.progress})`;
             }
             const label = tl.currentLabel();
-            if (chapterEl && label && chapterMap[label]) {
-              chapterEl.textContent = chapterMap[label];
+            const chapter = label ? chapterMap[label] : '';
+            if (this.chapterText && chapter && chapter !== this.lastChapter) {
+              this.chapterText.textContent = chapter;
+              this.lastChapter = chapter;
             }
           },
         },

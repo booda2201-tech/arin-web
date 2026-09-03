@@ -7,7 +7,7 @@
 </section>
 
 <section *ngFor="let s of services" [id]="s.slug" class="group relative isolate overflow-hidden border-b border-white/10 scroll-mt-24">
-  <img [src]="s.image" alt="" class="absolute inset-0 -z-20 h-full w-full scale-105 object-cover transition duration-500 group-hover:scale-100" />
+  <img [src]="s.image" alt="" loading="lazy" decoding="async" class="absolute inset-0 -z-20 h-full w-full scale-105 object-cover transition duration-500 group-hover:scale-100" />
   <div class="absolute inset-0 -z-10 bg-ink/90 transition group-hover:bg-ink/65"></div>
   <div class="arin-wrap relative grid gap-10 py-20 text-cream lg:grid-cols-[0.42fr_0.58fr] lg:items-center lg:py-28">
     <div>
@@ -43,7 +43,7 @@
 
   <div class="arin-wrap why-tiles">
     <article *ngFor="let item of reasons" class="why-tile">
-      <img [src]="item.image" alt="" />
+      <img [src]="item.image" alt="" loading="lazy" decoding="async" />
       <div class="why-tile-shade"></div>
       <div class="why-tile-copy">
         <span>{{ item.index }}</span>

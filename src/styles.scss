@@ -23,6 +23,10 @@
     scrollbar-width: none;
   }
 
+  body.on-home {
+    background: #0b0f0d;
+  }
+
   body.nav-open {
     overflow: hidden;
   }

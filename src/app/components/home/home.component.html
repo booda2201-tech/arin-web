@@ -14,6 +14,7 @@
         height="1706"
         alt=""
         fetchpriority="high"
+        decoding="async"
       />
       <div class="chamber-shade"></div>
       <p class="house-plaque">{{ 'STORY.PLAQUE' | translate }}</p>
@@ -144,7 +145,7 @@
               [fragment]="s.slug"
               class="service-slide group relative isolate text-cream"
             >
-              <img [src]="s.image" alt="" class="absolute inset-0 h-full w-full object-cover" />
+              <img [src]="s.image" alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />
               <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent"></div>
               <div class="relative flex h-full flex-col justify-end p-5 sm:p-8">
                 <span class="mb-auto font-mono text-[10px] tracking-[0.28em] text-gold-light">{{ s.index }}</span>
@@ -191,6 +192,8 @@
             width="900"
             height="900"
             alt=""
+            loading="lazy"
+            decoding="async"
           />
         </figure>
       </div>

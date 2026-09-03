@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, HostListener, NgZone, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { navItems, site } from '../../data/content';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements AfterViewInit, OnDestroy {
   site = site;
   navItems = navItems;
   scrolled = false;
@@ -20,10 +20,14 @@ export class NavbarComponent implements OnDestroy {
   currentUrl = this.router.url.split('?')[0].split('#')[0];
   private lastY = 0;
   private sub: Subscription;
+  private scrollTicking = false;
+  private offScroll?: () => void;
+  private offResize?: () => void;
 
   constructor(
     public language: LanguageService,
-    private router: Router
+    private router: Router,
+    private zone: NgZone
   ) {
     this.sub = this.language.languageChanged$.subscribe((lang) => (this.currentLang = lang));
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
@@ -34,35 +38,67 @@ export class NavbarComponent implements OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.zone.runOutsideAngular(() => {
+      const onScroll = () => {
+        if (this.scrollTicking) {
+          return;
+        }
+        this.scrollTicking = true;
+        requestAnimationFrame(() => {
+          this.scrollTicking = false;
+          this.updateScrollState();
+        });
+      };
+      const onResize = () => {
+        if (this.open && window.innerWidth >= 1024) {
+          this.zone.run(() => this.close());
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize, { passive: true });
+      this.offScroll = () => window.removeEventListener('scroll', onScroll);
+      this.offResize = () => window.removeEventListener('resize', onResize);
+      this.updateScrollState();
+    });
+  }
+
   ngOnDestroy(): void {
     this.close();
     this.sub.unsubscribe();
+    this.offScroll?.();
+    this.offResize?.();
   }
 
-  @HostListener('window:scroll')
-  onScroll(): void {
+  private updateScrollState(): void {
     const y = Math.max(0, window.scrollY || 0);
-    this.scrolled = y > 24;
+    const scrolled = y > 24;
+    let hidden = this.hidden;
 
     if (this.open || y < 48) {
-      this.hidden = false;
+      hidden = false;
       this.lastY = y;
+      if (this.scrolled !== scrolled || this.hidden !== hidden) {
+        this.zone.run(() => {
+          this.scrolled = scrolled;
+          this.hidden = hidden;
+        });
+      }
       return;
     }
 
     const delta = y - this.lastY;
     if (delta > 6) {
-      this.hidden = true;
+      hidden = true;
     } else if (delta < -6) {
-      this.hidden = false;
+      hidden = false;
     }
     this.lastY = y;
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    if (this.open && window.innerWidth >= 1024) {
-      this.close();
+    if (this.scrolled !== scrolled || this.hidden !== hidden) {
+      this.zone.run(() => {
+        this.scrolled = scrolled;
+        this.hidden = hidden;
+      });
     }
   }
 

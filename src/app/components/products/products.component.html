@@ -23,7 +23,7 @@
     <div *ngIf="filtered.length; else empty" class="product-grid">
       <article *ngFor="let p of filtered" class="product-card group" data-aos="fade-up">
         <a [routerLink]="['/products', p.slug]" class="product-card-media page-still">
-          <img [src]="p.image" [alt]="txt(p.name)" class="h-full w-full object-cover" />
+          <img [src]="p.image" [alt]="txt(p.name)" loading="lazy" decoding="async" class="h-full w-full object-cover" />
         </a>
         <div class="product-card-body">
           <p class="film-kicker !mb-2">{{ txt(p.origin) }}</p>

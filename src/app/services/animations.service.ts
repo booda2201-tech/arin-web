@@ -17,6 +17,7 @@ export class AnimationsService implements OnDestroy {
   private magnetOff: Array<() => void> = [];
   private moveHandler?: (e: PointerEvent) => void;
   private lastUrl?: string;
+  private refreshQueued = false;
 
   constructor(
     private readonly router: Router,
@@ -30,11 +31,7 @@ export class AnimationsService implements OnDestroy {
       }
       this.lastUrl = url;
       this.zone.runOutsideAngular(() => {
-        setTimeout(() => {
-          this.refreshAos();
-          this.bindMagnets();
-          ScrollTrigger.refresh();
-        }, 80);
+        this.scheduleRefresh();
       });
     });
   }
@@ -117,6 +114,21 @@ export class AnimationsService implements OnDestroy {
     });
 
     this.bindMagnets();
+  }
+
+  private scheduleRefresh(): void {
+    if (this.refreshQueued) {
+      return;
+    }
+    this.refreshQueued = true;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.refreshQueued = false;
+        this.refreshAos();
+        this.bindMagnets();
+        ScrollTrigger.refresh();
+      });
+    });
   }
 
   private bindMagnets(): void {

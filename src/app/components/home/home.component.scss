@@ -100,7 +100,8 @@
 
 .film-chamber {
   position: relative;
-  height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
   background: #0b0f0d;
@@ -664,7 +665,8 @@
   }
   .chamber-world {
     position: relative;
-    height: 100svh;
+    height: 100dvh;
+    min-height: 100svh;
   }
   .chamber-photo {
     will-change: auto;
