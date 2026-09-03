@@ -2,25 +2,33 @@
   <div class="arin-wrap relative grid gap-12 py-20 lg:grid-cols-[1.4fr_0.8fr_0.9fr_1.1fr]">
     <div>
       <div class="flex items-center gap-3">
-        <span class="h-16 w-16 shrink-0">
+        <span class="flex h-20 w-20 shrink-0 items-center justify-center">
           <img [src]="site.logo" alt="" class="h-full w-full object-contain" />
         </span>
         <span class="font-display text-xl font-bold">{{ site.name[currentLang] }}</span>
       </div>
       <p class="mt-6 max-w-sm text-sm leading-7 text-platinum">{{ 'FOOTER.BLURB' | translate }}</p>
       <p class="mt-4 text-sm text-gold">{{ site.tagline[currentLang] }}</p>
-      <form class="page-form mt-8 max-w-sm" (submit)="subscribe($event)">
-        <input
-          class="w-full text-cream"
-          [placeholder]="'FOOTER.NEWS' | translate"
-          type="email"
-          [(ngModel)]="email"
-          name="news"
-          required
-        />
-        <button type="submit" class="mt-4 font-mono text-[10px] tracking-[0.24em] text-gold" [attr.aria-label]="'FOOTER.NEWS' | translate">
-          <i class="bi" [ngClass]="sent ? 'bi-check-lg' : 'bi-send'"></i>
-        </button>
+      <form class="page-form news-form mt-8 max-w-sm" (submit)="subscribe($event)">
+        <div class="news-field">
+          <input
+            class="w-full text-cream"
+            [placeholder]="'FOOTER.NEWS' | translate"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            [(ngModel)]="email"
+            name="news"
+            required
+          />
+          <button
+            type="submit"
+            class="news-send"
+            [attr.aria-label]="'FOOTER.NEWS' | translate"
+          >
+            <i class="bi" [ngClass]="sent ? 'bi-check-lg' : 'bi-send'"></i>
+          </button>
+        </div>
       </form>
       <p *ngIf="sent" class="mt-2 text-xs text-gold">{{ 'FOOTER.NEWS_OK' | translate }}</p>
     </div>

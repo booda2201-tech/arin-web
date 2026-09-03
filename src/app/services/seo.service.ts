@@ -4,7 +4,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { LanguageService } from './language.service';
-import { Lang } from '../data/content';
+import { Lang, getProduct } from '../data/content';
 
 type SeoContent = { title: string; description: string };
 
@@ -57,11 +57,12 @@ export class SeoService {
       },
       '/products': {
         title: 'المنتجات | عرين الموارد التجارية',
-        description: 'دليل منتجات توريد للمواد الغذائية والعناية والتوريدات المؤسسية.',
+        description: 'دليل منتجات توريد للمواد الغذائية والعناية الشخصية والتوزيعات الموسمية.',
       },
       '/private-label': {
         title: 'علامتك التجارية | عرين الموارد التجارية',
-        description: 'من الفكرة إلى منتج جاهز بعلامتك: تصميم، تصنيع، وشحن.',
+        description:
+          'التصنيع للغير من الفكرة إلى الرف: موجز، هوية، عينة معتمدة، إنتاج تحت رقابة، وشحن حتى المستودع — بملف واحد للشركات.',
       },
       '/projects': {
         title: 'مشاريعنا | عرين الموارد التجارية',
@@ -92,11 +93,12 @@ export class SeoService {
       },
       '/products': {
         title: 'Products | Arin Almawared Altijaria',
-        description: 'A B2B catalogue across food, personal care and institutional supply.',
+        description: 'A B2B catalogue across food, personal care and seasonal distribution.',
       },
       '/private-label': {
         title: 'Private Label | Arin Almawared Altijaria',
-        description: 'From idea to a finished product under your brand.',
+        description:
+          'Contract manufacturing from idea to shelf: brief, identity, approved sample, controlled production and freight — one file for companies.',
       },
       '/projects': {
         title: 'Projects | Arin Almawared Altijaria',
@@ -113,6 +115,17 @@ export class SeoService {
     };
     const dict = this.lang === 'ar' ? ar : en;
     if (path.startsWith('/products/')) {
+      const slug = path.split('/')[2] || '';
+      const product = getProduct(slug);
+      if (product) {
+        return {
+          title:
+            this.lang === 'ar'
+              ? `${product.name.ar} | عرين الموارد التجارية`
+              : `${product.name.en} | Arin Almawared Altijaria`,
+          description: product.description[this.lang],
+        };
+      }
       return dict['/products'];
     }
     return dict[path] || dict['/'];

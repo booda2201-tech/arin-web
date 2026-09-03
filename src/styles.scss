@@ -8,6 +8,10 @@
 @layer base {
   html {
     scroll-behavior: auto;
+    background: #0b0f0d;
+    overflow-x: clip;
+    width: 100%;
+    scrollbar-width: none;
   }
 
   body {
@@ -15,6 +19,12 @@
     font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
     line-height: 1.75;
     overflow-x: clip;
+    max-width: 100%;
+    scrollbar-width: none;
+  }
+
+  body.nav-open {
+    overflow: hidden;
   }
 
   ::selection {
@@ -106,7 +116,13 @@
   opacity: 0.22;
 }
 .on-home .site-geo {
-  opacity: 0;
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .site-geo {
+    display: none;
+  }
 }
 
 .btn {
@@ -114,17 +130,38 @@
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
-::-webkit-scrollbar-track {
-  background: #0b0f0d;
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1b3a29;
-  border-radius: 999px;
+  background: transparent;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #c3a462;
+
+@media (min-width: 1024px) {
+  html,
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: #1b3a29 transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1b3a29;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c3a462;
+  }
 }
 
 .arin-wrap {
@@ -248,6 +285,13 @@
     linear-gradient(to top, rgba(11, 15, 13, 0.82) 0%, transparent 52%);
 }
 
+@media (max-width: 767px) {
+  .page-stage {
+    min-height: 0;
+    padding: 6.25rem 0 2rem;
+  }
+}
+
 .page-stage-copy {
   position: relative;
   z-index: 1;
@@ -274,7 +318,6 @@
 }
 
 .page-form input,
-.page-form select,
 .page-form textarea {
   border: 1px solid rgba(23, 48, 45, 0.12);
   border-radius: 0.9rem;
@@ -284,13 +327,11 @@
 }
 
 .page-form input:focus,
-.page-form select:focus,
 .page-form textarea:focus {
   border-color: #c3a462;
 }
 
 .bg-forest-deep .page-form input,
-.bg-forest-deep .page-form select,
 .bg-forest-deep .page-form textarea {
   border-color: rgba(195, 164, 98, 0.28);
   background: rgba(255, 255, 255, 0.06);

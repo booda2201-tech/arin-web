@@ -12,7 +12,6 @@ export class ProductsComponent implements OnDestroy {
   categories = productCategories;
   products = products;
   active = 'all';
-  quoted: string | null = null;
   lang: Lang = this.language.current;
   private sub: Subscription;
 
@@ -34,6 +33,5 @@ export class ProductsComponent implements OnDestroy {
 
   setFilter(id: string): void {
     this.active = id;
-    this.quoted = null;
   }
 }

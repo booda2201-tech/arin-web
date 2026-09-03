@@ -1,0 +1,57 @@
+<div
+  class="pick"
+  [class.is-open]="open"
+  [class.is-filled]="!!selected"
+  [class.is-dark]="tone === 'dark'"
+>
+  <button
+    #trigger
+    type="button"
+    class="pick-trigger"
+    [disabled]="disabled"
+    [attr.aria-expanded]="open"
+    aria-haspopup="listbox"
+    [attr.aria-labelledby]="labelledBy || null"
+    (click)="toggle($event)"
+  >
+    <i *ngIf="selected?.icon" class="bi pick-ico" [ngClass]="selected?.icon" aria-hidden="true"></i>
+    <span class="pick-copy">
+      <b *ngIf="selected">{{ selected.label }}</b>
+      <em *ngIf="!selected">{{ placeholder }}</em>
+      <small *ngIf="selected?.hint">{{ selected?.hint }}</small>
+    </span>
+    <i class="bi bi-chevron-down pick-chevron" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div
+  #panel
+  class="pick-panel"
+  role="listbox"
+  [class.is-open]="open"
+  [class.is-dark]="tone === 'dark'"
+  [attr.aria-hidden]="!open"
+  [style.top.px]="box.top"
+  [style.left.px]="box.left"
+  [style.width.px]="box.width"
+>
+  <button
+    type="button"
+    class="pick-option"
+    *ngFor="let opt of options; let i = index"
+    role="option"
+    [class.is-on]="opt.value === value"
+    [class.is-active]="i === active"
+    [attr.aria-selected]="opt.value === value"
+    (click)="choose(opt, $event)"
+    (pointerenter)="active = i"
+  >
+    <span class="pick-idx">{{ indexOf(i) }}</span>
+    <i *ngIf="opt.icon" class="bi pick-ico" [ngClass]="opt.icon" aria-hidden="true"></i>
+    <span class="pick-copy">
+      <b>{{ opt.label }}</b>
+      <small *ngIf="opt.hint">{{ opt.hint }}</small>
+    </span>
+    <i *ngIf="opt.value === value" class="bi bi-check2 pick-check" aria-hidden="true"></i>
+  </button>
+</div>

@@ -1,4 +1,4 @@
-<section class="page-stage">
+<section class="page-stage quote-hero">
   <div class="arin-wrap page-stage-copy">
     <p class="film-kicker">{{ 'QUOTE_PAGE.EYEBROW' | translate }}</p>
     <h1 class="film-display">{{ 'QUOTE_PAGE.TITLE' | translate }}</h1>
@@ -6,83 +6,169 @@
   </div>
 </section>
 
-<section class="page-panel bg-cream">
-  <div class="arin-wrap max-w-3xl">
-    <ol class="mb-12 grid grid-cols-4 gap-4">
-      <li
-        *ngFor="let key of ['S1','S2','S3','S4']; let i = index"
-        class="page-fact text-[11px] font-bold"
-        [class.text-forest]="step >= i"
-        [class.text-olive]="step < i"
-      >
-        <span class="film-kicker !mb-2 block" [class.!text-gold]="step >= i">0{{ i + 1 }}</span>
-        {{ 'QUOTE_PAGE.' + key | translate }}
-      </li>
-    </ol>
+<section class="quote-board">
+  <div class="arin-wrap quote-layout">
+    <div class="quote-main">
+      <ol class="quote-steps" [attr.aria-label]="'QUOTE_PAGE.TITLE' | translate">
+        <li
+          *ngFor="let key of stepKeys; let i = index"
+          class="quote-step"
+          [class.is-on]="step === i"
+          [class.is-done]="step > i"
+        >
+          <span class="quote-dot">
+            <i *ngIf="step > i" class="bi bi-check2" aria-hidden="true"></i>
+            <ng-container *ngIf="step <= i">0{{ i + 1 }}</ng-container>
+          </span>
+          <span class="quote-step-label">{{ 'QUOTE_PAGE.' + key | translate }}</span>
+        </li>
+      </ol>
 
-    <form [formGroup]="form" class="page-form" (ngSubmit)="submit()">
-      <div *ngIf="status === 'done'" class="text-forest">
-        {{ 'QUOTE_PAGE.DONE' | translate }} <strong>{{ reference }}</strong>
-      </div>
-
-      <ng-container *ngIf="status === 'idle'">
-        <div *ngIf="step === 0" class="grid gap-6">
-          <label class="grid gap-2 text-xs font-bold text-forest">
-            {{ 'QUOTE_PAGE.SERVICE' | translate }}
-            <select formControlName="service">
-              <option value=""></option>
-              <option *ngFor="let s of services" [value]="s.slug">{{ s.title[lang] }}</option>
-            </select>
-          </label>
-          <label class="grid gap-2 text-xs font-bold text-forest">
-            {{ 'QUOTE_PAGE.PRODUCT' | translate }}
-            <select formControlName="product">
-              <option value=""></option>
-              <option *ngFor="let p of products" [value]="p.slug">{{ p.name[lang] }}</option>
-            </select>
-          </label>
-          <label class="grid gap-2 text-xs font-bold text-forest">
-            {{ 'QUOTE_PAGE.QTY' | translate }}
-            <input formControlName="quantity" />
-          </label>
-          <label class="grid gap-2 text-xs font-bold text-forest">
-            {{ 'QUOTE_PAGE.DEST' | translate }}
-            <input formControlName="destination" />
-          </label>
+      <form class="quote-desk" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div *ngIf="status === 'done'" class="quote-done">
+          <span class="quote-done-mark"><i class="bi bi-check-lg" aria-hidden="true"></i></span>
+          <p class="film-kicker !mb-3 !text-gold">{{ 'QUOTE_PAGE.EYEBROW' | translate }}</p>
+          <h2 class="font-display text-3xl font-bold text-forest">{{ 'QUOTE_PAGE.DONE' | translate }}</h2>
+          <p class="quote-ref">{{ reference }}</p>
+          <p class="mt-4 max-w-md text-sm leading-7 text-olive">{{ 'QUOTE_PAGE.DONE_LEAD' | translate }}</p>
+          <a routerLink="/contact" class="btn btn-gold mt-8">{{ 'NAV.CONTACT' | translate }}</a>
         </div>
 
-        <div *ngIf="step === 1" class="grid gap-5">
-          <p class="film-kicker !text-gold">{{ 'QUOTE_PAGE.MODE' | translate }}</p>
-          <label class="flex items-center gap-2 text-sm"><input type="radio" formControlName="mode" value="sea" /> {{ 'QUOTE_PAGE.SEA' | translate }}</label>
-          <label class="flex items-center gap-2 text-sm"><input type="radio" formControlName="mode" value="land" /> {{ 'QUOTE_PAGE.LAND' | translate }}</label>
-          <label class="flex items-center gap-2 text-sm"><input type="radio" formControlName="mode" value="unsure" /> {{ 'QUOTE_PAGE.UNSURE' | translate }}</label>
-          <label class="grid gap-2 text-xs font-bold text-forest">
-            {{ 'QUOTE_PAGE.NOTES' | translate }}
-            <textarea class="min-h-[120px]" formControlName="notes"></textarea>
-          </label>
-        </div>
+        <ng-container *ngIf="status === 'idle'">
+          <div #pane class="quote-pane">
+            <div *ngIf="step === 0" class="quote-grid">
+              <div class="quote-field">
+                <span class="quote-label quote-in">{{ 'QUOTE_PAGE.SERVICE' | translate }}</span>
+                <app-select-menu
+                  formControlName="service"
+                  [placeholder]="'QUOTE_PAGE.PICK_SERVICE' | translate"
+                  [options]="serviceOptions"
+                ></app-select-menu>
+              </div>
+              <div class="quote-field">
+                <span class="quote-label quote-in">{{ 'QUOTE_PAGE.PRODUCT' | translate }}</span>
+                <app-select-menu
+                  formControlName="product"
+                  [placeholder]="'QUOTE_PAGE.PICK_PRODUCT' | translate"
+                  [options]="productOptions"
+                ></app-select-menu>
+              </div>
+              <label class="quote-field quote-in" [class.is-bad]="bad('quantity')">
+                <span class="quote-label">{{ 'QUOTE_PAGE.QTY' | translate }}</span>
+                <input formControlName="quantity" [placeholder]="'QUOTE_PAGE.QTY_HINT' | translate" />
+              </label>
+              <label class="quote-field quote-in" [class.is-bad]="bad('destination')">
+                <span class="quote-label">{{ 'QUOTE_PAGE.DEST' | translate }}</span>
+                <input formControlName="destination" [placeholder]="'QUOTE_PAGE.DEST_HINT' | translate" />
+              </label>
+            </div>
 
-        <div *ngIf="step === 2" class="grid gap-6">
-          <label class="grid gap-2 text-xs font-bold text-forest">{{ 'CONTACT_PAGE.NAME' | translate }}<input formControlName="name" /></label>
-          <label class="grid gap-2 text-xs font-bold text-forest">{{ 'CONTACT_PAGE.COMPANY' | translate }}<input formControlName="company" /></label>
-          <label class="grid gap-2 text-xs font-bold text-forest">{{ 'CONTACT_PAGE.EMAIL' | translate }}<input formControlName="email" dir="ltr" /></label>
-          <label class="grid gap-2 text-xs font-bold text-forest">{{ 'QUOTE_PAGE.PHONE' | translate }}<input formControlName="phone" dir="ltr" /></label>
-        </div>
+            <div *ngIf="step === 1" class="quote-grid">
+              <p class="quote-label quote-in">{{ 'QUOTE_PAGE.MODE' | translate }}</p>
+              <div class="quote-modes" role="radiogroup">
+                <button
+                  type="button"
+                  class="quote-mode quote-in"
+                  *ngFor="let m of modes"
+                  [class.is-on]="form.value.mode === m.value"
+                  (click)="form.patchValue({ mode: m.value })"
+                >
+                  <i class="bi" [ngClass]="m.icon" aria-hidden="true"></i>
+                  <span>
+                    <b>{{ 'QUOTE_PAGE.' + m.label | translate }}</b>
+                    <small>{{ 'QUOTE_PAGE.' + m.hint | translate }}</small>
+                  </span>
+                </button>
+              </div>
+              <label class="quote-field quote-in">
+                <span class="quote-label">
+                  {{ 'QUOTE_PAGE.NOTES' | translate }}
+                  <em>{{ 'QUOTE_PAGE.OPTIONAL' | translate }}</em>
+                </span>
+                <textarea formControlName="notes" rows="5" [placeholder]="'QUOTE_PAGE.NOTES_HINT' | translate"></textarea>
+              </label>
+            </div>
 
-        <div *ngIf="step === 3" class="space-y-4 text-sm text-olive">
-          <p class="page-fact"><b class="text-forest">{{ 'QUOTE_PAGE.SERVICE' | translate }}:</b> {{ serviceLabel() }}</p>
-          <p class="page-fact"><b class="text-forest">{{ 'QUOTE_PAGE.PRODUCT' | translate }}:</b> {{ productLabel() }}</p>
-          <p class="page-fact"><b class="text-forest">{{ 'QUOTE_PAGE.QTY' | translate }}:</b> {{ form.value.quantity }}</p>
-          <p class="page-fact"><b class="text-forest">{{ 'QUOTE_PAGE.DEST' | translate }}:</b> {{ form.value.destination }}</p>
-          <p class="page-fact"><b class="text-forest">{{ 'QUOTE_PAGE.MODE' | translate }}:</b> {{ form.value.mode }}</p>
-        </div>
+            <div *ngIf="step === 2" class="quote-grid quote-grid-2">
+              <label class="quote-field quote-in" [class.is-bad]="bad('name')">
+                <span class="quote-label">{{ 'CONTACT_PAGE.NAME' | translate }}</span>
+                <input formControlName="name" autocomplete="name" />
+              </label>
+              <label class="quote-field quote-in">
+                <span class="quote-label">
+                  {{ 'CONTACT_PAGE.COMPANY' | translate }}
+                  <em>{{ 'QUOTE_PAGE.OPTIONAL' | translate }}</em>
+                </span>
+                <input formControlName="company" autocomplete="organization" />
+              </label>
+              <label class="quote-field quote-in" [class.is-bad]="bad('email')">
+                <span class="quote-label">{{ 'CONTACT_PAGE.EMAIL' | translate }}</span>
+                <input formControlName="email" dir="ltr" type="email" autocomplete="email" />
+              </label>
+              <label class="quote-field quote-in" [class.is-bad]="bad('phone')">
+                <span class="quote-label">{{ 'QUOTE_PAGE.PHONE' | translate }}</span>
+                <input formControlName="phone" dir="ltr" type="tel" autocomplete="tel" />
+              </label>
+            </div>
 
-        <div class="mt-10 flex justify-between gap-3">
-          <button type="button" class="btn btn-ghost !text-forest" *ngIf="step > 0" (click)="back()">{{ 'QUOTE_PAGE.BACK' | translate }}</button>
-          <button type="button" class="btn btn-gold ms-auto" *ngIf="step < 3" (click)="next()">{{ 'QUOTE_PAGE.NEXT' | translate }}</button>
-          <button type="submit" class="btn btn-gold ms-auto" *ngIf="step === 3">{{ 'QUOTE_PAGE.SUBMIT' | translate }}</button>
-        </div>
-      </ng-container>
-    </form>
+            <div *ngIf="step === 3" class="quote-review">
+              <div class="quote-row quote-in">
+                <span>{{ 'QUOTE_PAGE.SERVICE' | translate }}</span>
+                <b>{{ serviceLabel() }}</b>
+              </div>
+              <div class="quote-row quote-in">
+                <span>{{ 'QUOTE_PAGE.PRODUCT' | translate }}</span>
+                <b>{{ productLabel() }}</b>
+              </div>
+              <div class="quote-row quote-in">
+                <span>{{ 'QUOTE_PAGE.QTY' | translate }}</span>
+                <b>{{ form.value.quantity }}</b>
+              </div>
+              <div class="quote-row quote-in">
+                <span>{{ 'QUOTE_PAGE.DEST' | translate }}</span>
+                <b>{{ form.value.destination }}</b>
+              </div>
+              <div class="quote-row quote-in">
+                <span>{{ 'QUOTE_PAGE.MODE' | translate }}</span>
+                <b>{{ 'QUOTE_PAGE.' + modeKey | translate }}</b>
+              </div>
+            </div>
+          </div>
+
+          <p *ngIf="blocked" class="quote-warn">{{ 'COMMON.REQUIRED' | translate }}</p>
+
+          <div class="quote-nav">
+            <button type="button" class="btn btn-ghost !text-forest" *ngIf="step > 0" (click)="back()">
+              {{ 'QUOTE_PAGE.BACK' | translate }}
+            </button>
+            <button type="button" class="btn btn-gold ms-auto" *ngIf="step < 3" (click)="next()">
+              {{ 'QUOTE_PAGE.NEXT' | translate }}
+              <i class="bi bi-arrow-left ltr:rotate-180" aria-hidden="true"></i>
+            </button>
+            <button type="submit" class="btn btn-gold ms-auto" *ngIf="step === 3">
+              {{ 'QUOTE_PAGE.SUBMIT' | translate }}
+            </button>
+          </div>
+        </ng-container>
+      </form>
+    </div>
+
+    <aside class="quote-rail">
+      <p class="film-kicker !text-gold">{{ 'QUOTE_PAGE.REPLY' | translate }}</p>
+      <a class="quote-channel" [href]="wa" target="_blank" rel="noreferrer">
+        <i class="bi bi-whatsapp" aria-hidden="true"></i>
+        <span>
+          <small>WhatsApp</small>
+          <b dir="ltr">{{ site.contact.whatsapp }}</b>
+        </span>
+      </a>
+      <a class="quote-channel" [href]="tel">
+        <i class="bi bi-telephone" aria-hidden="true"></i>
+        <span>
+          <small>{{ 'QUOTE_PAGE.PHONE' | translate }}</small>
+          <b dir="ltr">{{ site.contact.phone }}</b>
+        </span>
+      </a>
+    </aside>
   </div>
 </section>

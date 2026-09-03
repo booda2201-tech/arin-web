@@ -44,8 +44,14 @@
 .why-tile {
   position: relative;
   overflow: hidden;
-  min-height: 320px;
+  min-height: 260px;
   border-radius: 1.6rem;
+}
+
+@media (min-width: 640px) {
+  .why-tile {
+    min-height: 320px;
+  }
 }
 
 .why-tile img {
@@ -73,10 +79,16 @@
   z-index: 1;
   display: flex;
   height: 100%;
-  min-height: 320px;
+  min-height: inherit;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.6rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .why-tile-copy {
+    padding: 1.6rem;
+  }
 }
 
 .why-tile-copy span {

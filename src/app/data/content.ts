@@ -6,7 +6,7 @@ export const site = {
   shortName: { ar: 'عرين', en: 'Arin' } as L,
   latin: 'ARIN ALMAWARED',
   tagline: { ar: 'نمو. موثوقية. موارد', en: 'Growth. Trust. Resources.' } as L,
-  logo: 'assets/images/logo.png',
+  logo: 'assets/images/arin-seal.png',
   contact: {
     phone: '+20 122 555 0180',
     phoneSecondary: '+20 100 774 2213',
@@ -41,6 +41,25 @@ export const images = {
   care: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=1200&q=80',
   packaging:
     'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80',
+  oliveOil:
+    'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=1400&q=80',
+  rice: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1400&q=80',
+  nuts: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=1400&q=80',
+  cinnamon:
+    'https://images.unsplash.com/photo-1606914501449-5a96b6afcc21?auto=format&fit=crop&w=1400&q=80',
+  greens:
+    'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1400&q=80',
+  honey: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1400&q=80',
+  dates: 'https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?auto=format&fit=crop&w=1400&q=80',
+  perfume:
+    'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1400&q=80',
+  lotion:
+    'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1400&q=80',
+  hamper:
+    'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=1400&q=80',
+  lantern:
+    'https://images.unsplash.com/photo-1578662996442-48f50103cca3?auto=format&fit=crop&w=1400&q=80',
+  tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=1400&q=80',
 };
 
 export interface NavItem {
@@ -308,6 +327,13 @@ export const partners = [
   'PORT SAID LOGISTICS',
 ];
 
+export type ProductAvailability = 'in-supply' | 'on-demand';
+
+export interface ProductSpec {
+  label: L;
+  value: L;
+}
+
 export interface ProductItem {
   slug: string;
   category: string;
@@ -316,13 +342,17 @@ export interface ProductItem {
   packaging: L;
   image: string;
   notes: L;
+  description: L;
+  moq: L;
+  availability: ProductAvailability;
+  specs: ProductSpec[];
 }
 
 export const productCategories = [
   { id: 'all', name: { ar: 'الكل', en: 'All' } as L },
   { id: 'food', name: { ar: 'المواد الغذائية', en: 'Food' } as L },
   { id: 'care', name: { ar: 'العناية الشخصية', en: 'Personal care' } as L },
-  { id: 'institutional', name: { ar: 'توريدات مؤسسية', en: 'Institutional' } as L },
+  { id: 'seasonal', name: { ar: 'توزيعات موسمية', en: 'Seasonal packs' } as L },
 ];
 
 export const products: ProductItem[] = [
@@ -332,8 +362,18 @@ export const products: ProductItem[] = [
     name: { ar: 'زيت زيتون بكر ممتاز', en: 'Extra virgin olive oil' },
     origin: { ar: 'إسبانيا · أندلسيا', en: 'Spain · Andalusia' },
     packaging: { ar: 'عبوات 500 مل / 5 لتر', en: '500 ml / 5 L packs' },
-    image: images.fmcg,
+    image: images.oliveOil,
     notes: { ar: 'المواصفة تُثبّت قبل إصدار العرض.', en: 'Specification is fixed before the offer.' },
+    description: {
+      ar: 'زيت زيتون بكر ممتاز من معاصر أندلسية مختارة. نثبّت الحموضة والتعبئة والمنشأ قبل أي عرض توريد، مع خيار التعبئة بعلامة العميل عند الحد الأدنى للطلب.',
+      en: 'Extra virgin olive oil from selected Andalusian mills. Acidity, pack size and origin are locked before any supply offer, with client branding available at MOQ.',
+    },
+    moq: { ar: 'منصة كاملة أو حاوية حسب الاتفاق', en: 'Full pallet or container, by agreement' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'الحموضة', en: 'Acidity' }, value: { ar: 'أقل من 0.8%', en: 'Under 0.8%' } },
+      { label: { ar: 'التغليف الخارجي', en: 'Outer pack' }, value: { ar: 'كراتين تصدير', en: 'Export cartons' } },
+    ],
   },
   {
     slug: 'basmati-rice',
@@ -341,8 +381,18 @@ export const products: ProductItem[] = [
     name: { ar: 'أرز بسمتي مُعتّق', en: 'Aged basmati rice' },
     origin: { ar: 'الهند · هاريانا', en: 'India · Haryana' },
     packaging: { ar: 'أكياس 5 / 10 / 25 كجم', en: '5 / 10 / 25 kg bags' },
-    image: images.food,
+    image: images.rice,
     notes: { ar: 'متاح بعلامة العميل عند الطلب.', en: 'Available under client branding on request.' },
+    description: {
+      ar: 'أرز بسمتي مُعتّق بدرجة كسر متفق عليها مسبقاً. نراجع الشهادة والمنشأ ونسبة الرطوبة قبل الشحن، ونرتّب التعبئة حسب قناة التوزيع.',
+      en: 'Aged basmati with a pre-agreed broken ratio. Certificates, origin and moisture are checked before shipping, with packing matched to the sales channel.',
+    },
+    moq: { ar: 'حسب حجم الحاوية', en: 'Per container load' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'نسبة الكسر', en: 'Broken ratio' }, value: { ar: 'حسب المواصفة المطلوبة', en: 'To requested spec' } },
+      { label: { ar: 'التعبئة', en: 'Filling' }, value: { ar: 'أكياس بولي بروبيلين', en: 'Polypropylene bags' } },
+    ],
   },
   {
     slug: 'dried-nuts',
@@ -350,8 +400,94 @@ export const products: ProductItem[] = [
     name: { ar: 'مكسرات وفواكه مجففة', en: 'Nuts and dried fruit' },
     origin: { ar: 'تركيا · إزمير', en: 'Turkey · Izmir' },
     packaging: { ar: 'كراتين 10 كجم', en: '10 kg cartons' },
-    image: images.fmcg,
+    image: images.nuts,
     notes: { ar: 'فحص جودة مستقل حسب الطلب.', en: 'Independent QC on request.' },
+    description: {
+      ar: 'مزيج مكسرات وفواكه مجففة من مصادر تركية مدققة. نثبّت الأصناف ونسبة الرطوبة والتعبئة قبل العرض، مع إمكانية الفرز حسب طلب العميل.',
+      en: 'A nuts and dried-fruit mix from verified Turkish sources. Varieties, moisture and packing are fixed before the offer, with sorting to client request.',
+    },
+    moq: { ar: 'حسب الكمية المطلوبة', en: 'Per requested volume' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'الأصناف', en: 'Variants' }, value: { ar: 'كاجو، لوز، زبيب، تين', en: 'Cashew, almond, raisin, fig' } },
+      { label: { ar: 'التخزين', en: 'Storage' }, value: { ar: 'جاف ومكيّف', en: 'Dry, climate-controlled' } },
+    ],
+  },
+  {
+    slug: 'cinnamon-sticks',
+    category: 'food',
+    name: { ar: 'قرفة أعواد كاملة', en: 'Whole cinnamon sticks' },
+    origin: { ar: 'سريلانكا', en: 'Sri Lanka' },
+    packaging: { ar: 'أكياس 1 / 5 / 25 كجم', en: '1 / 5 / 25 kg bags' },
+    image: images.cinnamon,
+    notes: { ar: 'الدرجة تُثبّت بالعينة قبل الشحن.', en: 'Grade is locked by sample before shipping.' },
+    description: {
+      ar: 'أعواد قرفة كاملة بدرجة تصدير. نراجع الرائحة والكسر والتعبئة على عينة معتمدة، ثم نثبّت الكمية ومسار الشحن البحري.',
+      en: 'Whole cinnamon sticks at export grade. Aroma, breakage and pack are confirmed on an approved sample, then volume and sea freight are locked.',
+    },
+    moq: { ar: 'حسب حجم الحاوية', en: 'Per container load' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'النوع', en: 'Type' }, value: { ar: 'سيلاني كامل', en: 'Ceylon, whole' } },
+      { label: { ar: 'الرطوبة', en: 'Moisture' }, value: { ar: 'ضمن حد التصدير', en: 'Within export limit' } },
+    ],
+  },
+  {
+    slug: 'leafy-greens',
+    category: 'food',
+    name: { ar: 'خضروات ورقية طازجة', en: 'Fresh leafy greens' },
+    origin: { ar: 'مصر · الدلتا', en: 'Egypt · Delta' },
+    packaging: { ar: 'صنادل مبرّدة حسب الدورة', en: 'Chilled crates per cycle' },
+    image: images.greens,
+    notes: { ar: 'جدول توريد أسبوعي للمستودعات والسلاسل.', en: 'Weekly supply schedule for warehouses and chains.' },
+    description: {
+      ar: 'خضروات ورقية من مزارع الدلتا بتوريد مرحلي مبرّد. نثبت الصنف ووزن الصندوق ونافذة التسليم قبل بدء الدورة، مع متابعة درجة التبريد حتى الباب.',
+      en: 'Leafy greens from Delta farms on a chilled, phased schedule. Variety, crate weight and delivery window are fixed before the cycle starts.',
+    },
+    moq: { ar: 'دورة أسبوعية متفق عليها', en: 'Agreed weekly cycle' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'سلسلة التبريد', en: 'Cold chain' }, value: { ar: 'من الحقل حتى المستودع', en: 'Field to warehouse' } },
+      { label: { ar: 'نافذة التسليم', en: 'Delivery window' }, value: { ar: 'فجر اليوم التالي', en: 'Next-morning drop' } },
+    ],
+  },
+  {
+    slug: 'blossom-honey',
+    category: 'food',
+    name: { ar: 'عسل أزهار طبيعي', en: 'Natural blossom honey' },
+    origin: { ar: 'مصر · الوادي الجديد', en: 'Egypt · New Valley' },
+    packaging: { ar: 'عبوات 500 جم / 1 كجم / دلو 25 كجم', en: '500 g / 1 kg / 25 kg pail' },
+    image: images.honey,
+    notes: { ar: 'تحليل مختبر يُرفق مع الشحنة عند الطلب.', en: 'Lab analysis attached to the shipment on request.' },
+    description: {
+      ar: 'عسل أزهار من مناحل مصرية مختارة. نثبت الرطوبة والتعبئة والملصق قبل الإنتاج، مع خيار العلامة الخاصة للدفعات التجارية.',
+      en: 'Blossom honey from selected Egyptian apiaries. Moisture, pack and label are fixed before production, with private-label runs available.',
+    },
+    moq: { ar: 'حسب دفعة التعبئة', en: 'Per filling batch' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'النوع', en: 'Type' }, value: { ar: 'أزهار متعددة', en: 'Polyfloral' } },
+      { label: { ar: 'التعبئة الخاصة', en: 'Private label' }, value: { ar: 'متاح عند الحد الأدنى', en: 'Available at MOQ' } },
+    ],
+  },
+  {
+    slug: 'medjool-dates',
+    category: 'food',
+    name: { ar: 'تمر مجهول فاخر', en: 'Premium Medjool dates' },
+    origin: { ar: 'الأردن · الأغوار', en: 'Jordan · Jordan Valley' },
+    packaging: { ar: 'كراتين 5 كجم مبرّدة', en: '5 kg chilled cartons' },
+    image: images.dates,
+    notes: { ar: 'الفرز حسب الحجم يتم قبل التعبئة.', en: 'Size grading is done before packing.' },
+    description: {
+      ar: 'تمر مجهول بدرجة فاخرة، مفرز حسب الحجم ورطوبة مضبوطة للشحن المبرّد. مناسب للتجزئة والتوزيعات الموسمية.',
+      en: 'Premium Medjool dates, size-graded with controlled moisture for chilled freight. Suited to retail and seasonal distribution.',
+    },
+    moq: { ar: 'منصة كاملة', en: 'Full pallet' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'الدرجة', en: 'Grade' }, value: { ar: 'جامبو / لارج', en: 'Jumbo / Large' } },
+      { label: { ar: 'التخزين', en: 'Storage' }, value: { ar: 'مبرّد 0–4°م', en: 'Chilled 0–4°C' } },
+    ],
   },
   {
     slug: 'face-serum',
@@ -361,6 +497,16 @@ export const products: ProductItem[] = [
     packaging: { ar: 'زجاج 30 مل', en: '30 ml glass' },
     image: images.cosmetics,
     notes: { ar: 'قابل للتصنيع بعلامتك الخاصة.', en: 'Available as private label.' },
+    description: {
+      ar: 'سيروم عناية يُصنَّع وفق تركيبة قابلة للتخصيص. نراجع الملصق، العبوة، وفحص الجودة قبل الإنتاج التجاري.',
+      en: 'A care serum made to a customisable formula. Label, bottle and QC are reviewed before commercial production.',
+    },
+    moq: { ar: 'حسب دفعة التصنيع', en: 'Per production batch' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'العبوة', en: 'Bottle' }, value: { ar: 'زجاج مع قطّارة', en: 'Glass with dropper' } },
+      { label: { ar: 'التركيبة', en: 'Formula' }, value: { ar: 'قابلة للتخصيص', en: 'Customisable' } },
+    ],
   },
   {
     slug: 'fragrance',
@@ -368,19 +514,113 @@ export const products: ProductItem[] = [
     name: { ar: 'مجموعة عطور فاخرة', en: 'Prestige fragrance set' },
     origin: { ar: 'فرنسا · غراس', en: 'France · Grasse' },
     packaging: { ar: '50 / 100 مل', en: '50 / 100 ml' },
-    image: images.care,
+    image: images.perfume,
     notes: { ar: 'تعبئة بعلامتك عند الحد الأدنى للطلب.', en: 'Filled under your brand at MOQ.' },
+    description: {
+      ar: 'مجموعة عطور بتراكيز متفق عليها وتعبئة زجاج فاخر. نثبت الرائحة والحجم والملصق قبل بدء دفعة التعبئة.',
+      en: 'A fragrance set at agreed concentrations in prestige glass. Scent, size and label are locked before the fill run.',
+    },
+    moq: { ar: 'حسب دفعة التعبئة', en: 'Per filling batch' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'التركيز', en: 'Concentration' }, value: { ar: 'Eau de parfum', en: 'Eau de parfum' } },
+      { label: { ar: 'العلبة', en: 'Carton' }, value: { ar: 'حسب هوية العميل', en: 'To client identity' } },
+    ],
   },
   {
-    slug: 'institutional-pack',
-    category: 'institutional',
-    name: { ar: 'قوائم توريد مؤسسية', en: 'Institutional supply lists' },
-    origin: { ar: 'مصادر متعددة مُدققة', en: 'Verified multi-origin' },
-    packaging: { ar: 'حسب دورة التسليم', en: 'Per delivery cycle' },
-    image: images.warehouse,
-    notes: { ar: 'عرض موحد لقائمة أصناف متنوعة.', en: 'A single offer covering mixed item lists.' },
+    slug: 'body-lotion',
+    category: 'care',
+    name: { ar: 'لوشن مرطّب للجسم', en: 'Moisturising body lotion' },
+    origin: { ar: 'تركيا · إسطنبول', en: 'Turkey · Istanbul' },
+    packaging: { ar: 'عبوات 200 / 400 مل', en: '200 / 400 ml bottles' },
+    image: images.lotion,
+    notes: { ar: 'التغليف يُثبّت قبل بدء الإنتاج.', en: 'Packaging is fixed before production begins.' },
+    description: {
+      ar: 'لوشن جسم بتركيبة مرطّبة قابلة لتعديل الرائحة والكثافة. مناسب لخطوط العناية الخاصة وقنوات التجزئة.',
+      en: 'A moisturising body lotion with adjustable scent and viscosity. Suited to private-label care lines and retail channels.',
+    },
+    moq: { ar: 'حسب دفعة التصنيع', en: 'Per production batch' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'الروائح', en: 'Fragrance' }, value: { ar: 'حسب الاختيار', en: 'Selected per project' } },
+      { label: { ar: 'الملصق', en: 'Label' }, value: { ar: 'بعلامة العميل', en: 'Client branded' } },
+    ],
+  },
+  {
+    slug: 'ramadan-hamper',
+    category: 'seasonal',
+    name: { ar: 'سلال رمضان المؤسسية', en: 'Ramadan institutional hampers' },
+    origin: { ar: 'تجميع من مصادر مدققة', en: 'Assembled from verified sources' },
+    packaging: { ar: 'سلة مغلقة حسب القائمة', en: 'Sealed basket per list' },
+    image: images.lantern,
+    notes: { ar: 'القائمة تُغلق قبل موسم الإنتاج.', en: 'The item list is locked before the production season.' },
+    description: {
+      ar: 'سلال توزيع رمضانية للشركات والجهات. نثبت الأصناف والأوزان والتغليف قبل الموسم، ثم نرتّب التجميع والتسليم على دفعات.',
+      en: 'Ramadan distribution hampers for companies and institutions. Items, weights and packing are locked before the season, then assembled and delivered in batches.',
+    },
+    moq: { ar: 'من 200 سلة', en: 'From 200 hampers' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'المحتوى', en: 'Contents' }, value: { ar: 'تمر، سكر، زيت، مشروبات', en: 'Dates, sugar, oil, drinks' } },
+      { label: { ar: 'التسليم', en: 'Delivery' }, value: { ar: 'مرحلي حتى المستودع', en: 'Phased to warehouse' } },
+    ],
+  },
+  {
+    slug: 'eid-gift-boxes',
+    category: 'seasonal',
+    name: { ar: 'علب هدايا العيد', en: 'Eid gift boxes' },
+    origin: { ar: 'تجميع محلي + استيراد', en: 'Local assembly + import' },
+    packaging: { ar: 'علبة مطبوعة بعلامتك', en: 'Printed box under your brand' },
+    image: images.hamper,
+    notes: { ar: 'التصميم يُعتمد قبل الطباعة بثلاثة أسابيع.', en: 'Artwork is approved three weeks before print.' },
+    description: {
+      ar: 'علب هدايا للعيد بهوية العميل: حلويات، مكسرات، ومشروبات مختارة. نغلق التصميم والمحتوى ثم ننتج دفعة واحدة بجدول تسليم واضح.',
+      en: 'Eid gift boxes in the client identity: sweets, nuts and selected drinks. Design and contents are locked, then produced in one run on a clear delivery date.',
+    },
+    moq: { ar: 'من 150 علبة', en: 'From 150 boxes' },
+    availability: 'on-demand',
+    specs: [
+      { label: { ar: 'الهوية', en: 'Branding' }, value: { ar: 'طباعة كاملة على العلبة', en: 'Full box print' } },
+      { label: { ar: 'المهلة', en: 'Lead time' }, value: { ar: '4–6 أسابيع قبل العيد', en: '4–6 weeks before Eid' } },
+    ],
+  },
+  {
+    slug: 'hospitality-tea',
+    category: 'seasonal',
+    name: { ar: 'شاي الضيافة الفاخر', en: 'Premium hospitality tea' },
+    origin: { ar: 'سريلانكا · كاندي', en: 'Sri Lanka · Kandy' },
+    packaging: { ar: 'علب 250 جم / صناديق 1 كجم', en: '250 g tins / 1 kg chests' },
+    image: images.tea,
+    notes: { ar: 'خلطة تُثبّت بالعينة قبل الموسم.', en: 'Blend is locked by sample before the season.' },
+    description: {
+      ar: 'شاي أسود للضيافة والتوزيعات الموسمية. نثبت الخلطة والتعبئة والملصق، مع خيار علب معدنية بعلامة العميل للفنادق والشركات.',
+      en: 'Black tea for hospitality and seasonal distribution. Blend, pack and label are fixed, with metal tins under the client brand for hotels and corporates.',
+    },
+    moq: { ar: 'حسب حجم الحاوية أو الدفعة الموسمية', en: 'Per container or seasonal batch' },
+    availability: 'in-supply',
+    specs: [
+      { label: { ar: 'الدرجة', en: 'Grade' }, value: { ar: 'BOP / OP حسب الطلب', en: 'BOP / OP on request' } },
+      { label: { ar: 'التعبئة الخاصة', en: 'Private label' }, value: { ar: 'علب معدنية مطبوعة', en: 'Printed metal tins' } },
+    ],
   },
 ];
+
+export function getProduct(slug: string): ProductItem | undefined {
+  return products.find((p) => p.slug === slug);
+}
+
+export function relatedProducts(slug: string, limit = 3): ProductItem[] {
+  const current = getProduct(slug);
+  if (!current) {
+    return [];
+  }
+  return products.filter((p) => p.category === current.category && p.slug !== slug).slice(0, limit);
+}
+
+export function categoryName(id: string, lang: Lang): string {
+  const found = productCategories.find((c) => c.id === id);
+  return found ? found.name[lang] : id;
+}
 
 export const projects = [
   {
@@ -442,36 +682,277 @@ export const projects = [
 export const labSteps = [
   {
     index: '01',
-    title: { ar: 'الفكرة', en: 'Brief' },
+    title: { ar: 'الموجز', en: 'Brief' },
     body: {
-      ar: 'دراسة الفئة والسعر المستهدف وتحديد المواصفة.',
-      en: 'Category, target price and specification.',
+      ar: 'نثبّت الفئة والجمهور والسعر المستهدف والمواصفة القابلة للتصنيع قبل أي حركة.',
+      en: 'We lock category, audience, target price and a manufacturable spec before any move.',
     },
   },
   {
     index: '02',
-    title: { ar: 'التصميم', en: 'Design' },
+    title: { ar: 'التركيبة أو المنتج', en: 'Formula or product' },
     body: {
-      ar: 'هوية العلامة والعبوة وملفات الطباعة.',
-      en: 'Brand identity, pack and print files.',
+      ar: 'نختار المصدر أو نطور التركيبة، ثم نطلب العينات الأولى للمراجعة.',
+      en: 'We select the source or develop the formula, then request first samples for review.',
     },
   },
   {
     index: '03',
-    title: { ar: 'التصنيع', en: 'Make' },
+    title: { ar: 'الهوية والعبوة', en: 'Identity and pack' },
     body: {
-      ar: 'اختيار المصنع، عينات، ثم إنتاج تحت رقابة جودة.',
-      en: 'Factory selection, samples, then QC-controlled production.',
+      ar: 'الاسم، الملصق، الخامة، والبيانات الإلزامية لسوق الوجهة — بهوية تقف وحدها على الرف.',
+      en: 'Name, label, material and mandatory data for the destination market — an identity that stands alone on the shelf.',
     },
   },
   {
     index: '04',
-    title: { ar: 'الشحن', en: 'Ship' },
+    title: { ar: 'العينة المعتمدة', en: 'Approved sample' },
     body: {
-      ar: 'التغليف والتحميل والتخليص حتى مستودعك.',
-      en: 'Pack, load, clear and deliver to your warehouse.',
+      ar: 'مراجعة الجودة والمظهر والتعبئة قبل أي إنتاج تجاري. لا دفعة بلا اعتماد.',
+      en: 'Quality, appearance and pack reviewed before commercial production. No batch without approval.',
     },
   },
+  {
+    index: '05',
+    title: { ar: 'التصنيع', en: 'Production' },
+    body: {
+      ar: 'دفعة تحت رقابة، مع نقاط فحص قبل التعبئة وقبل التحميل.',
+      en: 'A controlled batch, with checkpoints before filling and before loading.',
+    },
+  },
+  {
+    index: '06',
+    title: { ar: 'الشحن والتوريد', en: 'Freight and supply' },
+    body: {
+      ar: 'المستندات، المسار، التسليم إلى المستودع، ثم الدورة التالية حتى لا يفرغ الرف.',
+      en: 'Documents, route, warehouse delivery, then the next cycle so the shelf never runs empty.',
+    },
+  },
+];
+
+export const privateLabelStats = [
+  {
+    value: { ar: '2022', en: '2022' },
+    label: { ar: 'إطلاق ذراع التصنيع للغير', en: 'Contract manufacturing launched' },
+  },
+  {
+    value: { ar: 'ملف واحد', en: 'One file' },
+    label: { ar: 'من الموجز حتى المستودع', en: 'From brief to warehouse' },
+  },
+  {
+    value: { ar: 'سرية', en: 'Sealed' },
+    label: { ar: 'للموجز والتركيبة والهوية', en: 'Brief, formula and identity' },
+  },
+  {
+    value: { ar: '4 قارات', en: '4 continents' },
+    label: { ar: 'شبكة مصانع ومصادر مُدققة', en: 'Vetted factories and origins' },
+  },
+];
+
+export const privateLabelPromises = [
+  {
+    index: '01',
+    title: { ar: 'ملكية الهامش', en: 'Own the margin' },
+    body: {
+      ar: 'أنت تحدد السعر والقناة والعلاقة مع العميل. نحن نضبط التكلفة والكمية والمهلة داخل عرض واضح.',
+      en: 'You set price, channel and the customer relationship. We lock cost, volume and lead time inside a clear offer.',
+    },
+  },
+  {
+    index: '02',
+    title: { ar: 'هوية مستقلة', en: 'Independent identity' },
+    body: {
+      ar: 'اسم وعبوة ورسائل تقف وحدها على الرف — لا منتج عام بملصق فوقه.',
+      en: 'A name, pack and message that stand alone on the shelf — not a generic product with a sticker on it.',
+    },
+  },
+  {
+    index: '03',
+    title: { ar: 'سلسلة تحت السيطرة', en: 'A chain under control' },
+    body: {
+      ar: 'مصنع مختار، نقاط فحص، ومستندات جاهزة للإفراج. جهة واحدة تتحمل الملف.',
+      en: 'A chosen factory, inspection points, and documents ready for release. One team owns the file.',
+    },
+  },
+  {
+    index: '04',
+    title: { ar: 'انطلاق محسوب', en: 'A measured launch' },
+    body: {
+      ar: 'دفعة تجريبية عند الحاجة، ثم توريد مستمر حسب أداء السوق — لا صفقة تُغلق وتُنسى.',
+      en: 'A trial batch where needed, then ongoing supply as the market performs — not a deal that closes and disappears.',
+    },
+  },
+];
+
+export const privateLabelLines = [
+  {
+    title: { ar: 'العناية الشخصية', en: 'Personal care' },
+    body: {
+      ar: 'سيروم، عطور، وخطوط يومية تُعبأ بعلامتك وفق مواصفة معتمدة.',
+      en: 'Serums, fragrances and daily lines filled under your brand to an approved spec.',
+    },
+    image: images.lotion,
+    index: '01',
+  },
+  {
+    title: { ar: 'المواد الغذائية', en: 'Food' },
+    body: {
+      ar: 'زيوت، أرز، مكسرات، وتغليف تجزئة أو مؤسسي بمصدر موثّق.',
+      en: 'Oils, rice, nuts, and retail or institutional packing from a verified origin.',
+    },
+    image: images.oliveOil,
+    index: '02',
+  },
+  {
+    title: { ar: 'التوريدات المؤسسية', en: 'Institutional' },
+    body: {
+      ar: 'قوائم أصناف لدورة تسليم ثابتة، بعلامتك أو بمواصفتك الخاصة.',
+      en: 'Item lists on a fixed delivery cycle, under your brand or your specification.',
+    },
+    image: images.hamper,
+    index: '03',
+  },
+  {
+    title: { ar: 'التغليف والهوية', en: 'Packaging and identity' },
+    body: {
+      ar: 'عبوات، ملصقات، وملفات طباعة جاهزة للمصنع ومتوافقة مع سوق الوجهة.',
+      en: 'Containers, labels and print files ready for the factory and the destination market.',
+    },
+    image: images.perfume,
+    index: '04',
+  },
+];
+
+export const privateLabelDeliverables = [
+  {
+    title: { ar: 'موجز منتج موثّق', en: 'Documented product brief' },
+    body: {
+      ar: 'مواصفات، جمهور، ونقطة تميز قابلة للقياس قبل أي إنتاج.',
+      en: 'Spec, audience and a measurable difference — before any production.',
+    },
+  },
+  {
+    title: { ar: 'عينة معتمدة', en: 'Approved sample' },
+    body: {
+      ar: 'اختبارات جودة ومراجعة مظهر قبل الدفعة التجارية.',
+      en: 'Quality checks and appearance review before the commercial batch.',
+    },
+  },
+  {
+    title: { ar: 'هوية متماسكة', en: 'Coherent identity' },
+    body: {
+      ar: 'اسم وعبوة ورسائل تساعد المنتج على الوقوف وحده.',
+      en: 'Name, pack and messages that let the product stand alone.',
+    },
+  },
+  {
+    title: { ar: 'خطة توريد', en: 'Supply plan' },
+    body: {
+      ar: 'كميات أولية، مهلات، ومسار شحن حتى المستودع.',
+      en: 'Initial volumes, lead times and a freight path through to the warehouse.',
+    },
+  },
+  {
+    title: { ar: 'ملف مستندي', en: 'Document file' },
+    body: {
+      ar: 'شهادات ومتطلبات سوق الوجهة جاهزة للإفراج والشحن.',
+      en: 'Certificates and destination requirements ready for release and freight.',
+    },
+  },
+  {
+    title: { ar: 'جهة اتصال واحدة', en: 'Single contact' },
+    body: {
+      ar: 'فريق يتابع من أول موجز حتى الدورة التالية، بلا تحويل بين أقسام.',
+      en: 'A team that follows from first brief to the next cycle, with no department hand-offs.',
+    },
+  },
+];
+
+export const privateLabelSeals = [
+  {
+    icon: 'bi-shield-check',
+    title: { ar: 'الجودة قبل الكمية', en: 'Quality before volume' },
+    body: {
+      ar: 'لا ننتقل إلى الإنتاج التجاري قبل اعتماد العينة ونقاط الفحص.',
+      en: 'We do not move to commercial production before sample approval and inspection points.',
+    },
+  },
+  {
+    icon: 'bi-globe2',
+    title: { ar: 'مطابقة سوق الوجهة', en: 'Destination compliance' },
+    body: {
+      ar: 'نراجع البيانات الإلزامية والمتطلبات قبل الطباعة والشحن.',
+      en: 'Mandatory data and requirements are reviewed before print and freight.',
+    },
+  },
+  {
+    icon: 'bi-lock',
+    title: { ar: 'سرية الملف', en: 'File confidentiality' },
+    body: {
+      ar: 'الموجز والتركيبة والهوية تُدار كأصل للعميل، لا كمادة للعرض.',
+      en: 'Brief, formula and identity are treated as the client’s asset — not display material.',
+    },
+  },
+  {
+    icon: 'bi-layers',
+    title: { ar: 'حد أدنى يناسب الفئة', en: 'MOQ by category' },
+    body: {
+      ar: 'أقل دفعة تُحدد بعد تثبيت المنتج والتغليف، لا كرقم عام على الموقع.',
+      en: 'The smallest viable batch is set after product and pack are fixed — not as a generic number on the site.',
+    },
+  },
+];
+
+export const privateLabelFaq: { q: L; a: L }[] = [
+  {
+    q: { ar: 'ما أقل كمية يمكن البدء بها؟', en: 'What is the minimum starting quantity?' },
+    a: {
+      ar: 'تختلف حسب الفئة ومصنع التنفيذ. نحدد أقل دفعة ممكنة بعد تثبيت المنتج والتغليف، وتُذكر في العرض لا كرقم عام.',
+      en: 'It varies by category and production facility. We define the smallest viable batch once product and packaging are fixed, and state it in the offer — not as a generic number.',
+    },
+  },
+  {
+    q: { ar: 'هل تساعدون في تصميم الهوية والتغليف؟', en: 'Do you help with identity and packaging?' },
+    a: {
+      ar: 'ننسق مواد التغليف والملصقات ومتطلبات البيانات الإلزامية، ونعمل مع مصممكم أو نرشّح بديلًا يفهم سوق الوجهة.',
+      en: 'We coordinate packaging materials, labels and mandatory data, working with your designer or recommending one who understands the destination market.',
+    },
+  },
+  {
+    q: { ar: 'كم تستغرق دورة المشروع؟', en: 'How long does a project take?' },
+    a: {
+      ar: 'تُقدَّر المدة بعد تحديد الفئة والكمية وسوق الوجهة، ثم تُثبَّت في العرض التجاري. لا نعد بمهلة قبل تثبيت المواصفة.',
+      en: 'Timelines are estimated once category, volume and destination market are set, then fixed in the commercial offer. We do not promise a lead time before the spec is locked.',
+    },
+  },
+  {
+    q: { ar: 'ماذا عن المستندات والمطابقة؟', en: 'What about documentation and compliance?' },
+    a: {
+      ar: 'نراجع متطلبات سوق الوجهة ونجهّز المستندات المطلوبة للشحن والإفراج ضمن الملف نفسه.',
+      en: 'We review destination-market requirements and prepare the documents needed for shipping and release inside the same file.',
+    },
+  },
+  {
+    q: { ar: 'هل نحتاج مصنعًا خاصًا بنا؟', en: 'Do we need our own factory?' },
+    a: {
+      ar: 'لا. التصنيع للغير يعني أن المصنع والرقابة والشحن تُدار عبر عرين، وتبقى العلامة والسوق ملكك.',
+      en: 'No. Contract manufacturing means factory, quality control and freight are run through Arin — you keep the brand and the market.',
+    },
+  },
+  {
+    q: { ar: 'كيف تُحفظ سرية التركيبة والهوية؟', en: 'How is formula and identity kept confidential?' },
+    a: {
+      ar: 'الملف يُدار داخليًا مع المصنع المختار فقط. لا تُعرض التركيبة أو الهوية كنموذج عام، ولا تُشارك مع عملاء آخرين.',
+      en: 'The file is handled internally with the chosen factory only. Formula and identity are not shown as public samples, and are not shared with other clients.',
+    },
+  },
+];
+
+export const privateLabelCategories = [
+  { id: 'care', name: { ar: 'العناية الشخصية', en: 'Personal care' } as L },
+  { id: 'food', name: { ar: 'المواد الغذائية', en: 'Food' } as L },
+  { id: 'institutional', name: { ar: 'توريدات مؤسسية', en: 'Institutional' } as L },
+  { id: 'other', name: { ar: 'فئة أخرى', en: 'Other category' } as L },
 ];
 
 export const mapNodes = [

@@ -1,0 +1,64 @@
+<section class="product-detail bg-cream" *ngIf="product as p">
+  <div class="arin-wrap">
+    <a routerLink="/products" class="product-back">
+      <i class="bi bi-arrow-right rtl:rotate-180"></i>
+      {{ 'PRODUCTS_PAGE.BACK' | translate }}
+    </a>
+
+    <div class="product-layout">
+      <div class="page-still product-still" data-aos="fade-up">
+        <img [src]="p.image" [alt]="txt(p.name)" />
+      </div>
+
+      <div class="product-copy" data-aos="fade-up">
+        <div class="product-meta">
+          <span class="film-kicker !mb-0">{{ categoryLabel() }}</span>
+          <span class="product-avail">{{ availabilityKey() | translate }}</span>
+        </div>
+        <h1 class="film-display text-forest">{{ txt(p.name) }}</h1>
+        <p class="product-lead">{{ txt(p.description) }}</p>
+
+        <dl class="product-specs">
+          <div *ngFor="let row of specRows(); let i = index" class="product-spec" [class.is-first]="i === 0">
+            <dt>{{ txt(row.label) }}</dt>
+            <dd>{{ row.value }}</dd>
+          </div>
+        </dl>
+
+        <div class="product-cta">
+          <a [routerLink]="'/quote'" [queryParams]="{ product: p.slug }" class="btn btn-gold">
+            {{ 'NAV.QUOTE' | translate }}
+            <i class="bi bi-arrow-left rtl:rotate-180"></i>
+          </a>
+          <a routerLink="/contact" class="btn btn-ghost !text-forest !border-forest/20 hover:!border-gold">
+            {{ 'COMMON.TALK' | translate }}
+          </a>
+        </div>
+        <p class="mt-4 text-xs leading-6 text-olive">{{ 'PRODUCTS_PAGE.PRICE' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page-panel product-related bg-sand" *ngIf="related.length">
+  <div class="arin-wrap">
+    <p class="film-kicker !text-gold">{{ 'PRODUCTS_PAGE.RELATED' | translate }}</p>
+    <div class="product-related-grid">
+      <article *ngFor="let item of related" class="product-card group" data-aos="fade-up">
+        <a [routerLink]="['/products', item.slug]" class="product-card-media page-still">
+          <img [src]="item.image" [alt]="txt(item.name)" class="h-full w-full object-cover" />
+        </a>
+        <div class="product-card-body">
+          <p class="film-kicker !mb-2">{{ txt(item.origin) }}</p>
+          <h2 class="font-display text-lg font-bold text-forest">
+            <a [routerLink]="['/products', item.slug]" class="transition hover:text-gold">{{ txt(item.name) }}</a>
+          </h2>
+          <a [routerLink]="['/products', item.slug]" class="btn btn-gold mt-5 !px-5 !py-2.5 !text-xs">
+            {{ 'COMMON.DETAILS' | translate }}
+            <i class="bi bi-arrow-left rtl:rotate-180"></i>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

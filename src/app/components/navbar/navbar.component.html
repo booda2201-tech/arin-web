@@ -1,14 +1,21 @@
 <header
-  class="fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-200"
+  class="site-nav fixed inset-x-0 top-0 z-50"
   [class.nav-solid]="scrolled || open || !isHome()"
   [class.nav-transparent]="!scrolled && !open && isHome()"
+  [class.is-open]="open"
+  [class.is-hidden]="hidden && !open"
 >
-  <div class="arin-wrap flex h-24 items-center gap-6">
-    <a routerLink="/" class="flex shrink-0 items-center gap-3" (click)="open = false">
-      <span class="relative h-20 w-20 shrink-0 sm:h-[5.5rem] sm:w-[5.5rem]">
-        <img [src]="site.logo" [alt]="site.name[currentLang]" class="h-full w-full object-contain drop-shadow-[0_0_12px_rgba(195,164,98,0.35)]" />
+  <div class="nav-chrome">
+    <div class="nav-bar arin-wrap flex h-16 items-center justify-between gap-3 lg:h-24 lg:justify-start lg:gap-6">
+    <a routerLink="/" class="flex shrink-0 items-center gap-3" (click)="close()">
+      <span class="relative flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center lg:h-[5.25rem] lg:w-[5.25rem]">
+        <img
+          [src]="site.logo"
+          [alt]="site.name[currentLang]"
+          class="h-full w-full object-contain"
+        />
       </span>
-      <span class="hidden leading-tight sm:block" *ngIf="!isHome()">
+      <span class="hidden leading-tight lg:block" *ngIf="!isHome()">
         <span class="block font-display text-lg font-bold text-cream">{{ site.name[currentLang] }}</span>
         <span class="block font-mono text-[10px] tracking-[0.28em] text-gold">{{ site.latin }}</span>
       </span>
@@ -19,9 +26,9 @@
         <li *ngFor="let item of navItems">
           <a
             [routerLink]="item.path"
-            routerLinkActive="text-gold-light"
-            [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-            class="relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-platinum transition hover:text-cream"
+            class="nav-link"
+            [class.is-active]="isCurrent(item.path)"
+            [attr.aria-current]="isCurrent(item.path) ? 'page' : null"
           >
             {{ label(item) }}
           </a>
@@ -32,43 +39,93 @@
     <div class="ms-auto flex items-center gap-2 lg:ms-0">
       <button
         type="button"
-        class="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold uppercase text-cream hover:border-gold/50 hover:text-gold"
+        class="hidden rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold uppercase text-cream hover:border-gold/50 hover:text-gold lg:inline-flex"
         (click)="language.toggle()"
       >
         {{ currentLang === 'ar' ? 'EN' : 'AR' }}
       </button>
-      <a routerLink="/quote" class="btn btn-gold hidden !px-5 !py-2.5 !text-xs sm:inline-flex">
+      <a routerLink="/quote" class="btn btn-gold !hidden !px-5 !py-2.5 !text-xs lg:!inline-flex">
         {{ 'NAV.QUOTE' | translate }}
         <i class="bi bi-arrow-left rtl:rotate-180"></i>
       </a>
       <button
         type="button"
-        class="rounded-xl border border-white/10 bg-white/5 p-2.5 text-cream lg:hidden"
+        class="nav-burger lg:hidden"
+        [class.is-open]="open"
         [attr.aria-expanded]="open"
-        [attr.aria-label]="'NAV.MENU' | translate"
-        (click)="open = !open"
+        [attr.aria-label]="(open ? 'NAV.CLOSE' : 'NAV.MENU') | translate"
+        (click)="toggle()"
       >
-        <i class="bi text-xl" [ngClass]="open ? 'bi-x-lg' : 'bi-list'"></i>
+        <span></span>
+        <span></span>
       </button>
+    </div>
     </div>
   </div>
 
-  <nav *ngIf="open" class="border-t border-white/10 bg-ink/95 lg:hidden">
-    <ul class="arin-wrap py-4">
-      <li *ngFor="let item of navItems">
+  <div
+    class="nav-sheet lg:hidden"
+    [class.is-open]="open"
+    role="dialog"
+    [attr.aria-modal]="open"
+    [attr.aria-hidden]="!open"
+    [attr.aria-label]="'NAV.MENU' | translate"
+  >
+    <div class="nav-sheet-glow" aria-hidden="true"></div>
+    <p class="nav-sheet-mark" aria-hidden="true">{{ site.shortName[currentLang] }}</p>
+
+    <div class="arin-wrap relative flex min-h-0 flex-1 flex-col pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
+      <p class="nav-sheet-kicker">{{ 'NAV.MENU' | translate }}</p>
+
+      <nav class="nav-sheet-list min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <a
+          *ngFor="let item of navItems; let i = index"
           [routerLink]="item.path"
-          class="block border-b border-white/5 py-3 text-base text-platinum hover:text-cream"
-          (click)="open = false"
+          class="nav-sheet-link"
+          [class.is-active]="isCurrent(item.path)"
+          (click)="close()"
         >
-          {{ label(item) }}
+          <span class="nav-sheet-title">{{ label(item) }}</span>
+          <span class="nav-sheet-idx">{{ indexOf(i) }}</span>
         </a>
-      </li>
-      <li class="pt-4">
-        <a routerLink="/quote" class="btn btn-gold w-full" (click)="open = false">
+      </nav>
+
+      <div class="nav-sheet-foot">
+        <a routerLink="/quote" class="btn btn-gold w-full" (click)="close()">
           {{ 'NAV.QUOTE' | translate }}
+          <i class="bi bi-arrow-left rtl:rotate-180"></i>
         </a>
-      </li>
-    </ul>
-  </nav>
+        <div class="nav-sheet-meta">
+          <div class="nav-lang" role="group" [attr.aria-label]="'NAV.LANG' | translate">
+            <p class="nav-lang-kicker">
+              <i class="bi bi-translate" aria-hidden="true"></i>
+              {{ 'NAV.LANG' | translate }}
+            </p>
+            <div class="nav-lang-switch">
+              <button
+                type="button"
+                [class.is-on]="currentLang === 'ar'"
+                [attr.aria-pressed]="currentLang === 'ar'"
+                (click)="language.switchLanguage('ar')"
+              >
+                عربي
+              </button>
+              <button
+                type="button"
+                [class.is-on]="currentLang === 'en'"
+                [attr.aria-pressed]="currentLang === 'en'"
+                (click)="language.switchLanguage('en')"
+              >
+                EN
+              </button>
+            </div>
+          </div>
+          <a class="nav-sheet-phone" [href]="'tel:' + site.contact.phone">
+            <i class="bi bi-telephone" aria-hidden="true"></i>
+            {{ site.contact.phone }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>

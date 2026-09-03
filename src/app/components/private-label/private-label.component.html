@@ -1,42 +1,171 @@
-<section class="page-stage">
-  <div class="arin-wrap page-stage-copy">
-    <p class="film-kicker">{{ 'PRIVATE.EYEBROW' | translate }}</p>
-    <h1 class="film-display max-w-3xl">{{ 'PRIVATE.TITLE' | translate }}</h1>
+<section class="pl-stage">
+  <img class="pl-stage-photo" [src]="images.perfume" alt="" />
+  <div class="pl-stage-shade"></div>
+  <div class="arin-wrap pl-stage-copy">
+    <p class="film-kicker pl-hero-fade">{{ 'PRIVATE.EYEBROW' | translate }}</p>
+    <h1 class="film-display pl-title">
+      <span class="pl-title-mask">
+        <span class="pl-title-line">{{ 'PRIVATE.TITLE' | translate }}</span>
+      </span>
+    </h1>
+    <p class="pl-hero-lead pl-hero-fade">{{ 'PRIVATE.SUB' | translate }}</p>
+    <div class="pl-hero-actions pl-hero-fade">
+      <a routerLink="/quote" class="btn btn-gold">
+        {{ 'PRIVATE.START' | translate }}
+        <i class="bi bi-arrow-left rtl:rotate-180"></i>
+      </a>
+      <a routerLink="/quote" class="btn btn-ghost">{{ 'PRIVATE.TALK' | translate }}</a>
+    </div>
+    <div class="pl-stats">
+      <article *ngFor="let item of stats" class="pl-stat">
+        <p class="pl-stat-value">{{ txt(item.value) }}</p>
+        <p class="pl-stat-label">{{ txt(item.label) }}</p>
+      </article>
+    </div>
+    <p class="pl-scroll">{{ 'PRIVATE.SCROLL' | translate }}</p>
   </div>
 </section>
 
 <section class="page-panel bg-cream">
   <div class="arin-wrap grid items-center gap-16 lg:grid-cols-2">
-    <div data-aos="fade-up">
-      <p class="max-w-xl text-base leading-8 text-olive">{{ 'PRIVATE.LEAD' | translate }}</p>
-      <a routerLink="/quote" [queryParams]="{ service: 'agencies' }" class="btn btn-gold mt-10">
-        {{ 'PRIVATE.START' | translate }}
-      </a>
+    <div class="pl-rise">
+      <p class="film-kicker !text-gold">{{ 'PRIVATE.STORY_K' | translate }}</p>
+      <h2 class="film-display text-forest">
+        {{ 'PRIVATE.STORY_T1' | translate }}
+        <em class="block">{{ 'PRIVATE.STORY_T2' | translate }}</em>
+      </h2>
+      <p class="mt-6 max-w-xl text-base leading-8 text-olive">{{ 'PRIVATE.STORY' | translate }}</p>
+      <blockquote class="page-fact mt-10 max-w-xl font-display text-xl font-bold leading-8 text-forest">
+        {{ 'PRIVATE.QUOTE' | translate }}
+      </blockquote>
     </div>
-    <div class="page-still min-h-[380px]" data-aos="fade-up">
-      <img [src]="images.cosmetics" alt="" class="h-full w-full object-cover" />
+    <div class="page-still pl-still pl-rise relative min-h-[420px]">
+      <img [src]="images.lotion" alt="" class="absolute inset-0 h-full w-full object-cover" />
+      <span class="pl-still-mark">عرين · PRIVATE LABEL</span>
+    </div>
+  </div>
+</section>
+
+<section class="pl-promises">
+  <div class="arin-wrap">
+    <div class="pl-rise max-w-3xl">
+      <p class="film-kicker">{{ 'PRIVATE.PROMISE_K' | translate }}</p>
+      <h2 class="film-display text-cream">{{ 'PRIVATE.PROMISE_T' | translate }}</h2>
+    </div>
+    <div class="mt-14 grid gap-10 md:grid-cols-2">
+      <article *ngFor="let item of promises" class="pl-promise pl-rise">
+        <span class="film-kicker">{{ item.index }} / 04</span>
+        <h3>{{ txt(item.title) }}</h3>
+        <p>{{ txt(item.body) }}</p>
+      </article>
     </div>
   </div>
 </section>
 
 <section class="page-panel bg-sand">
-  <div class="arin-wrap grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-    <article *ngFor="let step of steps" class="page-fact" data-aos="fade-up">
-      <span class="film-kicker">{{ step.index }} / 04</span>
-      <h3 class="mt-5 font-display text-xl font-bold text-forest">{{ txt(step.title) }}</h3>
-      <p class="mt-3 text-sm leading-7 text-olive">{{ txt(step.body) }}</p>
-    </article>
+  <div class="arin-wrap">
+    <div class="pl-rise max-w-3xl">
+      <p class="film-kicker !text-gold">{{ 'PRIVATE.PATH_K' | translate }}</p>
+      <h2 class="film-display text-forest">{{ 'PRIVATE.PATH_T' | translate }}</h2>
+    </div>
+    <div class="pl-path-track">
+      <span class="pl-path-line" aria-hidden="true"></span>
+      <ol class="pl-path-grid">
+        <li *ngFor="let step of steps" class="pl-step">
+          <span class="pl-step-index">{{ step.index }}</span>
+          <h3>{{ txt(step.title) }}</h3>
+          <p>{{ txt(step.body) }}</p>
+        </li>
+      </ol>
+    </div>
   </div>
 </section>
 
 <section class="page-panel bg-cream">
   <div class="arin-wrap">
-    <p class="film-kicker !text-gold">{{ 'PRIVATE.OUT' | translate }}</p>
-    <div class="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-      <article *ngFor="let d of deliverables" class="page-fact">
+    <div class="pl-rise mb-12 max-w-3xl">
+      <p class="film-kicker !text-gold">{{ 'PRIVATE.LINES_K' | translate }}</p>
+      <h2 class="film-display text-forest">{{ 'PRIVATE.LINES_T' | translate }}</h2>
+      <p class="mt-4 max-w-xl text-base leading-8 text-olive">{{ 'PRIVATE.LINES_B' | translate }}</p>
+    </div>
+    <div class="pl-lines">
+      <article *ngFor="let line of lines" class="pl-line pl-rise">
+        <img [src]="line.image" alt="" />
+        <div class="pl-line-shade"></div>
+        <div class="pl-line-copy">
+          <span>{{ line.index }}</span>
+          <h3>{{ txt(line.title) }}</h3>
+          <p>{{ txt(line.body) }}</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="page-panel bg-sand">
+  <div class="arin-wrap">
+    <div class="pl-rise max-w-3xl">
+      <p class="film-kicker !text-gold">{{ 'PRIVATE.OUT' | translate }}</p>
+      <h2 class="film-display mb-14 text-forest">{{ 'PRIVATE.OUT_T' | translate }}</h2>
+    </div>
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <article *ngFor="let d of deliverables" class="page-fact pl-rise">
         <h3 class="font-display text-lg font-bold text-forest">{{ txt(d.title) }}</h3>
         <p class="mt-3 text-sm leading-7 text-olive">{{ txt(d.body) }}</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<section class="page-panel bg-cream">
+  <div class="arin-wrap">
+    <div class="pl-rise max-w-3xl">
+      <p class="film-kicker !text-gold">{{ 'PRIVATE.SEAL_K' | translate }}</p>
+      <h2 class="film-display mb-14 text-forest">{{ 'PRIVATE.SEAL_T' | translate }}</h2>
+    </div>
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <article *ngFor="let seal of seals" class="pl-seal pl-rise">
+        <i class="bi" [ngClass]="seal.icon" aria-hidden="true"></i>
+        <h3>{{ txt(seal.title) }}</h3>
+        <p>{{ txt(seal.body) }}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="page-panel bg-sand">
+  <div class="arin-wrap">
+    <div>
+      <p class="film-kicker !text-gold pl-rise">{{ 'PRIVATE.FAQ_K' | translate }}</p>
+      <h2 class="film-display text-forest pl-rise">{{ 'PRIVATE.FAQ_T' | translate }}</h2>
+      <div class="mt-10 max-w-3xl">
+        <article *ngFor="let item of faqs; let i = index" class="pl-faq">
+          <button type="button" [attr.aria-expanded]="openFaq === i" (click)="toggleFaq(i)">
+            <span>{{ txt(item.q) }}</span>
+            <i class="bi" [class.bi-dash]="openFaq === i" [class.bi-plus]="openFaq !== i" aria-hidden="true"></i>
+          </button>
+          <div class="pl-faq-body" [class.is-open]="openFaq === i">
+            <div class="pl-faq-inner">
+              <p>{{ txt(item.a) }}</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pl-close">
+  <span class="pl-close-ring" aria-hidden="true"></span>
+  <div class="arin-wrap pl-close-copy">
+    <h2 class="film-display max-w-4xl">{{ 'PRIVATE.END_T' | translate }}</h2>
+    <p class="mt-5 max-w-lg text-base leading-8 text-platinum">{{ 'PRIVATE.END_B' | translate }}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a routerLink="/quote" class="btn btn-gold !px-8 !py-4 !text-sm">
+        {{ 'PRIVATE.START' | translate }}
+        <i class="bi bi-arrow-left rtl:rotate-180"></i>
+      </a>
+      <a routerLink="/contact" class="btn btn-ghost">{{ 'COMMON.TALK' | translate }}</a>
     </div>
   </div>
 </section>

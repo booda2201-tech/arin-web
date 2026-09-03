@@ -14,10 +14,12 @@ import { HeroFieldComponent } from './components/hero-field/hero-field.component
 import { AboutComponent } from './components/about/about.component';
 import { ServicesComponent } from './components/services/services.component';
 import { ProductsComponent } from './components/products/products.component';
+import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { PrivateLabelComponent } from './components/private-label/private-label.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { QuoteComponent } from './components/quote/quote.component';
+import { SelectMenuComponent } from './components/select-menu/select-menu.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -34,10 +36,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     AboutComponent,
     ServicesComponent,
     ProductsComponent,
+    ProductDetailComponent,
     PrivateLabelComponent,
     ProjectsComponent,
     ContactComponent,
     QuoteComponent,
+    SelectMenuComponent,
     NotFoundComponent,
   ],
   imports: [

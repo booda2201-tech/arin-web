@@ -192,6 +192,11 @@
   pointer-events: none;
 }
 
+.film:not(.is-live) .chamber-room {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 .chamber-room > .arin-wrap,
 .chamber-room > .services-pin {
   max-height: 100%;
@@ -284,7 +289,7 @@
 }
 .journey-stage {
   position: relative;
-  min-height: 220px;
+  min-height: 280px;
 }
 .journey-card {
   position: absolute;
@@ -309,8 +314,8 @@
 .journey-still {
   display: none;
   overflow: hidden;
-  height: 200px;
-  border-radius: 1.25rem;
+  height: min(48vh, 460px);
+  border-radius: 1.5rem;
 }
 .journey-still img {
   width: 100%;
@@ -319,10 +324,11 @@
 }
 @media (min-width: 1024px) {
   .journey-stage {
-    min-height: 240px;
+    min-height: min(48vh, 460px);
   }
   .journey-card {
-    grid-template-columns: 0.22fr 1fr 0.7fr;
+    grid-template-columns: 0.2fr 1fr 0.95fr;
+    gap: 1.5rem;
   }
   .journey-still {
     display: block;
@@ -368,6 +374,63 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.proof-index {
+  display: none;
+}
+
+.end-seal {
+  display: none;
+}
+
+.end-lead {
+  margin-top: 1.25rem;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 2;
+  color: #c5cdc8;
+}
+
+.end-actions {
+  margin-top: 2rem;
+}
+
+@media (min-width: 900px) {
+  .end-layout {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    width: 100%;
+    max-width: 70rem;
+    margin-inline: auto;
+  }
+
+  .end-copy {
+    flex: 0 1 28rem;
+  }
+
+  .end-seal {
+    display: block;
+    position: relative;
+    flex: 0 0 auto;
+    width: min(34vw, 26rem);
+    margin: 0;
+  }
+
+  .end-seal-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: 52% 48%;
+    border-radius: 50%;
+    border: 1px solid rgba(195, 164, 98, 0.45);
+    box-shadow: 0 28px 64px -30px rgba(0, 0, 0, 0.65);
+  }
+}
 .proof-grid {
   display: grid;
   gap: 1.5rem;
@@ -391,6 +454,172 @@
   line-height: 1.1;
   color: #e6a15c;
 }
+.proof-label {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #9ca3af;
+}
+
+@media (max-width: 767px) {
+  .room-proof {
+    justify-content: flex-start;
+    padding-block: 5.25rem 1.35rem;
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(195, 164, 98, 0.14), transparent 46%),
+      #122b2a;
+  }
+
+  .proof-layout {
+    justify-content: flex-start;
+    gap: 0.85rem;
+    height: 100%;
+  }
+
+  .proof-layout .film-kicker {
+    margin-bottom: 0.2rem;
+    font-size: 0.72rem;
+  }
+
+  .proof-layout h2 {
+    max-width: 16ch;
+    margin-top: 0;
+    font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+    font-size: clamp(1.45rem, 6.4vw, 1.85rem);
+    font-weight: 700;
+    line-height: 1.45;
+    color: #f3efe6;
+  }
+
+  .proof-grid {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: stretch;
+    gap: 0.7rem;
+    margin-top: 0.15rem;
+    min-height: 0;
+  }
+
+  .proof-item {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(195, 164, 98, 0.22);
+    border-top-color: rgba(195, 164, 98, 0.22);
+    border-radius: 1.15rem;
+    padding: 0.95rem 1.1rem 1rem;
+    background:
+      linear-gradient(160deg, rgba(195, 164, 98, 0.14), rgba(11, 15, 13, 0.22) 58%);
+    box-shadow: inset 0 1px 0 rgba(243, 239, 230, 0.07);
+  }
+
+  .proof-item::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.85rem;
+    inset-inline-start: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: #c3a462;
+  }
+
+  .proof-index {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    color: rgba(195, 164, 98, 0.7);
+  }
+
+  .proof-value {
+    font-size: clamp(2.15rem, 9vw, 2.85rem);
+    line-height: 1;
+  }
+
+  .proof-label {
+    margin-top: 0.4rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: #d4d8d4;
+  }
+
+  .room-end {
+    justify-content: flex-start;
+    padding-block: 5.25rem 1.5rem;
+    background:
+      radial-gradient(ellipse at 50% 18%, rgba(195, 164, 98, 0.16), transparent 42%),
+      #17302d;
+  }
+
+  .end-layout {
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1.15rem;
+    height: 100%;
+    text-align: start;
+  }
+
+  .end-seal {
+    display: block;
+    order: -1;
+    flex: 0 0 auto;
+    width: 4.75rem;
+    margin: 0;
+  }
+
+  .end-seal-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: 52% 48%;
+    border-radius: 50%;
+    border: 1px solid rgba(195, 164, 98, 0.45);
+  }
+
+  .end-copy {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .end-copy .film-kicker {
+    margin-bottom: 0.45rem;
+  }
+
+  .end-layout h2 {
+    max-width: 14ch;
+    font-size: clamp(1.55rem, 6.6vw, 2rem);
+    line-height: 1.4;
+  }
+
+  .end-lead {
+    margin-top: 0.7rem;
+    max-width: 22rem;
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+
+  .end-actions {
+    display: flex;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 1.25rem;
+  }
+
+  .end-actions .btn {
+    width: 100%;
+    min-height: 3.1rem;
+    padding-inline: 1.25rem;
+  }
+}
 
 @media (max-width: 899px) {
   .film-title {
@@ -399,17 +628,32 @@
   .origin-year {
     font-size: clamp(3rem, 16vw, 4.6rem);
   }
+  .services-viewport {
+    overflow: auto;
+    padding-bottom: 0.5rem;
+  }
   .services-track {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     height: auto;
+    gap: 0.9rem;
   }
   .service-slide {
     width: 100%;
-    min-height: 210px;
+    min-height: 260px;
   }
   .map-frame {
     max-height: 28vh;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 899px) {
+  .services-track {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .service-slide {
+    min-height: 280px;
   }
 }
 

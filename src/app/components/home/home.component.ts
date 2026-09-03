@@ -44,6 +44,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     document.body.classList.add('on-home');
+    history.scrollRestoration = 'manual';
+    this.homeRoot.nativeElement.classList.remove('is-live');
     this.zone.runOutsideAngular(() => {
       const ready = document.fonts?.ready ?? Promise.resolve();
       void ready.then(() => this.bootMotion());
@@ -52,6 +54,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.classList.remove('on-home');
+    this.homeRoot.nativeElement.classList.remove('is-live');
+    history.scrollRestoration = 'auto';
     this.ctx?.revert();
     this.sub.unsubscribe();
   }
@@ -75,6 +79,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private bootMotion(): void {
     this.ctx?.revert();
     const root = this.homeRoot.nativeElement;
+    root.classList.remove('is-live');
     const chamber = this.chamber.nativeElement;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const chapterEl = root.querySelector('.film-rail-num');
@@ -92,6 +97,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this.ctx = gsap.context(() => {
       if (reduce) {
+        root.classList.add('is-live');
         return;
       }
 
@@ -137,7 +143,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         const room = rooms[index];
         const prev = index > 0 ? rooms[index - 1] : null;
         tl.addLabel(label);
-        tl.to(room, { autoAlpha: 1, y: 0, duration: 1.45, ease: 'none' });
+        tl.to(room, { autoAlpha: 1, y: 0, duration: 1.45, ease: 'none', immediateRender: false });
         tl.set(room, { pointerEvents: 'auto' }, '<');
         if (prev) {
           tl.to(prev, { autoAlpha: 0, duration: 1.45, ease: 'none' }, '<');
@@ -198,6 +204,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       openRoom(6, 'end', 1.5);
     }, root);
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      requestAnimationFrame(() => root.classList.add('is-live'));
+    });
   }
 }

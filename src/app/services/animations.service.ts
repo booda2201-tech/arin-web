@@ -16,13 +16,19 @@ export class AnimationsService implements OnDestroy {
   private chrome?: ReturnType<typeof gsap.context>;
   private magnetOff: Array<() => void> = [];
   private moveHandler?: (e: PointerEvent) => void;
+  private lastUrl?: string;
 
   constructor(
     private readonly router: Router,
     private readonly zone: NgZone
   ) {
-    this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe(() => {
-      window.scrollTo({ top: 0 });
+    this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
+      const url = e.urlAfterRedirects;
+      const isReload = this.lastUrl === undefined && this.isReload();
+      if (!isReload) {
+        window.scrollTo({ top: 0 });
+      }
+      this.lastUrl = url;
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.refreshAos();
@@ -161,5 +167,10 @@ export class AnimationsService implements OnDestroy {
     document.documentElement.classList.remove('has-cursor', 'cursor-grow');
     this.chrome?.revert();
     this.chrome = undefined;
+  }
+
+  private isReload(): boolean {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    return nav?.type === 'reload';
   }
 }
