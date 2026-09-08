@@ -1,7 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
-import { Lang, L, productCategories, products } from '../../data/content';
+import { AdminDataService } from '../../services/admin-data.service';
+import { Lang, L, productCategories, ProductItem } from '../../data/content';
 
 @Component({
   selector: 'app-products',
@@ -10,13 +11,21 @@ import { Lang, L, productCategories, products } from '../../data/content';
 })
 export class ProductsComponent implements OnDestroy {
   categories = productCategories;
-  products = products;
+  products: ProductItem[] = [];
   active = 'all';
   lang: Lang = this.language.current;
-  private sub: Subscription;
+  private sub = new Subscription();
 
-  constructor(public language: LanguageService) {
-    this.sub = this.language.languageChanged$.subscribe((lang) => (this.lang = lang));
+  constructor(
+    public language: LanguageService,
+    private adminData: AdminDataService
+  ) {
+    this.sub.add(
+      this.language.languageChanged$.subscribe((lang) => (this.lang = lang))
+    );
+    this.sub.add(
+      this.adminData.products$.subscribe((items) => (this.products = items))
+    );
   }
 
   ngOnDestroy(): void {

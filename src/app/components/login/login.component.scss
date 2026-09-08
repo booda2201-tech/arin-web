@@ -1,0 +1,521 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #0b0f0d;
+}
+
+.login-page {
+  min-height: 100vh;
+  background-color: #0b0f0d;
+  color: #f3efe6;
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+}
+
+.login-grid {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .login-grid {
+    grid-template-columns: 45% 55%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .login-grid {
+    grid-template-columns: 42% 58%;
+  }
+}
+
+/* =========================================
+   SHOWCASE SIDE (Visual Brand Atmosphere)
+   ========================================= */
+.login-showcase {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  border-inline-end: 1px solid rgba(195, 164, 98, 0.22);
+}
+
+@media (min-width: 1024px) {
+  .login-showcase {
+    display: block;
+  }
+}
+
+.showcase-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.showcase-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.6) saturate(1.15);
+  transform: scale(1.03);
+}
+
+.showcase-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(11, 15, 13, 0.75) 0%, rgba(11, 15, 13, 0.95) 100%),
+    linear-gradient(90deg, rgba(18, 43, 42, 0.88) 0%, rgba(11, 15, 13, 0.75) 100%);
+}
+
+.showcase-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(195, 164, 98, 0.14) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.65;
+}
+
+.showcase-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 3.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.showcase-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-crest {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(195, 164, 98, 0.35);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
+}
+
+.brand-crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-name {
+  display: block;
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f3efe6;
+  letter-spacing: 0;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: #c3a462;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.showcase-statement {
+  max-width: 440px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-block: 2rem;
+}
+
+.showcase-kicker {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #c3a462;
+  margin-bottom: 1rem;
+}
+
+.showcase-headline {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 2.3rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: #f3efe6;
+  margin-bottom: 1.25rem;
+}
+
+.showcase-desc {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #e8e1d4;
+  margin-bottom: 2rem;
+}
+
+.showcase-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: #f3efe6;
+}
+
+.feature-item i {
+  color: #c3a462;
+  font-size: 1.1rem;
+}
+
+.showcase-footer {
+  border-top: 1px solid rgba(195, 164, 98, 0.15);
+  padding-top: 1.5rem;
+}
+
+/* =========================================
+   FORM SIDE (Executive Portal Container)
+   ========================================= */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 60% 25%, rgba(195, 164, 98, 0.08) 0%, transparent 60%),
+    linear-gradient(180deg, #122b2a 0%, #0b0f0d 75%);
+}
+
+.panel-header {
+  padding: 1.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #e8e1d4;
+  transition: all 0.2s ease;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(195, 164, 98, 0.2);
+}
+
+.back-btn:hover {
+  color: #c3a462;
+  border-color: #c3a462;
+  background: rgba(195, 164, 98, 0.1);
+}
+
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e8e1d4;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(195, 164, 98, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+  color: #c3a462;
+  border-color: #c3a462;
+}
+
+.panel-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem 3.5rem;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.mobile-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .mobile-brand {
+    display: none;
+  }
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  background: rgba(195, 164, 98, 0.15);
+  border: 1px solid rgba(195, 164, 98, 0.4);
+  color: #c3a462;
+  font-size: 1.35rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 25px rgba(195, 164, 98, 0.2);
+}
+
+.form-title {
+  font-family: 'El Messiri', 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f3efe6;
+  letter-spacing: 0;
+}
+
+.form-desc {
+  font-size: 0.88rem;
+  color: #d5bf85;
+  margin-top: 0.45rem;
+}
+
+/* Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(200, 117, 82, 0.18);
+  border: 1px solid rgba(200, 117, 82, 0.4);
+  color: #fca5a5;
+  font-size: 0.82rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.45;
+}
+
+.error-banner i {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  color: #c87552;
+}
+
+/* Form Fields */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.field-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #d5bf85;
+  margin-bottom: 0.45rem;
+}
+
+.field-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  inset-inline-start: 1.1rem;
+  color: #c3a462;
+  font-size: 1.05rem;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding-block: 0.75rem;
+  padding-inline-start: 2.85rem;
+  padding-inline-end: 1.15rem;
+  background: rgba(18, 43, 42, 0.6);
+  border: 1px solid rgba(195, 164, 98, 0.3);
+  border-radius: 0.95rem;
+  color: #f3efe6;
+  font-size: 0.92rem;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(243, 239, 230, 0.05);
+  transition: all 0.25s ease;
+}
+
+.field-input::placeholder {
+  color: rgba(213, 191, 133, 0.45);
+}
+
+.field-input:focus {
+  border-color: #c3a462;
+  background: rgba(18, 43, 42, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(195, 164, 98, 0.2),
+    inset 0 1px 0 rgba(243, 239, 230, 0.08);
+}
+
+.field-input:focus ~ .field-icon {
+  color: #d5bf85;
+}
+
+.field-input.is-invalid {
+  border-color: #c87552;
+}
+
+.field-hint-error {
+  font-size: 0.75rem;
+  color: #c87552;
+  margin-top: 0.35rem;
+}
+
+.toggle-pass-btn {
+  position: absolute;
+  inset-inline-end: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  color: #c3a462;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.toggle-pass-btn:hover {
+  color: #d5bf85;
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  min-height: 3.35rem;
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 0.95rem;
+  background: linear-gradient(135deg, #c3a462 0%, #d5bf85 100%);
+  color: #0b0f0d;
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow:
+    0 10px 25px -5px rgba(195, 164, 98, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 30px -5px rgba(195, 164, 98, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  filter: brightness(1.05);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-spinner {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid rgba(11, 15, 13, 0.3);
+  border-top-color: #0b0f0d;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Subtle Quick Test Bar */
+.demo-bar {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(195, 164, 98, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.demo-caption {
+  font-size: 0.72rem;
+  color: #d5bf85;
+  font-family: 'DM Mono', monospace;
+}
+
+.demo-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(18, 43, 42, 0.6);
+  border: 1px solid rgba(195, 164, 98, 0.25);
+  font-size: 0.74rem;
+  color: #e8e1d4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-pill:hover {
+  background: rgba(195, 164, 98, 0.18);
+  border-color: #c3a462;
+  color: #f3efe6;
+}

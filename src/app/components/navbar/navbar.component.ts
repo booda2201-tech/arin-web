@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 import { navItems, site } from '../../data/content';
 
 @Component({
@@ -26,6 +27,7 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public language: LanguageService,
+    public auth: AuthService,
     private router: Router,
     private zone: NgZone
   ) {
@@ -125,6 +127,12 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
 
   toggle(): void {
     this.open ? this.close() : this.openMenu();
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.close();
+    this.router.navigate(['/']);
   }
 
   openMenu(): void {

@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import gsap from 'gsap';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
+import { AdminDataService } from '../../services/admin-data.service';
 import { Lang, products, services, site, telHref, whatsappHref } from '../../data/content';
 import { SelectOption } from '../select-menu/select-menu.component';
 
@@ -48,6 +49,7 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public language: LanguageService,
+    private adminData: AdminDataService,
     private fb: FormBuilder,
     route: ActivatedRoute
   ) {
@@ -134,6 +136,23 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
   }
 
   submit(): void {
+    const val = this.form.value;
+    this.adminData.addSubmission({
+      type: 'quote',
+      name: val.name || '',
+      company: val.company || '',
+      email: val.email || '',
+      phone: val.phone || '',
+      status: 'new',
+      details: {
+        service: this.serviceLabel(),
+        product: this.productLabel(),
+        quantity: val.quantity || '',
+        destination: val.destination || '',
+        mode: this.modeKey,
+        notes: val.notes || '',
+      },
+    });
     this.reference = 'ARIN-' + Math.floor(1000 + Math.random() * 9000);
     this.status = 'done';
   }

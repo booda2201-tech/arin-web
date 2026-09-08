@@ -3,8 +3,15 @@
 }
 
 .quote-hero.page-stage {
-  min-height: 48svh;
+  min-height: clamp(380px, 48svh, 520px);
   padding-bottom: 7rem;
+}
+
+@media (max-width: 767px) {
+  .quote-hero.page-stage {
+    min-height: 350px;
+    padding-bottom: 5.5rem;
+  }
 }
 
 .quote-board {

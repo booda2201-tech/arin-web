@@ -20,6 +20,8 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { QuoteComponent } from './components/quote/quote.component';
 import { SelectMenuComponent } from './components/select-menu/select-menu.component';
+import { LoginComponent } from './components/login/login.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -42,6 +44,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ContactComponent,
     QuoteComponent,
     SelectMenuComponent,
+    LoginComponent,
+    AdminDashboardComponent,
     NotFoundComponent,
   ],
   imports: [

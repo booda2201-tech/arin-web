@@ -1,0 +1,1237 @@
+<div class="admin-shell" [attr.dir]="lang === 'ar' ? 'rtl' : 'ltr'">
+  <!-- Ambient backdrop glows (subtle, non-intrusive) -->
+  <div class="ambient-glows" aria-hidden="true">
+    <div class="glow-orb orb-top"></div>
+    <div class="glow-orb orb-mid"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div *ngIf="toastMessage" class="admin-toast" [ngClass]="toastType" role="status">
+    <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill' : toastType === 'info' ? 'bi-info-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
+    <span class="toast-text">{{ toastMessage }}</span>
+    <button type="button" class="toast-close" (click)="toastMessage = ''">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <!-- Brand Header -->
+    <div class="sidebar-brand">
+      <a routerLink="/" class="brand-link">
+        <div class="brand-crest">
+          <img [src]="site.logo" [alt]="site.name[lang]" />
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">{{ site.name[lang] }}</span>
+          <span class="brand-sub">لوحة الإدارة التنفيذية</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <!-- Section 1 -->
+      <div class="nav-group">
+        <p class="group-title">القوائم الرئيسية</p>
+        <ul class="nav-list">
+          <li>
+            <button
+              type="button"
+              class="nav-tab-btn"
+              [class.is-active]="currentTab === 'overview'"
+              (click)="setTab('overview')"
+            >
+              <i class="bi bi-speedometer2 tab-icon"></i>
+              <span class="tab-label">نظرة عامة</span>
+              <span *ngIf="newSubmissionsCount > 0" class="tab-badge-alert">
+                {{ newSubmissionsCount }}
+              </span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="nav-tab-btn"
+              [class.is-active]="currentTab === 'products'"
+              (click)="setTab('products')"
+            >
+              <i class="bi bi-box-seam tab-icon"></i>
+              <span class="tab-label">كتالوج المنتجات</span>
+              <span class="tab-badge-count">{{ products.length }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="nav-group">
+        <p class="group-title">استمارات الموقع والطلبات</p>
+        <ul class="nav-list">
+          <li>
+            <button
+              type="button"
+              class="nav-tab-btn"
+              [class.is-active]="currentTab === 'quotes'"
+              (click)="setTab('quotes')"
+            >
+              <i class="bi bi-receipt tab-icon"></i>
+              <span class="tab-label">عروض الأسعار</span>
+              <span class="tab-badge-count">{{ quotesList.length }}</span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="nav-tab-btn"
+              [class.is-active]="currentTab === 'private-label'"
+              (click)="setTab('private-label')"
+            >
+              <i class="bi bi-tag tab-icon"></i>
+              <span class="tab-label">العلامة الخاصة</span>
+              <span class="tab-badge-count">{{ privateLabelList.length }}</span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="nav-tab-btn"
+              [class.is-active]="currentTab === 'contact'"
+              (click)="setTab('contact')"
+            >
+              <i class="bi bi-chat-left-dots tab-icon"></i>
+              <span class="tab-label">رسائل التواصل</span>
+              <span class="tab-badge-count">{{ contactList.length }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- System Live Status Card inside Sidebar (neatly fills the space) -->
+      <div class="sidebar-status-card">
+        <div class="status-card-header">
+          <span class="live-dot-pulse"></span>
+          <span class="status-card-title">بوابة الإدارة التنفيذية</span>
+        </div>
+        <p class="status-card-desc">النظام متصل بالسيرفر والبيانات محدثة في واجهة العميل.</p>
+        <div class="status-card-metrics">
+          <div class="metric-pill">
+            <span class="pill-name">المنتجات النشطة</span>
+            <span class="pill-val font-mono">{{ products.length }}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="pill-name">الوارد الجديد</span>
+            <span class="pill-val font-mono text-terracotta">{{ newSubmissionsCount }}</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar Footer / Admin profile -->
+    <div class="sidebar-user-card">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <div class="user-meta">
+          <span class="user-name">{{ currentUser?.name || 'عبدالرحمن عرين' }}</span>
+          <span class="user-title">{{ currentUser?.title || 'مدير النظام' }}</span>
+        </div>
+      </div>
+
+      <div class="user-actions">
+        <a routerLink="/" class="action-btn" title="الموقع الرئيسي">
+          <i class="bi bi-globe2"></i>
+          <span>الموقع</span>
+        </a>
+        <button type="button" (click)="logout()" class="action-btn is-logout" title="تسجيل الخروج">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>خروج</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="admin-main">
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+      <div class="topbar-context">
+        <h1 class="topbar-page-title">
+          <span *ngIf="currentTab === 'overview'">نظرة عامة على المنظومة</span>
+          <span *ngIf="currentTab === 'products'">كتالوج المنتجات والتوريد</span>
+          <span *ngIf="currentTab === 'quotes'">طلبات عروض الأسعار</span>
+          <span *ngIf="currentTab === 'private-label'">طلبات تصنيع العلامات الخاصة</span>
+          <span *ngIf="currentTab === 'contact'">استفسارات ورسائل التواصل</span>
+        </h1>
+        <p class="current-date">
+          <i class="bi bi-calendar3"></i>
+          <span>{{ currentDateFormatted }}</span>
+        </p>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Live System Status Indicator -->
+        <div class="status-indicator-chip" title="حالة الاتصال">
+          <span class="live-dot"></span>
+          <span>النظام متصل</span>
+        </div>
+
+        <!-- Language Switcher -->
+        <button
+          type="button"
+          class="topbar-pill-btn"
+          (click)="language.toggle()"
+        >
+          <i class="bi bi-translate"></i>
+          <span>{{ lang === 'ar' ? 'English' : 'العربية' }}</span>
+        </button>
+
+        <!-- Visit Website -->
+        <a routerLink="/" class="topbar-pill-btn is-accent">
+          <i class="bi bi-box-arrow-up-right"></i>
+          <span>زيارة الموقع</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Scrollable Content Body -->
+    <main class="admin-content">
+
+      <!-- ==============================================
+           TAB 1: OVERVIEW
+           ============================================== -->
+      <section *ngIf="currentTab === 'overview'" class="tab-fade space-y-6">
+        <!-- 4 Compact, Organized Stat Cards -->
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Card 1 -->
+          <div class="compact-stat-card" (click)="setTab('products')">
+            <div class="stat-icon-wrap stat-gold">
+              <i class="bi bi-box-seam-fill"></i>
+            </div>
+            <div class="stat-body">
+              <span class="stat-label">إجمالي المنتجات</span>
+              <span class="stat-number">{{ products.length }}</span>
+            </div>
+            <span class="stat-tag tag-neutral">كتالوج نشط</span>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="compact-stat-card" (click)="setTab('quotes')">
+            <div class="stat-icon-wrap stat-emerald">
+              <i class="bi bi-receipt-cutoff"></i>
+            </div>
+            <div class="stat-body">
+              <span class="stat-label">عروض الأسعار</span>
+              <span class="stat-number">{{ quotesList.length }}</span>
+            </div>
+            <span class="stat-tag" [class.tag-gold]="quotesList.length > 0">عروض أسعار</span>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="compact-stat-card" (click)="setTab('private-label')">
+            <div class="stat-icon-wrap stat-amber">
+              <i class="bi bi-tag-fill"></i>
+            </div>
+            <div class="stat-body">
+              <span class="stat-label">العلامة الخاصة</span>
+              <span class="stat-number">{{ privateLabelList.length }}</span>
+            </div>
+            <span class="stat-tag tag-amber">تصنيع للغير</span>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="compact-stat-card" (click)="setTab('contact')">
+            <div class="stat-icon-wrap stat-blue">
+              <i class="bi bi-chat-left-dots-fill"></i>
+            </div>
+            <div class="stat-body">
+              <span class="stat-label">رسائل التواصل</span>
+              <span class="stat-number">{{ contactList.length }}</span>
+            </div>
+            <span class="stat-tag tag-neutral">استفسارات</span>
+          </div>
+        </div>
+
+        <!-- Inquiries Table Panel -->
+        <div class="data-surface">
+          <!-- Panel Header & Search Filters -->
+          <div class="surface-header">
+            <div class="surface-title-group">
+              <h3 class="surface-title">
+                <i class="bi bi-clock-history text-gold"></i>
+                <span>أحدث العمليات والطلبات الواردة</span>
+              </h3>
+              <p class="surface-sub">سجل مباشر لكافة الاستفسارات وطلبات عروض الأسعار والتصنيع</p>
+            </div>
+
+            <div class="surface-controls">
+              <!-- Search Box -->
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  [(ngModel)]="searchQuery"
+                  placeholder="بحث باسم العميل، الهاتف، أو الرقم..."
+                  class="search-input"
+                />
+                <button *ngIf="searchQuery" type="button" class="clear-search" (click)="searchQuery = ''">
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+              </div>
+
+              <!-- Status Filter Pills -->
+              <div class="filter-pills">
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'all'"
+                  (click)="statusFilter = 'all'"
+                >
+                  الكل ({{ submissions.length }})
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'new'"
+                  (click)="statusFilter = 'new'"
+                >
+                  <span class="dot-new"></span>
+                  <span>جديد ({{ newSubmissionsCount }})</span>
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'in_progress'"
+                  (click)="statusFilter = 'in_progress'"
+                >
+                  <span class="dot-prog"></span>
+                  <span>متابعة ({{ inProgressCount }})</span>
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'completed'"
+                  (click)="statusFilter = 'completed'"
+                >
+                  <span class="dot-done"></span>
+                  <span>مكتمل ({{ completedCount }})</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-container">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th style="width: 110px;">رقم الطلب</th>
+                  <th style="width: 120px;">النوع</th>
+                  <th style="width: 180px;">العميل / المنشأة</th>
+                  <th>بيانات الطلب والاحتياج</th>
+                  <th style="width: 150px;">الهاتف للتواصل</th>
+                  <th style="width: 130px;">تاريخ الطلب</th>
+                  <th style="width: 110px;">الحالة</th>
+                  <th style="width: 80px; text-align: center;">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let item of filteredSubmissions"
+                  (click)="openSubmissionDetails(item)"
+                  class="table-row group"
+                >
+                  <!-- ID -->
+                  <td>
+                    <button
+                      type="button"
+                      class="id-tag font-mono"
+                      (click)="copyToClipboard(item.id, $event)"
+                      title="انقر لنسخ المعرف"
+                    >
+                      <span>{{ item.id }}</span>
+                    </button>
+                  </td>
+
+                  <!-- Type -->
+                  <td>
+                    <span class="type-tag" [ngClass]="item.type">
+                      <span *ngIf="item.type === 'quote'">عرض سعر</span>
+                      <span *ngIf="item.type === 'private-label'">علامة خاصة</span>
+                      <span *ngIf="item.type === 'contact'">تواصل</span>
+                    </span>
+                  </td>
+
+                  <!-- Client -->
+                  <td>
+                    <div class="client-cell">
+                      <span class="client-name">{{ item.name }}</span>
+                      <span class="client-company">{{ item.company || 'عميل فردي' }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Summary details -->
+                  <td>
+                    <div class="summary-cell">
+                      <span *ngIf="item.details['service']" class="detail-lead">
+                        {{ item.details['service'] }} · {{ item.details['product'] || '' }}
+                      </span>
+                      <span *ngIf="item.details['category']" class="detail-lead">
+                        مجال: {{ item.details['category'] }}
+                      </span>
+                      <span *ngIf="item.details['interest']" class="detail-lead">
+                        {{ item.details['interest'] }}
+                      </span>
+                      <span *ngIf="item.details['quantity']" class="detail-sub">
+                        الكمية: {{ item.details['quantity'] }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Phone (Proper LTR formatting) -->
+                  <td>
+                    <a
+                      [href]="getWhatsAppUrl(item.phone)"
+                      target="_blank"
+                      rel="noreferrer"
+                      (click)="$event.stopPropagation()"
+                      class="phone-tag font-mono"
+                      dir="ltr"
+                      title="مراسلة عبر واتساب"
+                    >
+                      <i class="bi bi-whatsapp text-emerald-400"></i>
+                      <span>{{ item.phone }}</span>
+                    </a>
+                  </td>
+
+                  <!-- Date -->
+                  <td>
+                    <div class="date-cell font-mono">
+                      <span>{{ item.createdAt.split(' ')[0] }}</span>
+                      <span class="date-t">{{ item.createdAt.split(' ')[1] || '' }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Status -->
+                  <td>
+                    <span class="status-badge" [ngClass]="item.status">
+                      <span class="status-indicator-dot"></span>
+                      <span *ngIf="item.status === 'new'">جديد</span>
+                      <span *ngIf="item.status === 'in_progress'">قيد المتابعة</span>
+                      <span *ngIf="item.status === 'completed'">مكتمل</span>
+                    </span>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="text-center">
+                    <div class="row-actions" (click)="$event.stopPropagation()">
+                      <button
+                        type="button"
+                        class="action-icon-btn"
+                        (click)="openSubmissionDetails(item)"
+                        title="عرض كامل التفاصيل"
+                      >
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="action-icon-btn is-delete"
+                        (click)="deleteSub(item.id, $event)"
+                        title="حذف الطلب"
+                      >
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr *ngIf="filteredSubmissions.length === 0">
+                  <td colspan="8" class="empty-cell">
+                    <div class="empty-state">
+                      <div class="empty-icon">
+                        <i class="bi bi-inbox"></i>
+                      </div>
+                      <p class="empty-title">لا توجد طلبات مطابقة</p>
+                      <p class="empty-desc">لم نجد أي طلبات تتطابق مع البحث أو التصفية الحالية.</p>
+                      <button *ngIf="searchQuery || statusFilter !== 'all'" type="button" class="empty-reset-btn" (click)="searchQuery = ''; statusFilter = 'all'">
+                        إلغاء التصفية وعرض الكل
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 2: PRODUCTS CATALOG
+           ============================================== -->
+      <section *ngIf="currentTab === 'products'" class="tab-fade space-y-6">
+        <!-- Products Control Bar -->
+        <div class="catalog-toolbar">
+          <div class="toolbar-title-group">
+            <h2 class="section-heading">كتالوج السلع والمنتجات للتوريد</h2>
+            <p class="section-subheading">إدارة المنتجات المعروضة في دليل الموقع، مع إمكانية الإضافة والتحديث الفوري.</p>
+          </div>
+
+          <div class="toolbar-actions">
+            <!-- Search -->
+            <div class="search-box">
+              <i class="bi bi-search search-icon"></i>
+              <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                placeholder="بحث عن منتج، منشأ، أو تصنيف..."
+                class="search-input"
+              />
+            </div>
+
+            <!-- Add Product Button -->
+            <button type="button" class="btn btn-gold !py-2.5 !px-5 !text-xs shadow-gold" (click)="openAddProduct()">
+              <i class="bi bi-plus-lg"></i>
+              <span>إضافة منتج جديد</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div class="category-pills-bar">
+          <button
+            *ngFor="let cat of allCategories"
+            type="button"
+            class="cat-pill"
+            [class.is-active]="productCategoryFilter === cat.id"
+            (click)="productCategoryFilter = cat.id"
+          >
+            {{ cat.name[lang] }}
+          </button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div *ngFor="let p of filteredProducts" class="catalog-card group">
+            <div class="card-thumb">
+              <img [src]="p.image" [alt]="p.name.ar" />
+              <div class="card-thumb-overlay"></div>
+              <span class="card-cat-badge font-mono">{{ p.category }}</span>
+              <span class="card-moq-badge">{{ p.moq ? p.moq.ar : 'متاح للتوريد' }}</span>
+              <span *ngIf="p.images && p.images.length > 1" class="card-images-badge font-mono" [title]="p.images.length + ' صور للمنتج'">
+                <i class="bi bi-images"></i>
+                <span>{{ p.images.length }}</span>
+              </span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-header-row">
+                <span class="card-origin">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>{{ p.origin.ar }}</span>
+                </span>
+                <span class="card-slug font-mono">{{ p.slug }}</span>
+              </div>
+
+              <h4 class="card-title">{{ p.name.ar }}</h4>
+              <p class="card-desc">{{ p.packaging.ar }}</p>
+
+              <div class="card-footer-bar">
+                <span class="status-dot-active">
+                  <span class="dot"></span>
+                  <span>معروض بالموقع</span>
+                </span>
+                <div class="card-actions">
+                  <button
+                    type="button"
+                    class="card-btn-action"
+                    (click)="openEditProduct(p, $event)"
+                    title="تعديل بيانات المنتج"
+                  >
+                    <i class="bi bi-pencil-square"></i>
+                    <span>تعديل</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="card-btn-action is-danger"
+                    (click)="deleteProd(p.slug, $event)"
+                    title="حذف المنتج من الكتالوج"
+                  >
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty Products -->
+        <div *ngIf="filteredProducts.length === 0" class="data-surface p-12 text-center">
+          <div class="empty-state">
+            <i class="bi bi-box-seam text-4xl text-gold/40"></i>
+            <p class="empty-title mt-3">لم يتم العثور على منتجات</p>
+            <p class="empty-desc">لا توجد منتجات تطابق كلمة البحث الحالية أو التصنيف المحدد.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 3: QUOTES
+           ============================================== -->
+      <section *ngIf="currentTab === 'quotes'" class="tab-fade space-y-6">
+        <div class="data-surface">
+          <div class="surface-header">
+            <div class="surface-title-group">
+              <h3 class="surface-title">
+                <i class="bi bi-receipt text-gold"></i>
+                <span>طلبات عروض الأسعار المسجلة</span>
+              </h3>
+              <p class="surface-sub">استفسارات الشحن والتوريد الواردة من صفحة اطلب عرض سعر (/quote)</p>
+            </div>
+
+            <div class="surface-controls">
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  [(ngModel)]="searchQuery"
+                  placeholder="بحث في عروض الأسعار..."
+                  class="search-input"
+                />
+              </div>
+
+              <div class="filter-pills">
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'all'"
+                  (click)="statusFilter = 'all'"
+                >
+                  الكل ({{ quotesList.length }})
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'new'"
+                  (click)="statusFilter = 'new'"
+                >
+                  جديد
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'in_progress'"
+                  (click)="statusFilter = 'in_progress'"
+                >
+                  قيد المتابعة
+                </button>
+                <button
+                  type="button"
+                  class="filter-pill-btn"
+                  [class.is-active]="statusFilter === 'completed'"
+                  (click)="statusFilter = 'completed'"
+                >
+                  مكتمل
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th style="width: 110px;">الرقم</th>
+                  <th style="width: 170px;">العميل / الشركة</th>
+                  <th>الخدمة المطلوبة</th>
+                  <th>المنتج والكمية</th>
+                  <th>الوجهة والشحن</th>
+                  <th style="width: 110px;">الحالة</th>
+                  <th style="width: 130px;">التاريخ</th>
+                  <th style="width: 80px; text-align: center;">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let q of filteredQuotes" (click)="openSubmissionDetails(q)" class="table-row">
+                  <td class="font-mono text-xs text-gold">{{ q.id }}</td>
+                  <td>
+                    <div class="client-cell">
+                      <span class="client-name">{{ q.name }}</span>
+                      <span class="client-company">{{ q.company || '—' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-xs text-cream font-medium">{{ q.details['service'] || '—' }}</span>
+                  </td>
+                  <td>
+                    <div class="summary-cell">
+                      <span class="detail-lead">{{ q.details['product'] || '—' }}</span>
+                      <span class="detail-sub">{{ q.details['quantity'] || 'غير محدد' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="summary-cell">
+                      <span class="detail-lead">{{ q.details['destination'] || '—' }}</span>
+                      <span class="detail-sub">طريقة: {{ q.details['mode'] || '—' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="q.status">
+                      <span class="status-indicator-dot"></span>
+                      <span *ngIf="q.status === 'new'">جديد</span>
+                      <span *ngIf="q.status === 'in_progress'">قيد المتابعة</span>
+                      <span *ngIf="q.status === 'completed'">مكتمل</span>
+                    </span>
+                  </td>
+                  <td class="font-mono text-xs text-platinum">{{ q.createdAt }}</td>
+                  <td class="text-center">
+                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(q)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 4: PRIVATE LABEL
+           ============================================== -->
+      <section *ngIf="currentTab === 'private-label'" class="tab-fade space-y-6">
+        <div class="data-surface">
+          <div class="surface-header">
+            <div class="surface-title-group">
+              <h3 class="surface-title">
+                <i class="bi bi-tag text-gold"></i>
+                <span>طلبات تصنيع العلامات الخاصة للشركات</span>
+              </h3>
+              <p class="surface-sub">موجز التصنيع والعينات المعتمدة الواردة عبر صفحة علامتك التجارية (/private-label)</p>
+            </div>
+            <div class="surface-controls">
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  [(ngModel)]="searchQuery"
+                  placeholder="بحث في طلبات العلامة الخاصة..."
+                  class="search-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th style="width: 110px;">الرقم</th>
+                  <th style="width: 170px;">العميل / المؤسسة</th>
+                  <th>مجال التصنيع</th>
+                  <th>الكمية المقدرة</th>
+                  <th>ملخص الاحتياج</th>
+                  <th style="width: 110px;">الحالة</th>
+                  <th style="width: 130px;">التاريخ</th>
+                  <th style="width: 80px; text-align: center;">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pl of filteredPrivateLabel" (click)="openSubmissionDetails(pl)" class="table-row">
+                  <td class="font-mono text-xs text-gold">{{ pl.id }}</td>
+                  <td>
+                    <div class="client-cell">
+                      <span class="client-name">{{ pl.name }}</span>
+                      <span class="client-company">{{ pl.company || '—' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-xs text-cream font-bold">{{ pl.details['category'] || '—' }}</span>
+                  </td>
+                  <td>
+                    <span class="text-xs text-gold font-mono">{{ pl.details['volume'] || '—' }}</span>
+                  </td>
+                  <td>
+                    <p class="text-xs text-platinum line-clamp-1 max-w-xs">{{ pl.details['message'] || '—' }}</p>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="pl.status">
+                      <span class="status-indicator-dot"></span>
+                      <span *ngIf="pl.status === 'new'">جديد</span>
+                      <span *ngIf="pl.status === 'in_progress'">قيد المتابعة</span>
+                      <span *ngIf="pl.status === 'completed'">مكتمل</span>
+                    </span>
+                  </td>
+                  <td class="font-mono text-xs text-platinum">{{ pl.createdAt }}</td>
+                  <td class="text-center">
+                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(pl)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 5: CONTACT
+           ============================================== -->
+      <section *ngIf="currentTab === 'contact'" class="tab-fade space-y-6">
+        <div class="data-surface">
+          <div class="surface-header">
+            <div class="surface-title-group">
+              <h3 class="surface-title">
+                <i class="bi bi-chat-left-dots text-gold"></i>
+                <span>رسائل التواصل وبحث الشراكات</span>
+              </h3>
+              <p class="surface-sub">استفسارات التوكيلات التجارية والتمثيل المحلي الواردة من (/contact)</p>
+            </div>
+            <div class="surface-controls">
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  [(ngModel)]="searchQuery"
+                  placeholder="بحث في الرسائل..."
+                  class="search-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th style="width: 110px;">الرقم</th>
+                  <th style="width: 170px;">المرسل</th>
+                  <th>البريد والهاتف</th>
+                  <th>مجال الاهتمام</th>
+                  <th>نص الرسالة</th>
+                  <th style="width: 110px;">الحالة</th>
+                  <th style="width: 130px;">التاريخ</th>
+                  <th style="width: 80px; text-align: center;">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let c of filteredContact" (click)="openSubmissionDetails(c)" class="table-row">
+                  <td class="font-mono text-xs text-gold">{{ c.id }}</td>
+                  <td>
+                    <div class="client-cell">
+                      <span class="client-name">{{ c.name }}</span>
+                      <span class="client-company">{{ c.company || '—' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="summary-cell">
+                      <span class="detail-lead font-mono" dir="ltr">{{ c.email }}</span>
+                      <span class="detail-sub font-mono" dir="ltr">{{ c.phone }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="text-xs text-cream font-medium">{{ c.details['interest'] || 'استفسار عام' }}</span>
+                  </td>
+                  <td>
+                    <p class="text-xs text-platinum line-clamp-1 max-w-sm">{{ c.details['message'] || '—' }}</p>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="c.status">
+                      <span class="status-indicator-dot"></span>
+                      <span *ngIf="c.status === 'new'">جديد</span>
+                      <span *ngIf="c.status === 'in_progress'">قيد المتابعة</span>
+                      <span *ngIf="c.status === 'completed'">مكتمل</span>
+                    </span>
+                  </td>
+                  <td class="font-mono text-xs text-platinum">{{ c.createdAt }}</td>
+                  <td class="text-center">
+                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(c)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==============================================
+       MODAL: ADD / EDIT PRODUCT
+       ============================================== -->
+  <div *ngIf="showProductModal" class="modal-backdrop" (click)="closeProductModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <span class="modal-kicker">ARIN CATALOG MANAGEMENT</span>
+          <h3 class="modal-title">
+            {{ editingProductSlug ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد للكتالوج' }}
+          </h3>
+        </div>
+        <button type="button" class="modal-close-btn" (click)="closeProductModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="modal-content space-y-4">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">الاسم بالعربية *</label>
+            <input type="text" formControlName="nameAr" class="input-field" placeholder="زيت زيتون بكر ممتاز" />
+          </div>
+          <div>
+            <label class="input-label">الاسم بالإنجليزية *</label>
+            <input type="text" formControlName="nameEn" dir="ltr" class="input-field" placeholder="Extra virgin olive oil" />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">المعرف الفريد (Slug) *</label>
+            <input type="text" formControlName="slug" dir="ltr" class="input-field font-mono" placeholder="extra-virgin-olive-oil" />
+          </div>
+          <div>
+            <label class="input-label">التصنيف *</label>
+            <app-select-menu
+              formControlName="category"
+              tone="dark"
+              [placeholder]="'اختر التصنيف'"
+              [options]="categoryOptions"
+            ></app-select-menu>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">بلد ومحافظة المنشأ (عربي) *</label>
+            <input type="text" formControlName="originAr" class="input-field" placeholder="إسبانيا · أندلسيا" />
+          </div>
+          <div>
+            <label class="input-label">بلد المنشأ (إنجليزي) *</label>
+            <input type="text" formControlName="originEn" dir="ltr" class="input-field" placeholder="Spain · Andalusia" />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">طريقة التعبئة (عربي) *</label>
+            <input type="text" formControlName="packagingAr" class="input-field" placeholder="عبوات 500 مل / 5 لتر" />
+          </div>
+          <div>
+            <label class="input-label">طريقة التعبئة (إنجليزي) *</label>
+            <input type="text" formControlName="packagingEn" dir="ltr" class="input-field" placeholder="500 ml / 5 L packs" />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">أقل كمية للطلب (MOQ بالعربية)</label>
+            <input type="text" formControlName="moqAr" class="input-field" placeholder="حاوية 20 قدم أو حسب الاتفاق" />
+          </div>
+          <div>
+            <label class="input-label">أقل كمية للطلب (MOQ بالإنجليزية)</label>
+            <input type="text" formControlName="moqEn" dir="ltr" class="input-field" placeholder="20ft container or by contract" />
+          </div>
+        </div>
+
+        <!-- Product Images & Media Gallery Section (Multi-image management) -->
+        <div class="product-gallery-section">
+          <div class="gallery-header-row">
+            <div>
+              <label class="input-label !mb-0.5 text-gold font-bold">
+                <i class="bi bi-images ml-1.5"></i>
+                <span>صور ومعرض المنتج (صور متعددة) *</span>
+              </label>
+              <p class="gallery-subtext">
+                يمكنك إضافة عدة صور للمنتج، تعيين الصورة الرئيسية، وتعديل أي رابط أو رفعه مباشرة من جهازك.
+              </p>
+            </div>
+            <span class="gallery-counter font-mono">
+              {{ modalImages.length }} {{ modalImages.length === 1 ? 'صورة' : 'صور' }}
+            </span>
+          </div>
+
+          <!-- Add Image Toolbar -->
+          <div class="add-image-toolbar">
+            <div class="add-url-group">
+              <i class="bi bi-link-45deg add-url-icon"></i>
+              <input
+                type="text"
+                [(ngModel)]="newImageUrl"
+                [ngModelOptions]="{standalone: true}"
+                dir="ltr"
+                placeholder="أدخل رابط صورة (URL) مثل: https://..."
+                class="input-field !text-xs !py-2 !pr-8"
+                (keydown.enter)="$event.preventDefault(); addImageUrl()"
+              />
+              <button
+                type="button"
+                class="btn btn-gold !py-2 !px-4 !text-xs whitespace-nowrap"
+                (click)="addImageUrl()"
+              >
+                <i class="bi bi-plus-lg"></i>
+                <span>إضافة رابط</span>
+              </button>
+            </div>
+
+            <!-- Upload File Button -->
+            <label class="upload-file-btn" title="اختر صورة أو عدة صور من جهازك">
+              <i class="bi bi-cloud-arrow-up-fill"></i>
+              <span>رفع من الجهاز</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="sr-only"
+                (change)="onImageFileSelected($event)"
+              />
+            </label>
+          </div>
+
+          <!-- Inline Edit Image Bar -->
+          <div *ngIf="editingImageIndex !== null" class="edit-image-banner">
+            <span class="text-xs text-gold font-bold">تعديل رابط الصورة رقم {{ editingImageIndex + 1 }}:</span>
+            <div class="flex items-center gap-2 mt-1">
+              <input
+                type="text"
+                [(ngModel)]="editedImageUrl"
+                [ngModelOptions]="{standalone: true}"
+                dir="ltr"
+                class="input-field !text-xs !py-1.5 flex-1"
+                placeholder="https://..."
+                (keydown.enter)="$event.preventDefault(); saveEditedModalImage(editingImageIndex)"
+              />
+              <button
+                type="button"
+                class="btn btn-gold !py-1.5 !px-3 !text-xs"
+                (click)="saveEditedModalImage(editingImageIndex)"
+              >
+                حفظ
+              </button>
+              <button
+                type="button"
+                class="btn btn-ghost !py-1.5 !px-2.5 !text-xs"
+                (click)="cancelEditModalImage()"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+
+          <!-- Thumbnails Grid -->
+          <div class="gallery-thumbs-grid">
+            <div
+              *ngFor="let img of modalImages; let i = index"
+              class="thumb-item group"
+              [class.is-primary]="i === 0"
+            >
+              <div class="thumb-img-box">
+                <img [src]="img" [alt]="'صورة ' + (i + 1)" />
+                <div class="thumb-overlay"></div>
+
+                <!-- Primary Badge -->
+                <span *ngIf="i === 0" class="primary-badge">
+                  <i class="bi bi-star-fill"></i>
+                  <span>الرئيسية</span>
+                </span>
+
+                <!-- Action buttons on hover -->
+                <div class="thumb-actions">
+                  <button
+                    *ngIf="i !== 0"
+                    type="button"
+                    class="thumb-action-btn is-star"
+                    (click)="setPrimaryModalImage(i, $event)"
+                    title="تعيين كصورة رئيسية للمنتج"
+                  >
+                    <i class="bi bi-star-fill"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="thumb-action-btn"
+                    (click)="startEditModalImage(i, $event)"
+                    title="تعديل رابط الصورة"
+                  >
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="thumb-action-btn is-delete"
+                    (click)="removeModalImage(i, $event)"
+                    title="حذف الصورة"
+                  >
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="thumb-footer">
+                <span class="thumb-num font-mono">#{{ i + 1 }}</span>
+                <span *ngIf="i === 0" class="thumb-role text-gold font-bold">صورة الغلاف</span>
+                <span *ngIf="i > 0" class="thumb-role text-platinum">معرض إضافي</span>
+              </div>
+            </div>
+
+            <!-- Empty State if no images -->
+            <div *ngIf="modalImages.length === 0" class="col-span-full p-4 text-center border border-dashed border-gold/30 rounded-xl">
+              <i class="bi bi-images text-2xl text-gold/40"></i>
+              <p class="text-xs text-platinum mt-1">لم تقم بإضافة أي صورة للمنتج بعد. أدخل رابطاً أعلاه أو ارفع من جهازك.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">ملاحظات ومواصفات بالعربية</label>
+            <textarea formControlName="notesAr" class="input-field !h-16" placeholder="المواصفة تُثبّت قبل إصدار العرض التجاري."></textarea>
+          </div>
+          <div>
+            <label class="input-label">ملاحظات بالإنجليزية</label>
+            <textarea formControlName="notesEn" dir="ltr" class="input-field !h-16" placeholder="Specifications confirmed before quote."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer-bar">
+          <button type="button" class="btn btn-ghost !py-2 !px-4 !text-xs" (click)="closeProductModal()">
+            إلغاء
+          </button>
+          <button type="submit" class="btn btn-gold !py-2 !px-6 !text-xs shadow-gold">
+            {{ editingProductSlug ? 'تحديث المنتج' : 'إضافة للكتالوج' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       DRAWER: SUBMISSION DETAILS
+       ============================================== -->
+  <div *ngIf="selectedSubmission" class="modal-backdrop" (click)="closeSubmissionDetails()">
+    <div class="drawer-card" (click)="$event.stopPropagation()">
+      <div class="drawer-head">
+        <div class="flex items-center gap-3">
+          <span class="type-tag" [ngClass]="selectedSubmission.type">
+            <span *ngIf="selectedSubmission.type === 'quote'">طلب عرض سعر</span>
+            <span *ngIf="selectedSubmission.type === 'private-label'">طلب تصنيع للغير</span>
+            <span *ngIf="selectedSubmission.type === 'contact'">استفسار تواصل</span>
+          </span>
+          <span class="font-mono text-xs text-gold font-bold">{{ selectedSubmission.id }}</span>
+        </div>
+        <button type="button" class="modal-close-btn" (click)="closeSubmissionDetails()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="drawer-body space-y-5">
+        <!-- Client Profile -->
+        <div class="info-block">
+          <h4 class="block-title">
+            <i class="bi bi-person-badge text-gold"></i>
+            <span>بيانات صاحب الطلب</span>
+          </h4>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <span class="field-meta">الاسم الكامل</span>
+              <strong class="field-value">{{ selectedSubmission.name }}</strong>
+            </div>
+            <div>
+              <span class="field-meta">المنشأة / الشركة</span>
+              <strong class="field-value">{{ selectedSubmission.company || 'عميل فردي' }}</strong>
+            </div>
+            <div>
+              <span class="field-meta">البريد الإلكتروني</span>
+              <a [href]="'mailto:' + selectedSubmission.email" class="field-link font-mono" dir="ltr">
+                {{ selectedSubmission.email }}
+              </a>
+            </div>
+            <div>
+              <span class="field-meta">الهاتف للتواصل</span>
+              <a [href]="'tel:' + selectedSubmission.phone" class="field-link font-mono" dir="ltr">
+                {{ selectedSubmission.phone }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Request Details -->
+        <div class="info-block">
+          <h4 class="block-title">
+            <i class="bi bi-card-text text-gold"></i>
+            <span>تفاصيل ومواصفات الطلب</span>
+          </h4>
+          <div class="space-y-2 mt-3">
+            <div *ngFor="let entry of (selectedSubmission.details | keyvalue)" class="detail-row">
+              <span class="detail-name">{{ entry.key }}:</span>
+              <div class="detail-box">{{ entry.value }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Management -->
+        <div class="info-block">
+          <h4 class="block-title">
+            <i class="bi bi-sliders text-gold"></i>
+            <span>تحديث حالة الطلب</span>
+          </h4>
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <button
+              type="button"
+              class="state-btn"
+              [class.is-current]="selectedSubmission.status === 'new'"
+              (click)="changeStatus(selectedSubmission, 'new')"
+            >
+              <span class="dot-new"></span>
+              <span>جديد</span>
+            </button>
+            <button
+              type="button"
+              class="state-btn"
+              [class.is-current]="selectedSubmission.status === 'in_progress'"
+              (click)="changeStatus(selectedSubmission, 'in_progress')"
+            >
+              <span class="dot-prog"></span>
+              <span>قيد المتابعة</span>
+            </button>
+            <button
+              type="button"
+              class="state-btn"
+              [class.is-current]="selectedSubmission.status === 'completed'"
+              (click)="changeStatus(selectedSubmission, 'completed')"
+            >
+              <span class="dot-done"></span>
+              <span>مكتمل</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="drawer-actions-bar">
+          <button
+            type="button"
+            class="btn btn-ghost !text-terracotta !border-terracotta/40 hover:!bg-terracotta/10 !py-2 !px-3 !text-xs"
+            (click)="deleteSub(selectedSubmission.id)"
+          >
+            <i class="bi bi-trash3"></i>
+            <span>حذف الطلب</span>
+          </button>
+          <a
+            [href]="getWhatsAppUrl(selectedSubmission.phone)"
+            target="_blank"
+            rel="noreferrer"
+            class="btn btn-gold !py-2 !px-4 !text-xs shadow-gold"
+          >
+            <i class="bi bi-whatsapp"></i>
+            <span>مراسلة واتساب</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -37,6 +37,46 @@
     </nav>
 
     <div class="ms-auto flex items-center gap-2 lg:ms-0">
+      <!-- User Menu / Dashboard when logged in (Desktop) -->
+      <div
+        *ngIf="auth.isLoggedIn"
+        class="hidden items-center gap-2 rounded-full border border-gold/30 bg-black/40 px-3 py-1.5 text-xs text-cream backdrop-blur-md shadow-sm lg:inline-flex"
+      >
+        <a
+          *ngIf="auth.isAdmin"
+          routerLink="/admin"
+          class="flex items-center gap-1.5 font-bold text-gold hover:text-gold-light transition"
+          [title]="'LOGIN.DASHBOARD' | translate"
+        >
+          <i class="bi bi-speedometer2"></i>
+          <span>{{ 'LOGIN.DASHBOARD' | translate }}</span>
+        </a>
+        <span *ngIf="auth.isAdmin" class="h-3 w-px bg-white/20" aria-hidden="true"></span>
+        <span class="max-w-[110px] truncate font-medium text-platinum" [title]="auth.currentUser?.email">
+          {{ auth.currentUser?.name }}
+        </span>
+        <button
+          type="button"
+          (click)="logout()"
+          class="rounded-full p-1 text-platinum/70 hover:text-terracotta transition"
+          [attr.aria-label]="'LOGIN.LOGOUT' | translate"
+          [title]="'LOGIN.LOGOUT' | translate"
+        >
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Login Link (Desktop) -->
+      <a
+        *ngIf="!auth.isLoggedIn"
+        routerLink="/login"
+        class="hidden rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-platinum hover:border-gold/50 hover:text-gold lg:inline-flex items-center gap-1.5 transition"
+        [title]="'LOGIN.TITLE' | translate"
+      >
+        <i class="bi bi-person"></i>
+        <span>{{ 'LOGIN.TITLE' | translate }}</span>
+      </a>
+
       <button
         type="button"
         class="hidden rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold uppercase text-cream hover:border-gold/50 hover:text-gold lg:inline-flex"
@@ -91,6 +131,50 @@
       </nav>
 
       <div class="nav-sheet-foot">
+        <!-- Logged in state (Mobile) -->
+        <div *ngIf="auth.isLoggedIn" class="mb-3.5 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-3">
+          <div class="flex items-center gap-2.5">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold font-bold">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="truncate text-xs font-bold text-cream">{{ auth.currentUser?.name }}</p>
+              <p class="text-[10px] font-mono text-gold">
+                {{ auth.isAdmin ? ('LOGIN.ROLE_ADMIN' | translate) : ('LOGIN.ROLE_USER' | translate) }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <a
+              *ngIf="auth.isAdmin"
+              routerLink="/admin"
+              (click)="close()"
+              class="rounded-lg bg-gold px-2.5 py-1 text-xs font-bold text-ink"
+            >
+              {{ 'LOGIN.DASHBOARD' | translate }}
+            </a>
+            <button
+              type="button"
+              (click)="logout()"
+              class="p-1.5 text-platinum hover:text-terracotta"
+              [attr.aria-label]="'LOGIN.LOGOUT' | translate"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Not logged in link (Mobile) -->
+        <a
+          *ngIf="!auth.isLoggedIn"
+          routerLink="/login"
+          (click)="close()"
+          class="btn btn-ghost mb-3 w-full !py-2.5 !text-xs !border-white/20 hover:!border-gold"
+        >
+          <i class="bi bi-person text-gold"></i>
+          <span>{{ 'LOGIN.TITLE' | translate }}</span>
+        </a>
+
         <a routerLink="/quote" class="btn btn-gold w-full" (click)="close()">
           {{ 'NAV.QUOTE' | translate }}
           <i class="bi bi-arrow-left rtl:rotate-180"></i>

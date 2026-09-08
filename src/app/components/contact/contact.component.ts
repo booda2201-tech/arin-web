@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
+import { AdminDataService } from '../../services/admin-data.service';
 import { Lang, mailHref, services, site, telHref, whatsappHref } from '../../data/content';
 import { SelectOption } from '../select-menu/select-menu.component';
 
@@ -31,6 +32,7 @@ export class ContactComponent implements OnDestroy {
 
   constructor(
     public language: LanguageService,
+    private adminData: AdminDataService,
     private fb: FormBuilder
   ) {
     this.sub = this.language.languageChanged$.subscribe((lang) => (this.lang = lang));
@@ -60,6 +62,20 @@ export class ContactComponent implements OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
+    const val = this.form.value;
+    const foundInterest = this.interestOptions.find((o) => o.value === val.interest);
+    this.adminData.addSubmission({
+      type: 'contact',
+      name: val.name || '',
+      company: val.company || '',
+      email: val.email || '',
+      phone: val.phone || '',
+      status: 'new',
+      details: {
+        interest: foundInterest ? foundInterest.label : (val.interest || 'استفسار عام'),
+        message: val.message || '',
+      },
+    });
     this.sent = true;
   }
 }

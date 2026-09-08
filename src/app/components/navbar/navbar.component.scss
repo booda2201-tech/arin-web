@@ -46,11 +46,18 @@
   display: block;
   white-space: nowrap;
   border-radius: 999px;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.875rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #9ca3af;
   transition: color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+@media (min-width: 1280px) {
+  .nav-link {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+  }
 }
 
 .nav-link:hover {

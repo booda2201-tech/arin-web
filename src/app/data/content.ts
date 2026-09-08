@@ -24,7 +24,8 @@ export const site = {
 };
 
 export const images = {
-  hero: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1920&q=80',
+  hero: 'https://images.unsplash.com/photo-1663900108404-a05e8bf82cda?auto=format&fit=crop&w=2560&q=85',
+  aboutHero: 'https://images.unsplash.com/photo-1669101564304-1da32c23f8ec?auto=format&fit=crop&w=2560&q=85',
   house: 'assets/images/house.jpg',
   boardroom:
     'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80',
@@ -341,6 +342,7 @@ export interface ProductItem {
   origin: L;
   packaging: L;
   image: string;
+  images?: string[];
   notes: L;
   description: L;
   moq: L;
@@ -363,6 +365,11 @@ export const products: ProductItem[] = [
     origin: { ar: 'إسبانيا · أندلسيا', en: 'Spain · Andalusia' },
     packaging: { ar: 'عبوات 500 مل / 5 لتر', en: '500 ml / 5 L packs' },
     image: images.oliveOil,
+    images: [
+      images.oliveOil,
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80',
+    ],
     notes: { ar: 'المواصفة تُثبّت قبل إصدار العرض.', en: 'Specification is fixed before the offer.' },
     description: {
       ar: 'زيت زيتون بكر ممتاز من معاصر أندلسية مختارة. نثبّت الحموضة والتعبئة والمنشأ قبل أي عرض توريد، مع خيار التعبئة بعلامة العميل عند الحد الأدنى للطلب.',

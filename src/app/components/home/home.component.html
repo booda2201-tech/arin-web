@@ -1,202 +1,262 @@
-<section #homeRoot class="film">
-  <aside class="film-rail" aria-hidden="true">
-    <span class="film-rail-num">01</span>
-    <span class="film-rail-track"><span class="film-rail-fill"></span></span>
-    <span class="film-rail-total">08</span>
-  </aside>
-
-  <div #chamber class="film-chamber">
-    <div class="chamber-world">
+<div class="home-flow">
+  <!-- 1. Hero Section -->
+  <header class="hero-stage">
+    <div class="hero-backdrop" aria-hidden="true">
       <img
-        class="chamber-photo"
-        [src]="images.house"
+        class="hero-photo"
+        [src]="images.hero"
         width="2560"
         height="1706"
-        alt=""
+        alt="عرين الموارد التجارية - برج المملكة الرياض"
         fetchpriority="high"
         decoding="async"
       />
-      <div class="chamber-shade"></div>
-      <p class="house-plaque">{{ 'STORY.PLAQUE' | translate }}</p>
+      <div class="hero-shade"></div>
     </div>
 
-    <div class="chamber-hero" data-chapter="01">
-      <div class="hero-copy arin-wrap">
-        <p class="film-kicker">{{ 'STORY.KICKER' | translate }}</p>
-        <h1 class="film-title">
-          <span class="hero-line">
-            <span class="hero-line-inner">{{ 'STORY.NAME' | translate }}</span>
-          </span>
-          <span class="hero-line">
-            <span class="hero-line-inner film-title-sub">{{ 'STORY.NAME_2' | translate }}</span>
-          </span>
-        </h1>
-        <p class="hero-sub mt-8 max-w-md text-sm tracking-wide text-gold">
-          {{ 'STORY.LINE' | translate }}
-        </p>
-      </div>
-      <p class="hero-scroll">
-        {{ 'STORY.SCROLL' | translate }}
-      </p>
-    </div>
+    <div class="hero-shell arin-wrap">
+      <div class="hero-content">
+        <!-- <div class="hero-plaque hero-anim">
+          <span class="plaque-dot"></span>
+          <span>{{ 'STORY.PLAQUE' | translate }}</span>
+        </div> -->
 
-    <section class="chamber-room room-origin" data-chapter="02">
-      <div class="arin-wrap origin-grid">
-        <p class="film-kicker !text-gold">{{ 'STORY.ORIGIN_K' | translate }}</p>
-        <p class="origin-year">{{ 'STORY.ORIGIN_YEAR' | translate }}</p>
-        <div class="origin-copy">
-          <h2 class="display-title text-4xl text-forest lg:text-5xl">{{ 'STORY.ORIGIN_T' | translate }}</h2>
-          <p class="mt-6 max-w-lg text-base leading-8 text-olive">{{ 'STORY.ORIGIN_B' | translate }}</p>
-          <p class="mt-8 text-sm text-gold">{{ 'STORY.ORIGIN_PLACE' | translate }}</p>
+        <div class="hero-core hero-anim">
+          <p class="hero-kicker">{{ 'STORY.KICKER' | translate }}</p>
+          <h1 class="hero-title">
+            <span class="hero-brand-primary">{{ 'STORY.NAME' | translate }}</span>
+            <span class="hero-brand-secondary">{{ 'STORY.NAME_2' | translate }}</span>
+          </h1>
+          <p class="hero-tagline">{{ 'STORY.LINE' | translate }}</p>
+        </div>
+
+        <div class="hero-actions hero-anim">
+          <a routerLink="/quote" class="hero-btn hero-btn-gold">
+            <span>{{ 'NAV.QUOTE' | translate }}</span>
+            <i class="bi bi-arrow-right rtl:rotate-180" aria-hidden="true"></i>
+          </a>
+          <a routerLink="/contact" class="hero-btn hero-btn-glass">
+            <span>{{ 'NAV.CONTACT' | translate }}</span>
+          </a>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="chamber-room room-manifesto" data-chapter="03">
-      <div class="arin-wrap manifesto-stage">
+    <a href="#origin" class="hero-scroll-cue" aria-label="Scroll to content">
+      <span>{{ 'STORY.SCROLL' | translate }}</span>
+      <i class="bi bi-chevron-down scroll-bounce" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <!-- 2. Origin 2014 Section (Light Cream) -->
+  <section id="origin" class="section-origin">
+    <div class="arin-wrap origin-container">
+      <div class="origin-col-year reveal-item">
+        <span class="origin-badge">{{ 'STORY.ORIGIN_K' | translate }}</span>
+        <h2 class="origin-year-display">{{ 'STORY.ORIGIN_YEAR' | translate }}</h2>
+        <div class="origin-place">
+          <i class="bi bi-geo-alt-fill text-gold" aria-hidden="true"></i>
+          <span>{{ 'STORY.ORIGIN_PLACE' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="origin-col-story reveal-item">
+        <p class="film-kicker !text-gold">{{ 'STORY.ORIGIN_T' | translate }}</p>
+        <h3 class="origin-headline font-display">{{ 'ABOUT.STORY_T1' | translate }} {{ 'ABOUT.STORY_T2' | translate }}</h3>
+        <p class="origin-text">{{ 'STORY.ORIGIN_B' | translate }}</p>
+
+        <div class="origin-highlights">
+          <div class="origin-pill">
+            <span class="pill-number">+10</span>
+            <span class="pill-label">{{ 'ABOUT.VALUES' | translate }}</span>
+          </div>
+          <div class="origin-pill">
+            <span class="pill-number">100%</span>
+            <span class="pill-label">{{ 'SERVICES_PAGE.WHY_2' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Manifesto Section (Deep Forest Teal) -->
+  <section class="section-manifesto">
+    <div class="arin-wrap">
+      <div class="manifesto-card reveal-item">
         <p class="film-kicker">{{ 'STORY.MANIFESTO_K' | translate }}</p>
-        <h2 class="film-display">
-          <span class="manifesto-line block">{{ 'STORY.MANIFESTO_T1' | translate }}</span>
-          <em class="manifesto-line block">{{ 'STORY.MANIFESTO_T2' | translate }}</em>
+        <h2 class="manifesto-title font-display">
+          <span>{{ 'STORY.MANIFESTO_T1' | translate }}</span>
+          <em class="text-gold not-italic">{{ 'STORY.MANIFESTO_T2' | translate }}</em>
         </h2>
-        <p class="manifesto-body mt-10 max-w-2xl text-lg leading-9 text-platinum">{{ 'STORY.MANIFESTO_B' | translate }}</p>
-      </div>
-    </section>
+        <p class="manifesto-body">{{ 'STORY.MANIFESTO_B' | translate }}</p>
 
-    <section class="chamber-room room-reach" data-chapter="04">
-      <div class="arin-wrap reach-grid">
-        <div>
-          <p class="film-kicker">{{ 'STORY.REACH_K' | translate }}</p>
-          <h2 class="film-display mt-4">
-            {{ 'STORY.REACH_T1' | translate }}
-            <em class="block">{{ 'STORY.REACH_T2' | translate }}</em>
-          </h2>
-          <p class="mt-6 max-w-md text-sm leading-8 text-platinum">{{ 'MAP.BODY' | translate }}</p>
-          <dl class="mt-12 grid grid-cols-2 gap-8">
-            <div>
-              <dt class="font-display text-4xl font-extrabold text-gold-light">{{ 'MAP.STAT_1V' | translate }}</dt>
-              <dd class="mt-2 text-xs text-platinum">{{ 'MAP.STAT_1' | translate }}</dd>
-            </div>
-            <div>
-              <dt class="font-display text-4xl font-extrabold text-gold-light">{{ 'MAP.STAT_2V' | translate }}</dt>
-              <dd class="mt-2 text-xs text-platinum">{{ 'MAP.STAT_2' | translate }}</dd>
-            </div>
-          </dl>
+        <blockquote class="manifesto-quote">
+          <i class="bi bi-quote quote-mark" aria-hidden="true"></i>
+          <p>{{ 'INTRO.MANIFESTO' | translate }}</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Global Reach & Route Map (Deep Navy/Black) -->
+  <section class="section-reach">
+    <div class="arin-wrap reach-grid">
+      <div class="reach-info reveal-item">
+        <p class="film-kicker">{{ 'STORY.REACH_K' | translate }}</p>
+        <h2 class="reach-title font-display">
+          {{ 'STORY.REACH_T1' | translate }}
+          <em class="block text-gold not-italic">{{ 'STORY.REACH_T2' | translate }}</em>
+        </h2>
+        <p class="reach-body">{{ 'MAP.BODY' | translate }}</p>
+
+        <div class="reach-stats-grid">
+          <div class="reach-stat-item">
+            <span class="stat-num font-display">{{ 'MAP.STAT_1V' | translate }}</span>
+            <span class="stat-desc">{{ 'MAP.STAT_1' | translate }}</span>
+          </div>
+          <div class="reach-stat-item">
+            <span class="stat-num font-display">{{ 'MAP.STAT_2V' | translate }}</span>
+            <span class="stat-desc">{{ 'MAP.STAT_2' | translate }}</span>
+          </div>
         </div>
-        <div class="map-frame relative overflow-hidden bg-navy">
-          <div class="absolute inset-0 bg-grid-fine bg-grid opacity-50"></div>
-          <svg viewBox="0 0 1000 460" class="relative block h-auto w-full" role="img" [attr.aria-label]="'MAP.ARIA' | translate">
+      </div>
+
+      <div class="reach-map-box reveal-item">
+        <div class="map-frame">
+          <svg viewBox="0 0 1000 460" class="map-svg" role="img" [attr.aria-label]="'MAP.ARIA' | translate">
             <defs>
-              <linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#E6A15C" stop-opacity="0.05" />
-                <stop offset="50%" stop-color="#F7B775" stop-opacity="0.8" />
-                <stop offset="100%" stop-color="#E6A15C" stop-opacity="0.05" />
+              <linearGradient id="routeGradNormal" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#E6A15C" stop-opacity="0.1" />
+                <stop offset="50%" stop-color="#F7B775" stop-opacity="0.9" />
+                <stop offset="100%" stop-color="#E6A15C" stop-opacity="0.1" />
               </linearGradient>
             </defs>
             <ellipse cx="500" cy="230" rx="440" ry="190" fill="none" stroke="#E6A15C" stroke-opacity="0.14" stroke-dasharray="3 7" />
             <g *ngFor="let route of routes">
-              <path class="map-route" [attr.d]="arc(route[0], route[1])" fill="none" stroke="url(#routeGrad)" stroke-width="1.6" />
-              <path class="map-route-head" [attr.d]="arc(route[0], route[1])" fill="none" stroke="#F7B775" stroke-width="2.2" stroke-linecap="round" />
+              <path class="map-route" [attr.d]="arc(route[0], route[1])" fill="none" stroke="url(#routeGradNormal)" stroke-width="1.8" />
+              <path class="map-route-head" [attr.d]="arc(route[0], route[1])" fill="none" stroke="#F7B775" stroke-width="2.4" stroke-linecap="round" />
             </g>
             <g *ngFor="let n of nodes">
-              <circle class="map-node" [attr.cx]="n.x" [attr.cy]="n.y" [attr.r]="n.hub ? 5 : 3.2" [attr.fill]="n.hub ? '#F7B775' : '#E6A15C'" />
-              <text [attr.x]="n.x" [attr.y]="n.y - (n.hub ? 16 : 13)" text-anchor="middle" [attr.fill]="n.hub ? '#F3F4F6' : '#9CA3AF'" [attr.font-size]="n.hub ? 15 : 13" font-family="IBM Plex Sans Arabic, sans-serif">
+              <circle class="map-node" [attr.cx]="n.x" [attr.cy]="n.y" [attr.r]="n.hub ? 5.5 : 3.5" [attr.fill]="n.hub ? '#F7B775' : '#E6A15C'" />
+              <text [attr.x]="n.x" [attr.y]="n.y - (n.hub ? 16 : 13)" text-anchor="middle" [attr.fill]="n.hub ? '#F3F4F6' : '#9CA3AF'" [attr.font-size]="n.hub ? 14 : 12" font-family="IBM Plex Sans Arabic, sans-serif">
                 {{ txt(n.label) }}
               </text>
             </g>
           </svg>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="chamber-room room-journey" data-chapter="05">
-      <div class="arin-wrap journey-layout">
+  <!-- 5. Journey Section (Warm Luxury Sand) -->
+  <section class="section-journey">
+    <div class="arin-wrap">
+      <div class="section-heading text-center reveal-item">
         <p class="film-kicker !text-gold">{{ 'STORY.JOURNEY_K' | translate }}</p>
-        <p class="mb-6 max-w-xl text-sm leading-7 text-olive">{{ 'STORY.JOURNEY_T' | translate }}</p>
-        <div class="journey-stage">
-          <article *ngFor="let step of processSteps; let i = index" class="journey-card" [class.is-first]="i === 0">
-            <span class="journey-num">{{ step.index }}</span>
-            <div>
-              <h3 class="font-display text-2xl font-bold text-forest lg:text-4xl">{{ txt(step.title) }}</h3>
-              <p class="mt-4 max-w-xl text-base leading-8 text-olive">{{ txt(step.body) }}</p>
-            </div>
-            <div class="journey-still">
-              <img [src]="step.image" alt="" />
-            </div>
-          </article>
-        </div>
+        <h2 class="journey-title font-display">{{ 'STORY.JOURNEY_T' | translate }}</h2>
       </div>
-    </section>
 
-    <section class="chamber-room room-capa" data-chapter="06">
-      <div class="services-pin">
-        <div class="arin-wrap capa-head">
-          <p class="film-kicker !text-gold">{{ 'STORY.CAPA_K' | translate }}</p>
-          <h2 class="film-display text-forest">
-            {{ 'STORY.CAPA_T1' | translate }}
-            <em class="block">{{ 'STORY.CAPA_T2' | translate }}</em>
-          </h2>
-        </div>
-        <div class="services-viewport arin-wrap">
-          <div class="services-track" dir="ltr">
-            <a
-              *ngFor="let s of services"
-              routerLink="/services"
-              [fragment]="s.slug"
-              class="service-slide group relative isolate text-cream"
-            >
-              <img [src]="s.image" alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />
-              <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent"></div>
-              <div class="relative flex h-full flex-col justify-end p-5 sm:p-8">
-                <span class="mb-auto font-mono text-[10px] tracking-[0.28em] text-gold-light">{{ s.index }}</span>
-                <h3 class="font-display text-xl font-bold leading-snug sm:text-2xl" [attr.dir]="lang === 'ar' ? 'rtl' : 'ltr'">{{ txt(s.title) }}</h3>
-                <p class="mt-2 text-sm leading-7 text-platinum sm:mt-3" [attr.dir]="lang === 'ar' ? 'rtl' : 'ltr'">{{ txt(s.short) }}</p>
-              </div>
-            </a>
+      <div class="journey-cards-grid">
+        <article *ngFor="let step of processSteps" class="journey-step-card reveal-item">
+          <div class="step-num-bar">
+            <span class="step-num font-display">{{ step.index }}</span>
+            <span class="step-line"></span>
           </div>
-        </div>
+          <div class="step-img-box">
+            <img [src]="step.image" [alt]="txt(step.title)" loading="lazy" decoding="async" />
+          </div>
+          <div class="step-details">
+            <h3 class="step-heading font-display">{{ txt(step.title) }}</h3>
+            <p class="step-text">{{ txt(step.body) }}</p>
+          </div>
+        </article>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="chamber-room room-proof" data-chapter="07">
-      <div class="arin-wrap proof-layout">
+  <!-- 6. Capabilities & Services (Crisp Cream) -->
+  <section class="section-capa">
+    <div class="arin-wrap">
+      <div class="section-heading text-center reveal-item">
+        <p class="film-kicker !text-gold">{{ 'STORY.CAPA_K' | translate }}</p>
+        <h2 class="capa-title font-display text-forest">
+          {{ 'STORY.CAPA_T1' | translate }}
+          <em class="block text-gold not-italic">{{ 'STORY.CAPA_T2' | translate }}</em>
+        </h2>
+      </div>
+
+      <div class="services-modern-grid">
+        <a
+          *ngFor="let s of services"
+          routerLink="/services"
+          [fragment]="s.slug"
+          class="service-item-card group reveal-item"
+        >
+          <img [src]="s.image" [alt]="txt(s.title)" loading="lazy" decoding="async" class="service-bg-img" />
+          <div class="service-gradient-shade"></div>
+          <div class="service-content-wrap">
+            <div class="service-top-row">
+              <span class="service-index-tag">{{ s.index }}</span>
+              <span class="service-icon-bubble"><i class="bi" [class]="s.icon" aria-hidden="true"></i></span>
+            </div>
+            <div class="service-bottom-details">
+              <h3 class="service-card-title font-display">{{ txt(s.title) }}</h3>
+              <p class="service-card-short">{{ txt(s.short) }}</p>
+              <span class="service-view-link">
+                <span>{{ 'COMMON.LEARN' | translate }}</span>
+                <i class="bi bi-arrow-right rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Proof / Telemetry (Deep Forest Teal) -->
+  <section class="section-proof">
+    <div class="arin-wrap">
+      <div class="section-heading text-center reveal-item">
         <p class="film-kicker">{{ 'STORY.PROOF_K' | translate }}</p>
-        <h2 class="mt-3 max-w-xl text-lg leading-8 text-platinum">{{ 'STORY.PROOF_T' | translate }}</h2>
-        <div class="proof-grid">
-          <div *ngFor="let item of telemetry; let i = index" class="proof-item">
-            <span class="proof-index">{{ i + 1 | number: '2.0-0' }}</span>
-            <p class="proof-value">{{ item.value }}</p>
-            <p class="proof-label">{{ txt(item.label) }}</p>
-          </div>
-        </div>
+        <h2 class="proof-title font-display">{{ 'STORY.PROOF_T' | translate }}</h2>
       </div>
-    </section>
 
-    <section class="chamber-room room-end" data-chapter="08">
-      <div class="arin-wrap end-layout">
-        <div class="end-copy">
-          <p class="film-kicker">{{ 'STORY.END_K' | translate }}</p>
-          <h2 class="film-display">{{ 'STORY.END_T' | translate }}</h2>
-          <p class="end-lead">{{ 'STORY.END_B' | translate }}</p>
-          <div class="end-actions">
-            <a routerLink="/contact" class="btn btn-gold">
-              {{ 'STORY.END_CTA' | translate }}
-              <i class="bi bi-arrow-left rtl:rotate-180"></i>
-            </a>
-          </div>
+      <div class="proof-items-row">
+        <div *ngFor="let item of telemetry; let i = index" class="proof-tile reveal-item">
+          <span class="proof-index-num">0{{ i + 1 }}</span>
+          <p class="proof-metric-val font-display">{{ item.value }}</p>
+          <p class="proof-metric-lbl">{{ txt(item.label) }}</p>
         </div>
-        <figure class="end-seal">
-          <img
-            class="end-seal-photo"
-            src="assets/images/port.jpg"
-            width="900"
-            height="900"
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
       </div>
-    </section>
-  </div>
-</section>
+    </div>
+  </section>
+
+  <!-- 8. End Section (Deep Forest Green) -->
+  <section class="section-end">
+    <div class="arin-wrap end-layout">
+      <figure class="end-seal reveal-item">
+        <img
+          class="end-seal-photo"
+          src="assets/images/port.jpg"
+          width="800"
+          height="800"
+          alt="عرين الموارد التجارية"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+
+      <div class="end-copy reveal-item">
+        <p class="film-kicker">{{ 'STORY.END_K' | translate }}</p>
+        <h2 class="end-display-title font-display">{{ 'STORY.END_T' | translate }}</h2>
+        <p class="end-body-lead">{{ 'STORY.END_B' | translate }}</p>
+        <div class="end-actions">
+          <a routerLink="/contact" class="btn btn-gold !px-9 !py-4 text-base font-bold shadow-xl shadow-gold/30">
+            {{ 'STORY.END_CTA' | translate }}
+            <i class="bi bi-arrow-right rtl:rotate-180" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

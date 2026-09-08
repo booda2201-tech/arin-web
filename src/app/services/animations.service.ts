@@ -95,22 +95,6 @@ export class AnimationsService implements OnDestroy {
       if (reduce) {
         return;
       }
-
-      if (fine) {
-        document.documentElement.classList.add('has-cursor');
-        gsap.set(['.cursor-dot', '.cursor-ring'], { xPercent: -50, yPercent: -50 });
-        const xDot = gsap.quickTo('.cursor-dot', 'x', { duration: 0.16, ease: 'power3' });
-        const yDot = gsap.quickTo('.cursor-dot', 'y', { duration: 0.16, ease: 'power3' });
-        const xRing = gsap.quickTo('.cursor-ring', 'x', { duration: 0.45, ease: 'power3' });
-        const yRing = gsap.quickTo('.cursor-ring', 'y', { duration: 0.45, ease: 'power3' });
-        this.moveHandler = (e: PointerEvent) => {
-          xDot(e.clientX);
-          yDot(e.clientY);
-          xRing(e.clientX);
-          yRing(e.clientY);
-        };
-        window.addEventListener('pointermove', this.moveHandler, { passive: true });
-      }
     });
 
     this.bindMagnets();

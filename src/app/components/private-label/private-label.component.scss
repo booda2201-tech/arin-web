@@ -20,14 +20,17 @@
   height: 100%;
   object-fit: cover;
   object-position: 78% 8%;
-  filter: saturate(0.72) contrast(1.12);
+  filter: brightness(0.52) contrast(1.18) saturate(0.75);
+  transform: scale(1.02);
 }
 
 .pl-stage-shade {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(11, 15, 13, 0.58) 0%, rgba(11, 15, 13, 0.22) 18%, rgba(11, 15, 13, 0.68) 46%, rgba(11, 15, 13, 0.97) 100%);
+    linear-gradient(180deg, rgba(11, 15, 13, 0.92) 0%, rgba(11, 15, 13, 0.58) 25%, rgba(11, 15, 13, 0.78) 65%, #0b0f0d 100%),
+    linear-gradient(to left, rgba(11, 15, 13, 0.9) 0%, rgba(11, 15, 13, 0.62) 50%, rgba(11, 15, 13, 0.35) 100%),
+    radial-gradient(ellipse at 80% 35%, rgba(195, 164, 98, 0.14) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -124,9 +127,9 @@
 
   .pl-stage-shade {
     background:
-      linear-gradient(to bottom, rgba(11, 15, 13, 0.62) 0%, transparent 36%),
-      linear-gradient(to top, rgba(11, 15, 13, 0.92) 0%, transparent 58%),
-      radial-gradient(ellipse at 70% 50%, transparent 12%, rgba(11, 15, 13, 0.45) 100%);
+      linear-gradient(to bottom, rgba(11, 15, 13, 0.92) 0%, rgba(11, 15, 13, 0.55) 25%, rgba(11, 15, 13, 0.78) 68%, #0b0f0d 100%),
+      linear-gradient(to left, rgba(11, 15, 13, 0.9) 0%, rgba(11, 15, 13, 0.62) 50%, rgba(11, 15, 13, 0.3) 100%),
+      radial-gradient(ellipse at 75% 45%, rgba(195, 164, 98, 0.12) 0%, transparent 60%);
   }
 
   .pl-title {

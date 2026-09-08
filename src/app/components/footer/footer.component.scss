@@ -2,82 +2,98 @@
   display: block;
 }
 
+.news-form {
+  position: relative;
+  max-width: 24rem;
+}
+
 .news-field {
   position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.news-form .news-field input {
+  width: 100%;
+  min-height: 3.2rem;
+  padding-block: 0.85rem;
+  padding-inline-start: 1.25rem;
+  padding-inline-end: 3.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(195, 164, 98, 0.35);
+  background: linear-gradient(180deg, rgba(243, 239, 230, 0.07), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(243, 239, 230, 0.08);
+  color: #f3efe6;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.news-form .news-field input::placeholder {
+  color: rgba(197, 205, 200, 0.72);
+}
+
+.news-form .news-field input:focus {
+  border-color: #c3a462;
+  background-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(243, 239, 230, 0.1),
+    0 0 0 3px rgba(195, 164, 98, 0.16);
 }
 
 .news-send {
+  position: absolute;
+  inset-inline-end: 0.38rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 2.45rem;
+  height: 2.45rem;
+  margin: 0;
+  border: 0;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.85rem;
-  color: #c3a462;
-  background: transparent;
-  border: 0;
-  font-size: 1rem;
-  line-height: 1;
+  background: #c3a462;
+  color: #0b0f0d;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -6px rgba(195, 164, 98, 0.7);
+  transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+.news-send:hover {
+  background: #d5bf85;
+  box-shadow: 0 8px 22px -6px rgba(195, 164, 98, 0.85);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.news-send:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.news-send:focus-visible {
+  outline: 2px solid #f3efe6;
+  outline-offset: 2px;
+}
+
+:host-context([dir='rtl']) .news-send i.bi-send {
+  transform: scaleX(-1);
 }
 
 @media (max-width: 767px) {
   .news-form {
     max-width: none;
   }
-
-  .news-field {
-    display: flex;
-    align-items: center;
-  }
-
-  .news-field input {
-    width: 100%;
-    min-height: 3.15rem;
-    padding-block: 0.9rem;
-    padding-inline: 1.05rem 3.35rem;
-    border-radius: 999px;
-    border-color: rgba(195, 164, 98, 0.38);
-    background: linear-gradient(180deg, rgba(243, 239, 230, 0.08), rgba(255, 255, 255, 0.04));
-    box-shadow: inset 0 1px 0 rgba(243, 239, 230, 0.08);
-    font-size: 0.92rem;
-  }
-
-  .news-field input::placeholder {
-    color: rgba(197, 205, 200, 0.78);
-  }
-
-  .news-field input:focus {
-    border-color: #c3a462;
-    box-shadow:
-      inset 0 1px 0 rgba(243, 239, 230, 0.1),
-      0 0 0 3px rgba(195, 164, 98, 0.14);
-  }
-
-  .news-send {
-    position: absolute;
-    inset-inline-end: 0.35rem;
-    top: 50%;
-    z-index: 1;
-    width: 2.45rem;
-    height: 2.45rem;
-    margin-top: 0;
-    transform: translateY(-50%);
-    border-radius: 50%;
-    background: #c3a462;
-    color: #0b0f0d;
-    font-size: 0.95rem;
-    box-shadow: 0 8px 18px -10px rgba(195, 164, 98, 0.9);
-  }
-
-  .news-send i {
-    transform: translateX(-1px);
-  }
-
-  :host-context([dir='rtl']) .news-send i {
-    transform: translateX(1px) scaleX(-1);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .news-send {
+  .news-send,
+  .news-send:hover {
+    transform: translateY(-50%);
     box-shadow: none;
+    transition: none;
   }
 }

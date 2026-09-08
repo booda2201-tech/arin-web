@@ -6,8 +6,49 @@
     </a>
 
     <div class="product-layout">
-      <div class="page-still product-still" data-aos="fade-up">
-        <img [src]="p.image" [alt]="txt(p.name)" />
+      <div class="product-gallery-box" data-aos="fade-up">
+        <div class="page-still product-still relative overflow-hidden group">
+          <img [src]="currentImage" [alt]="txt(p.name)" class="w-full h-full object-cover transition duration-300" />
+
+          <!-- Next / Prev Controls -->
+          <div *ngIf="allImages.length > 1" class="gallery-arrows">
+            <button
+              type="button"
+              class="gallery-arrow arrow-prev"
+              (click)="prevImage()"
+              aria-label="Previous image"
+            >
+              <i class="bi bi-chevron-right rtl:rotate-180"></i>
+            </button>
+            <button
+              type="button"
+              class="gallery-arrow arrow-next"
+              (click)="nextImage()"
+              aria-label="Next image"
+            >
+              <i class="bi bi-chevron-left rtl:rotate-180"></i>
+            </button>
+          </div>
+
+          <!-- Counter Badge -->
+          <div *ngIf="allImages.length > 1" class="gallery-counter-badge">
+            <i class="bi bi-camera me-1"></i>
+            <span>{{ activeImageIndex + 1 }} / {{ allImages.length }}</span>
+          </div>
+        </div>
+
+        <!-- Thumbnails row -->
+        <div *ngIf="allImages.length > 1" class="product-thumbs-strip mt-3 flex items-center gap-2 overflow-x-auto pb-1">
+          <button
+            *ngFor="let img of allImages; let idx = index"
+            type="button"
+            class="thumb-item"
+            [class.is-active]="idx === activeImageIndex"
+            (click)="setActiveImage(idx)"
+          >
+            <img [src]="img" [alt]="txt(p.name)" />
+          </button>
+        </div>
       </div>
 
       <div class="product-copy" data-aos="fade-up">

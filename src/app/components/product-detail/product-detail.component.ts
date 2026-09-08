@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
+import { AdminDataService } from '../../services/admin-data.service';
 import {
   Lang,
   L,
@@ -20,10 +21,12 @@ export class ProductDetailComponent implements OnDestroy {
   product?: ProductItem;
   related: ProductItem[] = [];
   lang: Lang = this.language.current;
+  activeImageIndex = 0;
   private sub = new Subscription();
 
   constructor(
     public language: LanguageService,
+    private adminData: AdminDataService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -63,8 +66,41 @@ export class ProductDetailComponent implements OnDestroy {
     ];
   }
 
+  get allImages(): string[] {
+    if (!this.product) {
+      return [];
+    }
+    if (this.product.images && this.product.images.length > 0) {
+      return this.product.images;
+    }
+    return this.product.image ? [this.product.image] : [];
+  }
+
+  get currentImage(): string {
+    const list = this.allImages;
+    return list[this.activeImageIndex] || this.product?.image || '';
+  }
+
+  setActiveImage(index: number): void {
+    this.activeImageIndex = index;
+  }
+
+  nextImage(): void {
+    const total = this.allImages.length;
+    if (total <= 1) return;
+    this.activeImageIndex = (this.activeImageIndex + 1) % total;
+  }
+
+  prevImage(): void {
+    const total = this.allImages.length;
+    if (total <= 1) return;
+    this.activeImageIndex = (this.activeImageIndex - 1 + total) % total;
+  }
+
   private load(slug: string): void {
-    this.product = getProduct(slug);
+    this.activeImageIndex = 0;
+    const fromAdmin = this.adminData.getProducts().find((p) => p.slug === slug);
+    this.product = fromAdmin || getProduct(slug);
     this.related = slug ? relatedProducts(slug) : [];
     if (!this.product && slug) {
       this.router.navigateByUrl('/products');

@@ -1,7 +1,31 @@
-<section class="page-stage">
+<section class="page-stage page-stage--about">
   <div class="arin-wrap page-stage-copy">
-    <p class="film-kicker">{{ 'ABOUT.EYEBROW' | translate }}</p>
-    <h1 class="film-display max-w-4xl">{{ 'ABOUT.TITLE' | translate }}</h1>
+    <div class="about-hero-plaque">
+      <span class="plaque-dot"></span>
+      <span>{{ (lang === 'ar' ? 'عرين الموارد · مسيرة التأسيس والريادة' : 'Arin Almawared · Heritage & Growth') }}</span>
+    </div>
+
+    <p class="about-hero-kicker">{{ 'ABOUT.EYEBROW' | translate }}</p>
+    <h1 class="about-hero-title">{{ 'ABOUT.TITLE' | translate }}</h1>
+
+    <p class="about-hero-lead">
+      {{ (lang === 'ar' ? 'منذ 2014، نبني شراكات تجارية وسلاسل إمداد مستدامة تربط المصادر الموثوقة بالأسواق الإقليمية والدولية.' : 'Since 2014, building sustainable trade partnerships and supply chains connecting trusted sources with regional and global markets.') }}
+    </p>
+
+    <div class="about-hero-chips">
+      <div class="about-chip">
+        <span class="chip-val">+10</span>
+        <span class="chip-lbl">{{ (lang === 'ar' ? 'سنوات خبرة بالسوق' : 'Years Market Experience') }}</span>
+      </div>
+      <div class="about-chip">
+        <span class="chip-val">+18</span>
+        <span class="chip-lbl">{{ (lang === 'ar' ? 'دولة نصل إليها' : 'Markets Reached') }}</span>
+      </div>
+      <div class="about-chip">
+        <span class="chip-val">+500</span>
+        <span class="chip-lbl">{{ (lang === 'ar' ? 'شريك تجاري موثوق' : 'Trusted Partners') }}</span>
+      </div>
+    </div>
   </div>
 </section>
 

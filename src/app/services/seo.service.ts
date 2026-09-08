@@ -76,6 +76,14 @@ export class SeoService {
         title: 'اطلب عرض سعر | عرين الموارد التجارية',
         description: 'أرسل احتياج التوريد أو الشحن وسنعود إليك بعرض واضح.',
       },
+      '/login': {
+        title: 'تسجيل الدخول | عرين الموارد التجارية',
+        description: 'بوابة تسجيل الدخول للإدارة والعمليات التجارية.',
+      },
+      '/admin': {
+        title: 'لوحة التحكم | عرين الموارد التجارية',
+        description: 'إدارة المنتجات، الفورمات، والطلبات في موقع عرين.',
+      },
     };
     const en: Record<string, SeoContent> = {
       '/': {
@@ -111,6 +119,14 @@ export class SeoService {
       '/quote': {
         title: 'Request a Quote | Arin Almawared Altijaria',
         description: 'Share your supply or shipping need and receive a clear commercial offer.',
+      },
+      '/login': {
+        title: 'Sign In | Arin Almawared Altijaria',
+        description: 'Management & Operations sign-in portal.',
+      },
+      '/admin': {
+        title: 'Admin Dashboard | Arin Almawared Altijaria',
+        description: 'Manage products, form submissions, and inquiries.',
       },
     };
     const dict = this.lang === 'ar' ? ar : en;

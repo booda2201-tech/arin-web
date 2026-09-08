@@ -9,7 +9,10 @@ import { PrivateLabelComponent } from './components/private-label/private-label.
 import { ProjectsComponent } from './components/projects/projects.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { QuoteComponent } from './components/quote/quote.component';
+import { LoginComponent } from './components/login/login.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { adminGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,6 +24,8 @@ const routes: Routes = [
   { path: 'projects', component: ProjectsComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'quote', component: QuoteComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },
   { path: '**', component: NotFoundComponent },
 ];
 

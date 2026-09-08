@@ -1,0 +1,196 @@
+<div class="login-page">
+  <div class="login-grid">
+    <!-- Visual Showcase Side (Desktop) -->
+    <aside class="login-showcase">
+      <div class="showcase-bg">
+        <img [src]="images.boardroom" alt="Arin Almawared Portal" />
+        <div class="showcase-overlay"></div>
+        <div class="showcase-pattern"></div>
+      </div>
+
+      <div class="showcase-content">
+        <!-- Brand Header -->
+        <a routerLink="/" class="showcase-brand">
+          <div class="brand-crest">
+            <img [src]="site.logo" [alt]="site.name[lang]" />
+          </div>
+          <div>
+            <span class="brand-name">{{ site.name[lang] }}</span>
+            <span class="brand-sub font-mono">{{ site.latin }}</span>
+          </div>
+        </a>
+
+        <!-- Middle Quote / Statement -->
+        <div class="showcase-statement">
+          <span class="showcase-kicker">GATEWAY · OPERATIONS</span>
+          <h2 class="showcase-headline">
+            منظومة إدارة التجارة وسلاسل الإمداد
+          </h2>
+          <p class="showcase-desc">
+            بوابة رقمية مخصصة لإدارة كتالوج المنتجات، متابعة طلبات عروض الأسعار، والإشراف على تصنيع العلامات التجارية لشركاء عرين.
+          </p>
+
+          <div class="showcase-features">
+            <div class="feature-item">
+              <i class="bi bi-shield-check"></i>
+              <span>وصول مخصص ومحمي للمسؤولين</span>
+            </div>
+            <div class="feature-item">
+              <i class="bi bi-speedometer2"></i>
+              <span>لوحة تحكم فورية في الموقع والطلبات</span>
+            </div>
+            <div class="feature-item">
+              <i class="bi bi-diagram-3"></i>
+              <span>ربط مباشر بين الاستفسارات والعمليات</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="showcase-footer">
+          <span class="font-mono text-xs text-platinum/70">
+            &copy; 2026 {{ site.latin }}. All rights reserved.
+          </span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Form Side -->
+    <main class="login-panel">
+      <!-- Top Actions Bar -->
+      <header class="panel-header">
+        <a routerLink="/" class="back-btn">
+          <i class="bi bi-arrow-right rtl:rotate-180"></i>
+          <span>العودة للموقع الرئيسي</span>
+        </a>
+
+        <button
+          type="button"
+          class="lang-btn"
+          (click)="language.toggle()"
+        >
+          <i class="bi bi-translate"></i>
+          <span>{{ lang === 'ar' ? 'EN' : 'عربي' }}</span>
+        </button>
+      </header>
+
+      <!-- Center Form Body -->
+      <div class="panel-body">
+        <div class="form-container">
+          <!-- Mobile Brand Logo -->
+          <div class="mobile-brand">
+            <a routerLink="/" class="inline-flex flex-col items-center gap-2">
+              <img [src]="site.logo" [alt]="site.name[lang]" class="h-14 w-14 object-contain" />
+              <span class="font-display text-lg font-bold text-cream">{{ site.name[lang] }}</span>
+            </a>
+          </div>
+
+          <!-- Form Header -->
+          <div class="form-header">
+            <div class="icon-badge">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <h1 class="form-title">تسجيل الدخول</h1>
+            <p class="form-desc">أدخل بيانات اعتمادك للمتابعة إلى النظام</p>
+          </div>
+
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="error-banner" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Form Fields -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+            <!-- Email -->
+            <div class="field-block">
+              <label for="login-email" class="field-label">
+                البريد الإلكتروني
+              </label>
+              <div class="field-control">
+                <i class="bi bi-envelope field-icon"></i>
+                <input
+                  id="login-email"
+                  type="email"
+                  formControlName="email"
+                  placeholder="admin@arin.com"
+                  dir="ltr"
+                  autocomplete="email"
+                  class="field-input"
+                  [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+                />
+              </div>
+              <p *ngIf="form.controls.email.touched && form.controls.email.invalid" class="field-hint-error">
+                البريد الإلكتروني مطلوب بصيغة صحيحة
+              </p>
+            </div>
+
+            <!-- Password -->
+            <div class="field-block">
+              <div class="flex items-center justify-between">
+                <label for="login-password" class="field-label">
+                  كلمة المرور
+                </label>
+              </div>
+              <div class="field-control">
+                <i class="bi bi-lock field-icon"></i>
+                <input
+                  id="login-password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  dir="ltr"
+                  autocomplete="current-password"
+                  class="field-input !pe-11"
+                  [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
+                />
+                <button
+                  type="button"
+                  class="toggle-pass-btn"
+                  (click)="togglePassword()"
+                  [attr.aria-label]="showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+                >
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+              <p *ngIf="form.controls.password.touched && form.controls.password.invalid" class="field-hint-error">
+                كلمة المرور مطلوبة
+              </p>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="submit-button"
+              [disabled]="loading"
+            >
+              <span *ngIf="!loading" class="flex items-center justify-center gap-2">
+                <span>دخول للنظام</span>
+                <i class="bi bi-arrow-left rtl:rotate-180"></i>
+              </span>
+              <span *ngIf="loading" class="flex items-center justify-center gap-2">
+                <span class="login-spinner"></span>
+                <span>جارٍ التحقق من الصلاحيات...</span>
+              </span>
+            </button>
+          </form>
+
+          <!-- Subtle Quick Test Assistant (unobtrusive, elegant) -->
+          <div class="demo-bar">
+            <span class="demo-caption">اختبار سريع:</span>
+            <div class="demo-actions">
+              <button type="button" class="demo-pill" (click)="fillAdmin()" title="تعبئة بيانات المدير admin@arin.com">
+                <i class="bi bi-shield-check text-gold"></i>
+                <span>مدير النظام (Admin)</span>
+              </button>
+              <button type="button" class="demo-pill" (click)="fillUser()" title="تعبئة بيانات العميل client@arin.com">
+                <i class="bi bi-person text-platinum"></i>
+                <span>عميل تجاري (User)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

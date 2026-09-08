@@ -68,6 +68,118 @@
   object-fit: cover;
 }
 
+.product-gallery-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-arrows {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.85rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.product-still:hover .gallery-arrows {
+  opacity: 1;
+}
+
+.gallery-arrow {
+  pointer-events: auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(18, 43, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(195, 164, 98, 0.4);
+  color: #f3efe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background: #c3a462;
+    color: #122b2a;
+    border-color: #c3a462;
+    transform: scale(1.08);
+  }
+}
+
+.gallery-counter-badge {
+  position: absolute;
+  bottom: 0.85rem;
+  inset-inline-end: 0.85rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(11, 15, 13, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(195, 164, 98, 0.35);
+  color: #d5bf85;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.product-thumbs-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding-block: 0.35rem;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(195, 164, 98, 0.3);
+    border-radius: 999px;
+  }
+}
+
+.thumb-item {
+  position: relative;
+  width: 4.25rem;
+  height: 3.25rem;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: #122b2a;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  opacity: 0.65;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    opacity: 0.95;
+    border-color: rgba(195, 164, 98, 0.5);
+  }
+
+  &.is-active {
+    opacity: 1;
+    border-color: #c3a462;
+    box-shadow: 0 0 10px rgba(195, 164, 98, 0.35);
+    transform: scale(1.04);
+  }
+}
+
 .product-copy {
   text-align: start;
 }

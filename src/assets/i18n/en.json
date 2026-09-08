@@ -17,6 +17,7 @@
     "DETAILS": "Details",
     "ALL_SERVICES": "See all services",
     "TALK": "Talk to our team",
+    "QUOTE": "Request a Quote",
     "SEND": "Send",
     "SENDING": "Sending…",
     "REQUIRED": "This field is required",
@@ -251,5 +252,21 @@
     "EYEBROW": "404 / route not found",
     "TITLE": "This page has not sailed yet.",
     "HOME": "Back home"
+  },
+  "LOGIN": {
+    "TITLE": "Sign In",
+    "SUBTITLE": "Management & Operations Portal",
+    "EMAIL": "Email address",
+    "PASSWORD": "Password",
+    "SUBMIT": "Sign In",
+    "LOGGING_IN": "Authenticating...",
+    "DEMO_TITLE": "Quick Demo Credentials:",
+    "ADMIN_DEMO": "System Admin (Full Access)",
+    "USER_DEMO": "Trade Client (Standard User)",
+    "ROLE_ADMIN": "System Administrator",
+    "ROLE_USER": "Trade Partner",
+    "LOGOUT": "Sign Out",
+    "BACK_HOME": "Back to Site",
+    "DASHBOARD": "Dashboard"
   }
 }
