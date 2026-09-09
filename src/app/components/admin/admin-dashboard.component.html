@@ -43,7 +43,8 @@
               (click)="setTab('overview')"
             >
               <i class="bi bi-speedometer2 tab-icon"></i>
-              <span class="tab-label">نظرة عامة</span>
+              <span class="tab-label tab-label-full">نظرة عامة</span>
+              <span class="tab-label tab-label-short">عامة</span>
               <span *ngIf="newSubmissionsCount > 0" class="tab-badge-alert">
                 {{ newSubmissionsCount }}
               </span>
@@ -57,7 +58,8 @@
               (click)="setTab('products')"
             >
               <i class="bi bi-box-seam tab-icon"></i>
-              <span class="tab-label">كتالوج المنتجات</span>
+              <span class="tab-label tab-label-full">كتالوج المنتجات</span>
+              <span class="tab-label tab-label-short">منتجات</span>
               <span class="tab-badge-count">{{ products.length }}</span>
             </button>
           </li>
@@ -76,20 +78,9 @@
               (click)="setTab('quotes')"
             >
               <i class="bi bi-receipt tab-icon"></i>
-              <span class="tab-label">عروض الأسعار</span>
+              <span class="tab-label tab-label-full">عروض الأسعار</span>
+              <span class="tab-label tab-label-short">أسعار</span>
               <span class="tab-badge-count">{{ quotesList.length }}</span>
-            </button>
-          </li>
-          <li>
-            <button
-              type="button"
-              class="nav-tab-btn"
-              [class.is-active]="currentTab === 'private-label'"
-              (click)="setTab('private-label')"
-            >
-              <i class="bi bi-tag tab-icon"></i>
-              <span class="tab-label">العلامة الخاصة</span>
-              <span class="tab-badge-count">{{ privateLabelList.length }}</span>
             </button>
           </li>
           <li>
@@ -100,7 +91,8 @@
               (click)="setTab('contact')"
             >
               <i class="bi bi-chat-left-dots tab-icon"></i>
-              <span class="tab-label">رسائل التواصل</span>
+              <span class="tab-label tab-label-full">رسائل التواصل</span>
+              <span class="tab-label tab-label-short">تواصل</span>
               <span class="tab-badge-count">{{ contactList.length }}</span>
             </button>
           </li>
@@ -158,11 +150,14 @@
     <header class="admin-topbar">
       <div class="topbar-context">
         <h1 class="topbar-page-title">
-          <span *ngIf="currentTab === 'overview'">نظرة عامة على المنظومة</span>
-          <span *ngIf="currentTab === 'products'">كتالوج المنتجات والتوريد</span>
-          <span *ngIf="currentTab === 'quotes'">طلبات عروض الأسعار</span>
-          <span *ngIf="currentTab === 'private-label'">طلبات تصنيع العلامات الخاصة</span>
-          <span *ngIf="currentTab === 'contact'">استفسارات ورسائل التواصل</span>
+          <span *ngIf="currentTab === 'overview'" class="title-full">نظرة عامة على المنظومة</span>
+          <span *ngIf="currentTab === 'overview'" class="title-short">نظرة عامة</span>
+          <span *ngIf="currentTab === 'products'" class="title-full">كتالوج المنتجات والتوريد</span>
+          <span *ngIf="currentTab === 'products'" class="title-short">المنتجات</span>
+          <span *ngIf="currentTab === 'quotes'" class="title-full">طلبات عروض الأسعار</span>
+          <span *ngIf="currentTab === 'quotes'" class="title-short">عروض الأسعار</span>
+          <span *ngIf="currentTab === 'contact'" class="title-full">استفسارات ورسائل التواصل</span>
+          <span *ngIf="currentTab === 'contact'" class="title-short">التواصل</span>
         </h1>
         <p class="current-date">
           <i class="bi bi-calendar3"></i>
@@ -192,6 +187,16 @@
           <i class="bi bi-box-arrow-up-right"></i>
           <span>زيارة الموقع</span>
         </a>
+
+        <button
+          type="button"
+          class="topbar-pill-btn is-logout mobile-only-flex"
+          (click)="logout()"
+          title="تسجيل الخروج"
+        >
+          <i class="bi bi-box-arrow-right"></i>
+          <span>خروج</span>
+        </button>
       </div>
     </header>
 
@@ -203,7 +208,7 @@
            ============================================== -->
       <section *ngIf="currentTab === 'overview'" class="tab-fade space-y-6">
         <!-- 4 Compact, Organized Stat Cards -->
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="admin-stats-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <!-- Card 1 -->
           <div class="compact-stat-card" (click)="setTab('products')">
             <div class="stat-icon-wrap stat-gold">
@@ -229,18 +234,6 @@
           </div>
 
           <!-- Card 3 -->
-          <div class="compact-stat-card" (click)="setTab('private-label')">
-            <div class="stat-icon-wrap stat-amber">
-              <i class="bi bi-tag-fill"></i>
-            </div>
-            <div class="stat-body">
-              <span class="stat-label">العلامة الخاصة</span>
-              <span class="stat-number">{{ privateLabelList.length }}</span>
-            </div>
-            <span class="stat-tag tag-amber">تصنيع للغير</span>
-          </div>
-
-          <!-- Card 4 -->
           <div class="compact-stat-card" (click)="setTab('contact')">
             <div class="stat-icon-wrap stat-blue">
               <i class="bi bi-chat-left-dots-fill"></i>
@@ -272,10 +265,11 @@
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
+                  (ngModelChange)="onListSearchChange()"
                   placeholder="بحث باسم العميل، الهاتف، أو الرقم..."
                   class="search-input"
                 />
-                <button *ngIf="searchQuery" type="button" class="clear-search" (click)="searchQuery = ''">
+                <button *ngIf="searchQuery" type="button" class="clear-search" (click)="searchQuery = ''; onListSearchChange()">
                   <i class="bi bi-x-circle-fill"></i>
                 </button>
               </div>
@@ -286,15 +280,15 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'all'"
-                  (click)="statusFilter = 'all'"
+                  (click)="setStatusFilter('all')"
                 >
-                  الكل ({{ submissions.length }})
+                  الكل ({{ dashboardSubmissions.length }})
                 </button>
                 <button
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'new'"
-                  (click)="statusFilter = 'new'"
+                  (click)="setStatusFilter('new')"
                 >
                   <span class="dot-new"></span>
                   <span>جديد ({{ newSubmissionsCount }})</span>
@@ -303,7 +297,7 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'in_progress'"
-                  (click)="statusFilter = 'in_progress'"
+                  (click)="setStatusFilter('in_progress')"
                 >
                   <span class="dot-prog"></span>
                   <span>متابعة ({{ inProgressCount }})</span>
@@ -312,7 +306,7 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'completed'"
-                  (click)="statusFilter = 'completed'"
+                  (click)="setStatusFilter('completed')"
                 >
                   <span class="dot-done"></span>
                   <span>مكتمل ({{ completedCount }})</span>
@@ -322,6 +316,12 @@
           </div>
 
           <!-- Table Container -->
+          <div class="catalog-meta" *ngIf="filteredSubmissions.length > 0">
+            <span class="catalog-meta-count">
+              {{ submissionsPageStart }}–{{ submissionsPageEnd }} من {{ filteredSubmissions.length }} طلب
+            </span>
+          </div>
+
           <div class="table-container">
             <table class="luxury-table">
               <thead>
@@ -338,12 +338,12 @@
               </thead>
               <tbody>
                 <tr
-                  *ngFor="let item of filteredSubmissions"
+                  *ngFor="let item of pagedSubmissions"
                   (click)="openSubmissionDetails(item)"
                   class="table-row group"
                 >
                   <!-- ID -->
-                  <td>
+                  <td data-label="رقم الطلب" class="mc-id">
                     <button
                       type="button"
                       class="id-tag font-mono"
@@ -355,7 +355,7 @@
                   </td>
 
                   <!-- Type -->
-                  <td>
+                  <td data-label="النوع" class="mc-type">
                     <span class="type-tag" [ngClass]="item.type">
                       <span *ngIf="item.type === 'quote'">عرض سعر</span>
                       <span *ngIf="item.type === 'private-label'">علامة خاصة</span>
@@ -364,7 +364,7 @@
                   </td>
 
                   <!-- Client -->
-                  <td>
+                  <td data-label="العميل" class="mc-client">
                     <div class="client-cell">
                       <span class="client-name">{{ item.name }}</span>
                       <span class="client-company">{{ item.company || 'عميل فردي' }}</span>
@@ -372,7 +372,7 @@
                   </td>
 
                   <!-- Summary details -->
-                  <td>
+                  <td data-label="التفاصيل" class="mc-detail">
                     <div class="summary-cell">
                       <span *ngIf="item.details['service']" class="detail-lead">
                         {{ item.details['service'] }} · {{ item.details['product'] || '' }}
@@ -390,7 +390,7 @@
                   </td>
 
                   <!-- Phone (Proper LTR formatting) -->
-                  <td>
+                  <td data-label="الهاتف" class="mc-contact">
                     <a
                       [href]="getWhatsAppUrl(item.phone)"
                       target="_blank"
@@ -406,7 +406,7 @@
                   </td>
 
                   <!-- Date -->
-                  <td>
+                  <td data-label="التاريخ" class="mc-date">
                     <div class="date-cell font-mono">
                       <span>{{ item.createdAt.split(' ')[0] }}</span>
                       <span class="date-t">{{ item.createdAt.split(' ')[1] || '' }}</span>
@@ -414,17 +414,22 @@
                   </td>
 
                   <!-- Status -->
-                  <td>
-                    <span class="status-badge" [ngClass]="item.status">
+                  <td data-label="الحالة" class="mc-status">
+                    <button
+                      type="button"
+                      class="status-badge is-clickable"
+                      [ngClass]="item.status"
+                      (click)="cycleStatus(item, $event)"
+                      title="اضغط لتغيير الحالة"
+                    >
                       <span class="status-indicator-dot"></span>
-                      <span *ngIf="item.status === 'new'">جديد</span>
-                      <span *ngIf="item.status === 'in_progress'">قيد المتابعة</span>
-                      <span *ngIf="item.status === 'completed'">مكتمل</span>
-                    </span>
+                      <span>{{ statusLabel(item.status) }}</span>
+                      <i class="bi bi-chevron-down status-chevron"></i>
+                    </button>
                   </td>
 
                   <!-- Actions -->
-                  <td class="text-center">
+                  <td data-label="إجراء" class="text-center mc-actions">
                     <div class="row-actions" (click)="$event.stopPropagation()">
                       <button
                         type="button"
@@ -455,7 +460,7 @@
                       </div>
                       <p class="empty-title">لا توجد طلبات مطابقة</p>
                       <p class="empty-desc">لم نجد أي طلبات تتطابق مع البحث أو التصفية الحالية.</p>
-                      <button *ngIf="searchQuery || statusFilter !== 'all'" type="button" class="empty-reset-btn" (click)="searchQuery = ''; statusFilter = 'all'">
+                      <button *ngIf="searchQuery || statusFilter !== 'all'" type="button" class="empty-reset-btn" (click)="searchQuery = ''; setStatusFilter('all')">
                         إلغاء التصفية وعرض الكل
                       </button>
                     </div>
@@ -463,6 +468,28 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="catalog-pager" *ngIf="filteredSubmissions.length > listPageSize">
+            <button type="button" class="pager-btn" (click)="prevSubmissionsPage()" [disabled]="safeSubmissionsPage <= 1" title="الصفحة السابقة">
+              <i class="bi bi-chevron-right"></i>
+              <span>السابق</span>
+            </button>
+            <div class="pager-pages">
+              <button
+                *ngFor="let page of submissionsPageNumbers"
+                type="button"
+                class="pager-dot"
+                [class.is-active]="safeSubmissionsPage === page"
+                (click)="goToSubmissionsPage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button type="button" class="pager-btn" (click)="nextSubmissionsPage()" [disabled]="safeSubmissionsPage >= submissionsTotalPages" title="الصفحة التالية">
+              <span>التالي</span>
+              <i class="bi bi-chevron-left"></i>
+            </button>
           </div>
         </div>
       </section>
@@ -485,6 +512,7 @@
               <input
                 type="text"
                 [(ngModel)]="searchQuery"
+                (ngModelChange)="onProductSearchChange()"
                 placeholder="بحث عن منتج، منشأ، أو تصنيف..."
                 class="search-input"
               />
@@ -505,19 +533,102 @@
             type="button"
             class="cat-pill"
             [class.is-active]="productCategoryFilter === cat.id"
-            (click)="productCategoryFilter = cat.id"
+            (click)="setProductCategory(cat.id)"
           >
             {{ cat.name[lang] }}
           </button>
+          <button
+            type="button"
+            class="cat-pill cat-manage-btn"
+            [class.is-active]="showCategoryPanel"
+            (click)="openCategoryPanel()"
+            title="إدارة الفئات"
+          >
+            <i class="bi bi-tags"></i>
+            <span>إدارة الفئات</span>
+          </button>
+        </div>
+
+        <!-- Category Manager Panel -->
+        <div *ngIf="showCategoryPanel" class="category-manager">
+          <div class="category-manager-head">
+            <div>
+              <h3 class="category-manager-title">إدارة فئات المنتجات</h3>
+              <p class="category-manager-sub">أضف أو عدّل الفئات المستخدمة في الفلترة ونموذج المنتج — تظهر فوراً على الموقع.</p>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeCategoryPanel()" title="إغلاق">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="category-manager-grid">
+            <div class="category-list">
+              <div *ngFor="let cat of categories" class="category-row" [class.is-editing]="editingCategoryId === cat.id">
+                <div class="category-row-main">
+                  <span class="category-row-name">{{ cat.name.ar }}</span>
+                  <span class="category-row-en font-mono">{{ cat.name.en }}</span>
+                  <span class="category-row-meta font-mono">{{ cat.id }} · {{ categoryProductCount(cat.id) }} منتج</span>
+                </div>
+                <div class="category-row-actions">
+                  <button type="button" class="action-icon-btn" (click)="startEditCategory(cat)" title="تعديل">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button type="button" class="action-icon-btn is-delete" (click)="deleteCategory(cat)" title="حذف">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+              <p *ngIf="categories.length === 0" class="category-empty">لا توجد فئات بعد. أضف أول فئة من النموذج.</p>
+            </div>
+
+            <form class="category-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+              <h4 class="category-form-title">
+                {{ editingCategoryId ? 'تعديل الفئة' : 'إضافة فئة جديدة' }}
+              </h4>
+              <div class="category-form-fields">
+                <div>
+                  <label class="input-label">الاسم بالعربية *</label>
+                  <input type="text" formControlName="nameAr" class="input-field" placeholder="مثال: العناية الشخصية" />
+                </div>
+                <div>
+                  <label class="input-label">الاسم بالإنجليزية *</label>
+                  <input type="text" formControlName="nameEn" dir="ltr" class="input-field" placeholder="Personal care" />
+                </div>
+                <div *ngIf="!editingCategoryId">
+                  <label class="input-label">المعرّف (اختياري)</label>
+                  <input type="text" formControlName="id" dir="ltr" class="input-field font-mono" placeholder="personal-care" />
+                  <p class="category-form-hint">إن تركته فارغاً يُولَّد تلقائياً من الاسم الإنجليزي.</p>
+                </div>
+                <div *ngIf="editingCategoryId">
+                  <label class="input-label">المعرّف</label>
+                  <input type="text" formControlName="id" dir="ltr" class="input-field font-mono" [disabled]="true" />
+                </div>
+              </div>
+              <div class="category-form-actions">
+                <button *ngIf="editingCategoryId" type="button" class="btn btn-ghost !py-2 !px-3 !text-xs" (click)="cancelEditCategory()">
+                  إلغاء التعديل
+                </button>
+                <button type="submit" class="btn btn-gold !py-2 !px-5 !text-xs shadow-gold">
+                  {{ editingCategoryId ? 'حفظ التعديل' : 'إضافة الفئة' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <!-- Products Grid -->
+        <div class="catalog-meta" *ngIf="filteredProducts.length > 0">
+          <span class="catalog-meta-count">
+            {{ productPageStart }}–{{ productPageEnd }} من {{ filteredProducts.length }} منتج
+          </span>
+        </div>
+
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <div *ngFor="let p of filteredProducts" class="catalog-card group">
+          <div *ngFor="let p of pagedProducts" class="catalog-card group" (click)="openEditProduct(p, $event)">
             <div class="card-thumb">
               <img [src]="p.image" [alt]="p.name.ar" />
               <div class="card-thumb-overlay"></div>
-              <span class="card-cat-badge font-mono">{{ p.category }}</span>
+              <span class="card-cat-badge">{{ categoryLabel(p.category) }}</span>
               <span class="card-moq-badge">{{ p.moq ? p.moq.ar : 'متاح للتوريد' }}</span>
               <span *ngIf="p.images && p.images.length > 1" class="card-images-badge font-mono" [title]="p.images.length + ' صور للمنتج'">
                 <i class="bi bi-images"></i>
@@ -542,7 +653,7 @@
                   <span class="dot"></span>
                   <span>معروض بالموقع</span>
                 </span>
-                <div class="card-actions">
+                <div class="card-actions" (click)="$event.stopPropagation()">
                   <button
                     type="button"
                     class="card-btn-action"
@@ -564,6 +675,43 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="catalog-pager" *ngIf="filteredProducts.length > productPageSize">
+          <button
+            type="button"
+            class="pager-btn"
+            (click)="prevProductPage()"
+            [disabled]="safeProductPage <= 1"
+            title="الصفحة السابقة"
+          >
+            <i class="bi bi-chevron-right"></i>
+            <span>السابق</span>
+          </button>
+
+          <div class="pager-pages">
+            <button
+              *ngFor="let page of productPageNumbers"
+              type="button"
+              class="pager-dot"
+              [class.is-active]="safeProductPage === page"
+              (click)="goToProductPage(page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button
+            type="button"
+            class="pager-btn"
+            (click)="nextProductPage()"
+            [disabled]="safeProductPage >= productTotalPages"
+            title="الصفحة التالية"
+          >
+            <span>التالي</span>
+            <i class="bi bi-chevron-left"></i>
+          </button>
         </div>
 
         <!-- Empty Products -->
@@ -596,6 +744,7 @@
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
+                  (ngModelChange)="onListSearchChange()"
                   placeholder="بحث في عروض الأسعار..."
                   class="search-input"
                 />
@@ -606,7 +755,7 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'all'"
-                  (click)="statusFilter = 'all'"
+                  (click)="setStatusFilter('all')"
                 >
                   الكل ({{ quotesList.length }})
                 </button>
@@ -614,7 +763,7 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'new'"
-                  (click)="statusFilter = 'new'"
+                  (click)="setStatusFilter('new')"
                 >
                   جديد
                 </button>
@@ -622,7 +771,7 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'in_progress'"
-                  (click)="statusFilter = 'in_progress'"
+                  (click)="setStatusFilter('in_progress')"
                 >
                   قيد المتابعة
                 </button>
@@ -630,12 +779,18 @@
                   type="button"
                   class="filter-pill-btn"
                   [class.is-active]="statusFilter === 'completed'"
-                  (click)="statusFilter = 'completed'"
+                  (click)="setStatusFilter('completed')"
                 >
                   مكتمل
                 </button>
               </div>
             </div>
+          </div>
+
+          <div class="catalog-meta" *ngIf="filteredQuotes.length > 0">
+            <span class="catalog-meta-count">
+              {{ quotesPageStart }}–{{ quotesPageEnd }} من {{ filteredQuotes.length }} عرض
+            </span>
           </div>
 
           <div class="table-container">
@@ -653,40 +808,45 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let q of filteredQuotes" (click)="openSubmissionDetails(q)" class="table-row">
-                  <td class="font-mono text-xs text-gold">{{ q.id }}</td>
-                  <td>
+                <tr *ngFor="let q of pagedQuotes" (click)="openSubmissionDetails(q)" class="table-row">
+                  <td data-label="الرقم" class="mc-id font-mono text-xs text-gold">{{ q.id }}</td>
+                  <td data-label="العميل" class="mc-client">
                     <div class="client-cell">
                       <span class="client-name">{{ q.name }}</span>
                       <span class="client-company">{{ q.company || '—' }}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="الخدمة" class="mc-detail">
                     <span class="text-xs text-cream font-medium">{{ q.details['service'] || '—' }}</span>
                   </td>
-                  <td>
+                  <td data-label="المنتج" class="mc-detail">
                     <div class="summary-cell">
                       <span class="detail-lead">{{ q.details['product'] || '—' }}</span>
                       <span class="detail-sub">{{ q.details['quantity'] || 'غير محدد' }}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="الشحن" class="mc-detail mc-detail-extra">
                     <div class="summary-cell">
                       <span class="detail-lead">{{ q.details['destination'] || '—' }}</span>
                       <span class="detail-sub">طريقة: {{ q.details['mode'] || '—' }}</span>
                     </div>
                   </td>
-                  <td>
-                    <span class="status-badge" [ngClass]="q.status">
+                  <td data-label="الحالة" class="mc-status">
+                    <button
+                      type="button"
+                      class="status-badge is-clickable"
+                      (click)="cycleStatus(q, $event)"
+                      [ngClass]="q.status"
+                      title="اضغط لتغيير الحالة"
+                    >
                       <span class="status-indicator-dot"></span>
-                      <span *ngIf="q.status === 'new'">جديد</span>
-                      <span *ngIf="q.status === 'in_progress'">قيد المتابعة</span>
-                      <span *ngIf="q.status === 'completed'">مكتمل</span>
-                    </span>
+                      <span>{{ statusLabel(q.status) }}</span>
+                      <i class="bi bi-chevron-down status-chevron"></i>
+                    </button>
                   </td>
-                  <td class="font-mono text-xs text-platinum">{{ q.createdAt }}</td>
-                  <td class="text-center">
-                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(q)">
+                  <td data-label="التاريخ" class="mc-date font-mono text-xs text-platinum">{{ q.createdAt }}</td>
+                  <td data-label="إجراء" class="text-center mc-actions">
+                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(q); $event.stopPropagation()">
                       <i class="bi bi-eye"></i>
                     </button>
                   </td>
@@ -694,90 +854,33 @@
               </tbody>
             </table>
           </div>
-        </div>
-      </section>
 
-      <!-- ==============================================
-           TAB 4: PRIVATE LABEL
-           ============================================== -->
-      <section *ngIf="currentTab === 'private-label'" class="tab-fade space-y-6">
-        <div class="data-surface">
-          <div class="surface-header">
-            <div class="surface-title-group">
-              <h3 class="surface-title">
-                <i class="bi bi-tag text-gold"></i>
-                <span>طلبات تصنيع العلامات الخاصة للشركات</span>
-              </h3>
-              <p class="surface-sub">موجز التصنيع والعينات المعتمدة الواردة عبر صفحة علامتك التجارية (/private-label)</p>
+          <div class="catalog-pager" *ngIf="filteredQuotes.length > listPageSize">
+            <button type="button" class="pager-btn" (click)="prevQuotesPage()" [disabled]="safeQuotesPage <= 1" title="الصفحة السابقة">
+              <i class="bi bi-chevron-right"></i>
+              <span>السابق</span>
+            </button>
+            <div class="pager-pages">
+              <button
+                *ngFor="let page of quotesPageNumbers"
+                type="button"
+                class="pager-dot"
+                [class.is-active]="safeQuotesPage === page"
+                (click)="goToQuotesPage(page)"
+              >
+                {{ page }}
+              </button>
             </div>
-            <div class="surface-controls">
-              <div class="search-box">
-                <i class="bi bi-search search-icon"></i>
-                <input
-                  type="text"
-                  [(ngModel)]="searchQuery"
-                  placeholder="بحث في طلبات العلامة الخاصة..."
-                  class="search-input"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="table-container">
-            <table class="luxury-table">
-              <thead>
-                <tr>
-                  <th style="width: 110px;">الرقم</th>
-                  <th style="width: 170px;">العميل / المؤسسة</th>
-                  <th>مجال التصنيع</th>
-                  <th>الكمية المقدرة</th>
-                  <th>ملخص الاحتياج</th>
-                  <th style="width: 110px;">الحالة</th>
-                  <th style="width: 130px;">التاريخ</th>
-                  <th style="width: 80px; text-align: center;">الإجراء</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let pl of filteredPrivateLabel" (click)="openSubmissionDetails(pl)" class="table-row">
-                  <td class="font-mono text-xs text-gold">{{ pl.id }}</td>
-                  <td>
-                    <div class="client-cell">
-                      <span class="client-name">{{ pl.name }}</span>
-                      <span class="client-company">{{ pl.company || '—' }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="text-xs text-cream font-bold">{{ pl.details['category'] || '—' }}</span>
-                  </td>
-                  <td>
-                    <span class="text-xs text-gold font-mono">{{ pl.details['volume'] || '—' }}</span>
-                  </td>
-                  <td>
-                    <p class="text-xs text-platinum line-clamp-1 max-w-xs">{{ pl.details['message'] || '—' }}</p>
-                  </td>
-                  <td>
-                    <span class="status-badge" [ngClass]="pl.status">
-                      <span class="status-indicator-dot"></span>
-                      <span *ngIf="pl.status === 'new'">جديد</span>
-                      <span *ngIf="pl.status === 'in_progress'">قيد المتابعة</span>
-                      <span *ngIf="pl.status === 'completed'">مكتمل</span>
-                    </span>
-                  </td>
-                  <td class="font-mono text-xs text-platinum">{{ pl.createdAt }}</td>
-                  <td class="text-center">
-                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(pl)">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <button type="button" class="pager-btn" (click)="nextQuotesPage()" [disabled]="safeQuotesPage >= quotesTotalPages" title="الصفحة التالية">
+              <span>التالي</span>
+              <i class="bi bi-chevron-left"></i>
+            </button>
           </div>
         </div>
       </section>
 
       <!-- ==============================================
-           TAB 5: CONTACT
+           TAB: CONTACT
            ============================================== -->
       <section *ngIf="currentTab === 'contact'" class="tab-fade space-y-6">
         <div class="data-surface">
@@ -795,11 +898,18 @@
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
+                  (ngModelChange)="onListSearchChange()"
                   placeholder="بحث في الرسائل..."
                   class="search-input"
                 />
               </div>
             </div>
+          </div>
+
+          <div class="catalog-meta" *ngIf="filteredContact.length > 0">
+            <span class="catalog-meta-count">
+              {{ contactPageStart }}–{{ contactPageEnd }} من {{ filteredContact.length }} رسالة
+            </span>
           </div>
 
           <div class="table-container">
@@ -817,43 +927,70 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let c of filteredContact" (click)="openSubmissionDetails(c)" class="table-row">
-                  <td class="font-mono text-xs text-gold">{{ c.id }}</td>
-                  <td>
+                <tr *ngFor="let c of pagedContact" (click)="openSubmissionDetails(c)" class="table-row">
+                  <td data-label="الرقم" class="mc-id font-mono text-xs text-gold">{{ c.id }}</td>
+                  <td data-label="المرسل" class="mc-client">
                     <div class="client-cell">
                       <span class="client-name">{{ c.name }}</span>
                       <span class="client-company">{{ c.company || '—' }}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="التواصل" class="mc-contact">
                     <div class="summary-cell">
                       <span class="detail-lead font-mono" dir="ltr">{{ c.email }}</span>
                       <span class="detail-sub font-mono" dir="ltr">{{ c.phone }}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="الاهتمام" class="mc-detail">
                     <span class="text-xs text-cream font-medium">{{ c.details['interest'] || 'استفسار عام' }}</span>
                   </td>
-                  <td>
-                    <p class="text-xs text-platinum line-clamp-1 max-w-sm">{{ c.details['message'] || '—' }}</p>
+                  <td data-label="الرسالة" class="mc-detail mc-detail-extra">
+                    <p class="text-xs text-platinum line-clamp-2">{{ c.details['message'] || '—' }}</p>
                   </td>
-                  <td>
-                    <span class="status-badge" [ngClass]="c.status">
+                  <td data-label="الحالة" class="mc-status">
+                    <button
+                      type="button"
+                      class="status-badge is-clickable"
+                      [ngClass]="c.status"
+                      (click)="cycleStatus(c, $event)"
+                      title="اضغط لتغيير الحالة"
+                    >
                       <span class="status-indicator-dot"></span>
-                      <span *ngIf="c.status === 'new'">جديد</span>
-                      <span *ngIf="c.status === 'in_progress'">قيد المتابعة</span>
-                      <span *ngIf="c.status === 'completed'">مكتمل</span>
-                    </span>
+                      <span>{{ statusLabel(c.status) }}</span>
+                      <i class="bi bi-chevron-down status-chevron"></i>
+                    </button>
                   </td>
-                  <td class="font-mono text-xs text-platinum">{{ c.createdAt }}</td>
-                  <td class="text-center">
-                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(c)">
+                  <td data-label="التاريخ" class="mc-date font-mono text-xs text-platinum">{{ c.createdAt }}</td>
+                  <td data-label="إجراء" class="text-center mc-actions">
+                    <button type="button" class="action-icon-btn" (click)="openSubmissionDetails(c); $event.stopPropagation()">
                       <i class="bi bi-eye"></i>
                     </button>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="catalog-pager" *ngIf="filteredContact.length > listPageSize">
+            <button type="button" class="pager-btn" (click)="prevContactPage()" [disabled]="safeContactPage <= 1" title="الصفحة السابقة">
+              <i class="bi bi-chevron-right"></i>
+              <span>السابق</span>
+            </button>
+            <div class="pager-pages">
+              <button
+                *ngFor="let page of contactPageNumbers"
+                type="button"
+                class="pager-dot"
+                [class.is-active]="safeContactPage === page"
+                (click)="goToContactPage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button type="button" class="pager-btn" (click)="nextContactPage()" [disabled]="safeContactPage >= contactTotalPages" title="الصفحة التالية">
+              <span>التالي</span>
+              <i class="bi bi-chevron-left"></i>
+            </button>
           </div>
         </div>
       </section>
@@ -865,7 +1002,8 @@
        MODAL: ADD / EDIT PRODUCT
        ============================================== -->
   <div *ngIf="showProductModal" class="modal-backdrop" (click)="closeProductModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-card app-sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-grabber" aria-hidden="true"><span></span></div>
       <div class="modal-head">
         <div>
           <span class="modal-kicker">ARIN CATALOG MANAGEMENT</span>
@@ -878,7 +1016,8 @@
         </button>
       </div>
 
-      <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="modal-content space-y-4">
+      <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="modal-sheet-form">
+        <div class="modal-content space-y-4">
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="input-label">الاسم بالعربية *</label>
@@ -1098,6 +1237,8 @@
           </div>
         </div>
 
+        </div>
+
         <div class="modal-footer-bar">
           <button type="button" class="btn btn-ghost !py-2 !px-4 !text-xs" (click)="closeProductModal()">
             إلغاء
@@ -1114,7 +1255,8 @@
        DRAWER: SUBMISSION DETAILS
        ============================================== -->
   <div *ngIf="selectedSubmission" class="modal-backdrop" (click)="closeSubmissionDetails()">
-    <div class="drawer-card" (click)="$event.stopPropagation()">
+    <div class="drawer-card app-sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-grabber" aria-hidden="true"><span></span></div>
       <div class="drawer-head">
         <div class="flex items-center gap-3">
           <span class="type-tag" [ngClass]="selectedSubmission.type">
@@ -1136,25 +1278,25 @@
             <i class="bi bi-person-badge text-gold"></i>
             <span>بيانات صاحب الطلب</span>
           </h4>
-          <div class="grid grid-cols-2 gap-3 mt-3">
-            <div>
+          <div class="profile-fields">
+            <div class="profile-field">
               <span class="field-meta">الاسم الكامل</span>
               <strong class="field-value">{{ selectedSubmission.name }}</strong>
             </div>
-            <div>
+            <div class="profile-field">
               <span class="field-meta">المنشأة / الشركة</span>
               <strong class="field-value">{{ selectedSubmission.company || 'عميل فردي' }}</strong>
             </div>
-            <div>
+            <div class="profile-field">
               <span class="field-meta">البريد الإلكتروني</span>
-              <a [href]="'mailto:' + selectedSubmission.email" class="field-link font-mono" dir="ltr">
-                {{ selectedSubmission.email }}
+              <a [href]="'mailto:' + selectedSubmission.email" class="field-link">
+                <span dir="ltr">{{ selectedSubmission.email }}</span>
               </a>
             </div>
-            <div>
+            <div class="profile-field">
               <span class="field-meta">الهاتف للتواصل</span>
-              <a [href]="'tel:' + selectedSubmission.phone" class="field-link font-mono" dir="ltr">
-                {{ selectedSubmission.phone }}
+              <a [href]="'tel:' + selectedSubmission.phone" class="field-link">
+                <span dir="ltr">{{ selectedSubmission.phone }}</span>
               </a>
             </div>
           </div>
@@ -1168,7 +1310,7 @@
           </h4>
           <div class="space-y-2 mt-3">
             <div *ngFor="let entry of (selectedSubmission.details | keyvalue)" class="detail-row">
-              <span class="detail-name">{{ entry.key }}:</span>
+              <span class="detail-name">{{ detailLabel(entry.key) }}:</span>
               <div class="detail-box">{{ entry.value }}</div>
             </div>
           </div>
@@ -1180,7 +1322,7 @@
             <i class="bi bi-sliders text-gold"></i>
             <span>تحديث حالة الطلب</span>
           </h4>
-          <div class="grid grid-cols-3 gap-2 mt-3">
+          <div class="status-state-grid grid grid-cols-3 gap-2 mt-3">
             <button
               type="button"
               class="state-btn"
@@ -1210,27 +1352,27 @@
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Actions Bar -->
-        <div class="drawer-actions-bar">
-          <button
-            type="button"
-            class="btn btn-ghost !text-terracotta !border-terracotta/40 hover:!bg-terracotta/10 !py-2 !px-3 !text-xs"
-            (click)="deleteSub(selectedSubmission.id)"
-          >
-            <i class="bi bi-trash3"></i>
-            <span>حذف الطلب</span>
-          </button>
-          <a
-            [href]="getWhatsAppUrl(selectedSubmission.phone)"
-            target="_blank"
-            rel="noreferrer"
-            class="btn btn-gold !py-2 !px-4 !text-xs shadow-gold"
-          >
-            <i class="bi bi-whatsapp"></i>
-            <span>مراسلة واتساب</span>
-          </a>
-        </div>
+      <!-- Actions Bar -->
+      <div class="drawer-actions-bar">
+        <button
+          type="button"
+          class="btn btn-ghost !text-terracotta !border-terracotta/40 hover:!bg-terracotta/10 !py-2 !px-3 !text-xs"
+          (click)="deleteSub(selectedSubmission.id)"
+        >
+          <i class="bi bi-trash3"></i>
+          <span>حذف الطلب</span>
+        </button>
+        <a
+          [href]="getWhatsAppUrl(selectedSubmission.phone)"
+          target="_blank"
+          rel="noreferrer"
+          class="btn btn-gold !py-2 !px-4 !text-xs shadow-gold"
+        >
+          <i class="bi bi-whatsapp"></i>
+          <span>مراسلة واتساب</span>
+        </a>
       </div>
     </div>
   </div>

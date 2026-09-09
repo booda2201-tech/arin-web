@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { AdminDataService } from '../../services/admin-data.service';
-import { Lang, L, productCategories, ProductItem } from '../../data/content';
+import { Lang, L, ProductCategory, ProductItem } from '../../data/content';
 
 @Component({
   selector: 'app-products',
@@ -10,7 +10,7 @@ import { Lang, L, productCategories, ProductItem } from '../../data/content';
   styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnDestroy {
-  categories = productCategories;
+  categories: ProductCategory[] = [];
   products: ProductItem[] = [];
   active = 'all';
   lang: Lang = this.language.current;
@@ -25,6 +25,14 @@ export class ProductsComponent implements OnDestroy {
     );
     this.sub.add(
       this.adminData.products$.subscribe((items) => (this.products = items))
+    );
+    this.sub.add(
+      this.adminData.categories$.subscribe(() => {
+        this.categories = this.adminData.getFilterCategories();
+        if (this.active !== 'all' && !this.adminData.getCategories().some((c) => c.id === this.active)) {
+          this.active = 'all';
+        }
+      })
     );
   }
 

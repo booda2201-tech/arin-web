@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { products, ProductItem } from '../data/content';
+import { BehaviorSubject } from 'rxjs';
+import { L, ProductCategory, ProductItem, productCategories, products } from '../data/content';
 
 export interface FormSubmission {
   id: string;
@@ -16,6 +16,9 @@ export interface FormSubmission {
 
 const STORAGE_PRODUCTS_KEY = 'arin_admin_products';
 const STORAGE_SUBMISSIONS_KEY = 'arin_admin_submissions';
+const STORAGE_CATEGORIES_KEY = 'arin_admin_categories';
+
+const SEED_CATEGORIES: ProductCategory[] = productCategories.filter((c) => c.id !== 'all');
 
 const INITIAL_SUBMISSIONS: FormSubmission[] = [
   {
@@ -93,15 +96,27 @@ export class AdminDataService {
   private submissionsSubject = new BehaviorSubject<FormSubmission[]>(this.loadSubmissions());
   submissions$ = this.submissionsSubject.asObservable();
 
-  constructor() {}
+  private categoriesSubject = new BehaviorSubject<ProductCategory[]>(this.loadCategories());
+  categories$ = this.categoriesSubject.asObservable();
 
-  // Products CRUD
+  constructor() {
+    if (!localStorage.getItem(STORAGE_SUBMISSIONS_KEY)) {
+      this.saveSubmissions(this.submissionsSubject.value);
+    }
+    if (!localStorage.getItem(STORAGE_PRODUCTS_KEY)) {
+      this.saveProducts(this.productsSubject.value);
+    }
+    if (!localStorage.getItem(STORAGE_CATEGORIES_KEY)) {
+      this.saveCategories(this.categoriesSubject.value);
+    }
+  }
+
   getProducts(): ProductItem[] {
     return this.productsSubject.value;
   }
 
   addProduct(item: ProductItem): void {
-    const list = [item, ...this.productsSubject.value];
+    const list = [item, ...this.productsSubject.value.filter((p) => p.slug !== item.slug)];
     this.saveProducts(list);
   }
 
@@ -115,19 +130,111 @@ export class AdminDataService {
     this.saveProducts(list);
   }
 
-  // Submissions Management
+  getCategories(): ProductCategory[] {
+    return this.categoriesSubject.value;
+  }
+
+  /** Filter list including virtual "all" for UI pills */
+  getFilterCategories(): ProductCategory[] {
+    return [
+      { id: 'all', name: { ar: 'الكل', en: 'All' } },
+      ...this.categoriesSubject.value,
+    ];
+  }
+
+  categoryLabel(id: string, lang: 'ar' | 'en'): string {
+    if (id === 'all') {
+      return lang === 'ar' ? 'الكل' : 'All';
+    }
+    const found = this.categoriesSubject.value.find((c) => c.id === id);
+    return found ? found.name[lang] : id;
+  }
+
+  countProductsInCategory(id: string): number {
+    return this.productsSubject.value.filter((p) => p.category === id).length;
+  }
+
+  addCategory(input: { id?: string; nameAr: string; nameEn: string }): { ok: boolean; message?: string; category?: ProductCategory } {
+    const nameAr = input.nameAr.trim();
+    const nameEn = input.nameEn.trim();
+    if (!nameAr || !nameEn) {
+      return { ok: false, message: 'الاسم بالعربية والإنجليزية مطلوبان' };
+    }
+
+    let id = (input.id || nameEn).trim().toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    if (!id) {
+      id = 'cat-' + Date.now().toString(36);
+    }
+    if (id === 'all') {
+      return { ok: false, message: 'المعرّف "all" محجوز' };
+    }
+    if (this.categoriesSubject.value.some((c) => c.id === id)) {
+      return { ok: false, message: 'معرّف الفئة موجود بالفعل' };
+    }
+
+    const category: ProductCategory = {
+      id,
+      name: { ar: nameAr, en: nameEn } as L,
+    };
+    this.saveCategories([...this.categoriesSubject.value, category]);
+    return { ok: true, category };
+  }
+
+  updateCategory(id: string, input: { nameAr: string; nameEn: string }): { ok: boolean; message?: string } {
+    if (id === 'all') {
+      return { ok: false, message: 'لا يمكن تعديل فئة الكل' };
+    }
+    const nameAr = input.nameAr.trim();
+    const nameEn = input.nameEn.trim();
+    if (!nameAr || !nameEn) {
+      return { ok: false, message: 'الاسم بالعربية والإنجليزية مطلوبان' };
+    }
+    if (!this.categoriesSubject.value.some((c) => c.id === id)) {
+      return { ok: false, message: 'الفئة غير موجودة' };
+    }
+    const list = this.categoriesSubject.value.map((c) =>
+      c.id === id ? { ...c, name: { ar: nameAr, en: nameEn } as L } : c
+    );
+    this.saveCategories(list);
+    return { ok: true };
+  }
+
+  deleteCategory(id: string): { ok: boolean; message?: string } {
+    if (id === 'all') {
+      return { ok: false, message: 'لا يمكن حذف فئة الكل' };
+    }
+    const used = this.countProductsInCategory(id);
+    if (used > 0) {
+      return {
+        ok: false,
+        message: `لا يمكن الحذف: يوجد ${used} منتج مرتبط بهذه الفئة. انقل المنتجات أولاً.`,
+      };
+    }
+    if (this.categoriesSubject.value.length <= 1) {
+      return { ok: false, message: 'يجب الإبقاء على فئة واحدة على الأقل' };
+    }
+    this.saveCategories(this.categoriesSubject.value.filter((c) => c.id !== id));
+    return { ok: true };
+  }
+
   getSubmissions(): FormSubmission[] {
     return this.submissionsSubject.value;
   }
 
-  addSubmission(sub: Omit<FormSubmission, 'id' | 'createdAt'>): void {
+  addSubmission(sub: Omit<FormSubmission, 'id' | 'createdAt' | 'status'> & { status?: FormSubmission['status'] }): void {
+    const stamp = new Date().toISOString().replace('T', ' ').substring(0, 16);
     const newSub: FormSubmission = {
       ...sub,
-      id: 'SUB-' + Math.floor(1000 + Math.random() * 9000),
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: sub.status || 'new',
+      id: this.nextSubmissionId(),
+      createdAt: stamp,
     };
-    const list = [newSub, ...this.submissionsSubject.value];
-    this.saveSubmissions(list);
+    this.saveSubmissions([newSub, ...this.submissionsSubject.value]);
   }
 
   updateSubmissionStatus(id: string, status: FormSubmission['status']): void {
@@ -136,11 +243,17 @@ export class AdminDataService {
   }
 
   deleteSubmission(id: string): void {
-    const list = this.submissionsSubject.value.filter((s) => s.id !== id);
-    this.saveSubmissions(list);
+    this.saveSubmissions(this.submissionsSubject.value.filter((s) => s.id !== id));
   }
 
-  // Storage Handlers
+  private nextSubmissionId(): string {
+    const nums = this.submissionsSubject.value
+      .map((s) => parseInt(String(s.id).replace(/\D/g, ''), 10))
+      .filter((n) => !Number.isNaN(n));
+    const next = (nums.length ? Math.max(...nums) : 1000) + 1;
+    return 'SUB-' + next;
+  }
+
   private loadProducts(): ProductItem[] {
     try {
       const stored = localStorage.getItem(STORAGE_PRODUCTS_KEY);
@@ -148,7 +261,7 @@ export class AdminDataService {
         const parsed: ProductItem[] = JSON.parse(stored);
         return parsed.map((p) => ({
           ...p,
-          images: p.images && p.images.length ? p.images : (p.image ? [p.image] : []),
+          images: p.images && p.images.length ? p.images : p.image ? [p.image] : [],
         }));
       }
     } catch (e) {
@@ -156,7 +269,7 @@ export class AdminDataService {
     }
     return products.map((p) => ({
       ...p,
-      images: p.images && p.images.length ? p.images : (p.image ? [p.image] : []),
+      images: p.images && p.images.length ? p.images : p.image ? [p.image] : [],
     }));
   }
 
@@ -169,6 +282,28 @@ export class AdminDataService {
     this.productsSubject.next(list);
   }
 
+  private loadCategories(): ProductCategory[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_CATEGORIES_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as ProductCategory[];
+        return parsed.filter((c) => c.id && c.id !== 'all' && c.name?.ar && c.name?.en);
+      }
+    } catch (e) {
+      console.warn('Failed to load categories from storage', e);
+    }
+    return SEED_CATEGORIES.map((c) => ({ ...c, name: { ...c.name } }));
+  }
+
+  private saveCategories(list: ProductCategory[]): void {
+    try {
+      localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('Failed to save categories', e);
+    }
+    this.categoriesSubject.next(list);
+  }
+
   private loadSubmissions(): FormSubmission[] {
     try {
       const stored = localStorage.getItem(STORAGE_SUBMISSIONS_KEY);
@@ -178,7 +313,7 @@ export class AdminDataService {
     } catch (e) {
       console.warn('Failed to load submissions from storage', e);
     }
-    return INITIAL_SUBMISSIONS;
+    return [...INITIAL_SUBMISSIONS];
   }
 
   private saveSubmissions(list: FormSubmission[]): void {

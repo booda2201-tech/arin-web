@@ -3,6 +3,15 @@
   position: relative;
 }
 
+:host(.pick-host-open),
+:host:has(.is-open) {
+  z-index: 80;
+}
+
+.pick {
+  position: relative;
+}
+
 .pick-trigger,
 .pick-option {
   display: flex;
@@ -78,14 +87,18 @@
 }
 
 .pick-panel {
-  position: fixed;
-  z-index: 400;
-  display: none;
-  max-height: min(32rem, 70vh);
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline: 0;
+  z-index: 90;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+  max-height: min(22rem, 55vh);
+  overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0.4rem;
   border: 1px solid rgba(195, 164, 98, 0.28);
   border-radius: 1.15rem;
   background: #ffffff;
@@ -94,8 +107,10 @@
     0 24px 60px -20px rgba(11, 15, 13, 0.45);
 }
 
-.pick-panel.is-open {
-  display: block;
+.pick-panel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .pick-option {
@@ -104,6 +119,7 @@
   border-radius: 0.85rem;
   background: #ffffff;
   color: #17302d;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pick-option.is-active,
@@ -177,10 +193,4 @@
 .pick-panel.is-dark .pick-option:hover,
 .pick-panel.is-dark .pick-option.is-on {
   background: rgba(195, 164, 98, 0.16);
-}
-
-.pick-panel::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
 }

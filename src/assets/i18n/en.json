@@ -82,7 +82,10 @@
     "STAT_1V": "12 days",
     "STAT_2": "Approved entry points",
     "STAT_2V": "4 ports",
-    "ARIA": "Trade routes between Cairo and global ports"
+    "ARIA": "Trade routes between Cairo and global ports",
+    "HINT": "Tap a city to explore its lane",
+    "TRANSIT": "Transit time",
+    "RESET": "Show full network"
   },
   "HOME_SERVICES": {
     "EYEBROW": "What we run",

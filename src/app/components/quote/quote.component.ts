@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { AdminDataService } from '../../services/admin-data.service';
-import { Lang, products, services, site, telHref, whatsappHref } from '../../data/content';
+import { Lang, ProductItem, services, site, telHref, whatsappHref } from '../../data/content';
 import { SelectOption } from '../select-menu/select-menu.component';
 
 @Component({
@@ -17,7 +17,7 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
   @ViewChild('pane') pane?: ElementRef<HTMLElement>;
 
   services = services;
-  products = products;
+  products: ProductItem[] = [];
   site = site;
   lang: Lang = this.language.current;
   step = 0;
@@ -44,7 +44,9 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
     phone: ['', Validators.required],
     notes: [''],
   });
-  private sub: Subscription;
+  serviceOptions: SelectOption[] = [];
+  productOptions: SelectOption[] = [];
+  private sub = new Subscription();
   private ctx?: ReturnType<typeof gsap.context>;
 
   constructor(
@@ -53,7 +55,18 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
     private fb: FormBuilder,
     route: ActivatedRoute
   ) {
-    this.sub = this.language.languageChanged$.subscribe((lang) => (this.lang = lang));
+    this.sub.add(
+      this.language.languageChanged$.subscribe((lang) => {
+        this.lang = lang;
+        this.refreshOptions();
+      })
+    );
+    this.sub.add(
+      this.adminData.products$.subscribe((items) => {
+        this.products = items;
+        this.refreshOptions();
+      })
+    );
     const q = route.snapshot.queryParamMap;
     this.form.patchValue({
       service: q.get('service') || '',
@@ -61,17 +74,14 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  get serviceOptions(): SelectOption[] {
-    return this.services.map((s) => ({
+  private refreshOptions(): void {
+    this.serviceOptions = this.services.map((s) => ({
       value: s.slug,
       label: s.title[this.lang],
       hint: s.subtitle[this.lang],
       icon: s.icon,
     }));
-  }
-
-  get productOptions(): SelectOption[] {
-    return this.products.map((p) => ({
+    this.productOptions = this.products.map((p) => ({
       value: p.slug,
       label: p.name[this.lang],
       hint: p.origin[this.lang],

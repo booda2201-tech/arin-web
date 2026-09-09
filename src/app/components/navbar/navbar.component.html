@@ -6,23 +6,23 @@
   [class.is-hidden]="hidden && !open"
 >
   <div class="nav-chrome">
-    <div class="nav-bar arin-wrap flex h-16 items-center justify-between gap-3 lg:h-24 lg:justify-start lg:gap-6">
-    <a routerLink="/" class="flex shrink-0 items-center gap-3" (click)="close()">
-      <span class="relative flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center lg:h-[5.25rem] lg:w-[5.25rem]">
+    <div class="nav-bar arin-wrap">
+    <a routerLink="/" class="nav-brand" (click)="close()">
+      <span class="nav-brand-mark">
         <img
           [src]="site.logo"
           [alt]="site.name[currentLang]"
           class="h-full w-full object-contain"
         />
       </span>
-      <span class="hidden leading-tight lg:block" *ngIf="!isHome()">
-        <span class="block font-display text-lg font-bold text-cream">{{ site.name[currentLang] }}</span>
-        <span class="block font-mono text-[10px] tracking-[0.28em] text-gold">{{ site.latin }}</span>
+      <span class="nav-brand-copy" *ngIf="!isHome()">
+        <span class="nav-brand-name">{{ site.name[currentLang] }}</span>
+        <span class="nav-brand-latin">{{ site.latin }}</span>
       </span>
     </a>
 
-    <nav class="mx-auto hidden lg:block" [attr.aria-label]="'NAV.HOME' | translate">
-      <ul class="flex items-center gap-1">
+    <nav class="nav-menu" [attr.aria-label]="'NAV.HOME' | translate">
+      <ul class="nav-menu-list">
         <li *ngFor="let item of navItems">
           <a
             [routerLink]="item.path"
@@ -36,7 +36,7 @@
       </ul>
     </nav>
 
-    <div class="ms-auto flex items-center gap-2 lg:ms-0">
+    <div class="nav-actions">
       <!-- User Menu / Dashboard when logged in (Desktop) -->
       <div
         *ngIf="auth.isLoggedIn"

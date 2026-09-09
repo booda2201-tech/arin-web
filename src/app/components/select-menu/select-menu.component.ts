@@ -1,10 +1,11 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
-  HostBinding,
   HostListener,
   Input,
-  ViewChild,
+  OnChanges,
+  SimpleChanges,
   forwardRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -28,36 +29,38 @@ export interface SelectOption {
     },
   ],
 })
-export class SelectMenuComponent implements ControlValueAccessor {
+export class SelectMenuComponent implements ControlValueAccessor, OnChanges {
   @Input() options: SelectOption[] = [];
   @Input() placeholder = '';
   @Input() tone: 'light' | 'dark' = 'light';
   @Input() labelledBy = '';
 
-  @ViewChild('trigger') trigger?: ElementRef<HTMLElement>;
-  @ViewChild('panel') panel?: ElementRef<HTMLElement>;
-
-  @HostBinding('class.is-open') get opened(): boolean {
-    return this.open;
-  }
-
   value = '';
+  label = '';
+  hint = '';
+  icon = '';
   open = false;
   disabled = false;
   active = -1;
-  box = { top: 0, left: 0, width: 0 };
 
   private onChange: (v: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
-  constructor(private host: ElementRef<HTMLElement>) {}
+  constructor(
+    private host: ElementRef<HTMLElement>,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  get selected(): SelectOption | undefined {
-    return this.options.find((o) => o.value === this.value);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['options']) {
+      this.syncFromValue();
+    }
   }
 
   writeValue(value: string | null): void {
-    this.value = value || '';
+    this.value = value ?? '';
+    this.syncFromValue();
+    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: (v: string) => void): void {
@@ -70,124 +73,72 @@ export class SelectMenuComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    this.cdr.markForCheck();
   }
 
   indexOf(i: number): string {
     return String(i + 1).padStart(2, '0');
   }
 
-  toggle(ev: Event): void {
-    ev.stopPropagation();
+  trackOpt(_i: number, opt: SelectOption): string {
+    return opt.value;
+  }
+
+  toggle(): void {
     if (this.disabled) {
       return;
     }
-    this.open ? this.close() : this.show();
+    this.open = !this.open;
+    if (this.open) {
+      this.active = Math.max(
+        0,
+        this.options.findIndex((o) => o.value === this.value)
+      );
+    }
+    this.cdr.markForCheck();
   }
 
-  choose(opt: SelectOption, ev?: Event): void {
-    ev?.stopPropagation();
+  pick(opt: SelectOption): void {
+    if (this.disabled || !opt) {
+      return;
+    }
     this.value = opt.value;
+    this.label = opt.label;
+    this.hint = opt.hint || '';
+    this.icon = opt.icon || '';
+    this.open = false;
     this.onChange(opt.value);
     this.onTouched();
-    this.close();
+    this.cdr.markForCheck();
   }
 
-  @HostListener('document:pointerdown', ['$event'])
-  onDoc(ev: Event): void {
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(ev: MouseEvent): void {
     if (!this.open) {
       return;
     }
-    const t = ev.target as Node;
-    if (this.host.nativeElement.contains(t) || this.panel?.nativeElement.contains(t)) {
-      return;
-    }
-    this.close();
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('window:resize')
-  onWin(): void {
-    if (this.open) {
-      this.place();
-    }
-  }
-
-  @HostListener('keydown', ['$event'])
-  onKey(ev: KeyboardEvent): void {
-    if (this.disabled) {
-      return;
-    }
-    if (!this.open) {
-      if (ev.key === 'ArrowDown') {
-        ev.preventDefault();
-        this.show();
-      }
-      return;
-    }
-    if (ev.key === 'Escape') {
-      ev.preventDefault();
-      this.close();
-      return;
-    }
-    if (ev.key === 'ArrowDown') {
-      ev.preventDefault();
-      this.move(1);
-      return;
-    }
-    if (ev.key === 'ArrowUp') {
-      ev.preventDefault();
-      this.move(-1);
-      return;
-    }
-    if (ev.key === 'Enter' || ev.key === ' ') {
-      ev.preventDefault();
-      const opt = this.options[this.active];
-      if (opt) {
-        this.choose(opt);
-      }
-    }
-  }
-
-  close(): void {
-    if (!this.open) {
+    const target = ev.target as Node | null;
+    if (target && this.host.nativeElement.contains(target)) {
       return;
     }
     this.open = false;
     this.onTouched();
+    this.cdr.markForCheck();
   }
 
-  private show(): void {
-    this.open = true;
-    this.active = Math.max(
-      0,
-      this.options.findIndex((o) => o.value === this.value)
-    );
-    this.place();
-  }
-
-  private place(): void {
-    const trigger = this.trigger?.nativeElement;
-    if (!trigger) {
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.open) {
       return;
     }
-    const r = trigger.getBoundingClientRect();
-    const gap = 8;
-    const maxH = Math.min(512, window.innerHeight * 0.7);
-    const below = window.innerHeight - r.bottom - gap;
-    const openUp = below < 180 && r.top > below;
-    this.box = {
-      top: openUp ? Math.max(12, r.top - gap - maxH) : r.bottom + gap,
-      left: r.left,
-      width: r.width,
-    };
+    this.open = false;
+    this.cdr.markForCheck();
   }
 
-  private move(dir: number): void {
-    if (!this.options.length) {
-      return;
-    }
-    this.active = (this.active + dir + this.options.length) % this.options.length;
-    const row = this.panel?.nativeElement.children[this.active] as HTMLElement | undefined;
-    row?.scrollIntoView({ block: 'nearest' });
+  private syncFromValue(): void {
+    const found = this.options.find((o) => o.value === this.value);
+    this.label = found?.label || '';
+    this.hint = found?.hint || '';
+    this.icon = found?.icon || '';
   }
 }

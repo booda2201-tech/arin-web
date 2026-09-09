@@ -98,7 +98,7 @@
     </div>
   </section>
 
-  <!-- 4. Global Reach & Route Map (Deep Navy/Black) -->
+  <!-- 4. Global Reach & Route Map -->
   <section class="section-reach">
     <div class="arin-wrap reach-grid">
       <div class="reach-info reveal-item">
@@ -122,8 +122,18 @@
       </div>
 
       <div class="reach-map-box reveal-item">
-        <div class="map-frame">
-          <svg viewBox="0 0 1000 460" class="map-svg" role="img" [attr.aria-label]="'MAP.ARIA' | translate">
+        <div
+          class="map-frame"
+          [class.has-focus]="!!activeId"
+          (mouseleave)="onMapLeave()"
+        >
+          <svg
+            viewBox="160 50 700 330"
+            class="map-svg"
+            role="img"
+            [attr.aria-label]="'MAP.ARIA' | translate"
+            preserveAspectRatio="xMidYMid meet"
+          >
             <defs>
               <linearGradient id="routeGradNormal" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stop-color="#E6A15C" stop-opacity="0.1" />
@@ -131,19 +141,104 @@
                 <stop offset="100%" stop-color="#E6A15C" stop-opacity="0.1" />
               </linearGradient>
             </defs>
-            <ellipse cx="500" cy="230" rx="440" ry="190" fill="none" stroke="#E6A15C" stroke-opacity="0.14" stroke-dasharray="3 7" />
-            <g *ngFor="let route of routes">
-              <path class="map-route" [attr.d]="arc(route[0], route[1])" fill="none" stroke="url(#routeGradNormal)" stroke-width="1.8" />
-              <path class="map-route-head" [attr.d]="arc(route[0], route[1])" fill="none" stroke="#F7B775" stroke-width="2.4" stroke-linecap="round" />
+
+            <ellipse class="map-orbit" cx="500" cy="220" rx="300" ry="130" fill="none" stroke="#E6A15C" stroke-dasharray="3 7" />
+            <ellipse class="map-orbit map-orbit-inner" cx="500" cy="220" rx="210" ry="90" fill="none" stroke="#E6A15C" stroke-dasharray="2 8" />
+
+            <g
+              *ngFor="let route of routes; let i = index"
+              class="map-route-group"
+              [class.is-lit]="isRouteLit(route)"
+              [class.is-dim]="isRouteDim(route)"
+            >
+              <path class="map-route" [attr.d]="arc(route[0], route[1])" fill="none" stroke="url(#routeGradNormal)" stroke-width="2.2" />
+              <path class="map-route-head" [attr.d]="arc(route[0], route[1])" fill="none" stroke="#F7B775" stroke-width="3" stroke-linecap="round" />
+              <path
+                class="map-route-flow"
+                [attr.d]="arc(route[0], route[1])"
+                fill="none"
+                stroke="#F7B775"
+                stroke-width="2.8"
+                stroke-linecap="round"
+                [style.animation-delay]="(i * 0.35) + 's'"
+              />
             </g>
-            <g *ngFor="let n of nodes">
-              <circle class="map-node" [attr.cx]="n.x" [attr.cy]="n.y" [attr.r]="n.hub ? 5.5 : 3.5" [attr.fill]="n.hub ? '#F7B775' : '#E6A15C'" />
-              <text [attr.x]="n.x" [attr.y]="n.y - (n.hub ? 16 : 13)" text-anchor="middle" [attr.fill]="n.hub ? '#F3F4F6' : '#9CA3AF'" [attr.font-size]="n.hub ? 14 : 12" font-family="IBM Plex Sans Arabic, sans-serif">
+
+            <g
+              *ngFor="let n of nodes"
+              class="map-node-group"
+              [class.is-hub]="!!n.hub"
+              [class.is-active]="activeId === n.id"
+              [class.is-dim]="isNodeDim(n.id)"
+            >
+              <circle *ngIf="n.hub" class="map-pulse" [attr.cx]="n.x" [attr.cy]="n.y" r="9" fill="none" stroke="#F7B775" />
+              <circle *ngIf="n.hub" class="map-pulse map-pulse-delay" [attr.cx]="n.x" [attr.cy]="n.y" r="9" fill="none" stroke="#F7B775" />
+              <circle
+                class="map-node"
+                [class.is-hub]="!!n.hub"
+                [attr.cx]="n.x"
+                [attr.cy]="n.y"
+                [attr.r]="n.hub ? 9 : 6.5"
+                [attr.fill]="n.hub ? '#F7B775' : '#E6A15C'"
+              />
+              <text
+                class="map-label"
+                [class.is-hub]="!!n.hub"
+                [attr.x]="n.x"
+                [attr.y]="n.y - (n.hub ? 22 : 16)"
+                text-anchor="middle"
+              >
                 {{ txt(n.label) }}
               </text>
+              <circle
+                class="map-hit"
+                [attr.cx]="n.x"
+                [attr.cy]="n.y"
+                [attr.r]="hitRadius"
+                fill="transparent"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="txt(n.label)"
+                [attr.aria-pressed]="activeId === n.id"
+                (click)="selectNode(n.id, $event)"
+                (keydown.enter)="selectNode(n.id, $event)"
+                (keydown.space)="selectNode(n.id, $event)"
+                (mouseenter)="previewNode(n.id)"
+              />
             </g>
           </svg>
         </div>
+
+        <div class="map-cities" role="tablist" [attr.aria-label]="'MAP.ARIA' | translate">
+          <button
+            *ngFor="let n of destinations"
+            type="button"
+            class="map-city-chip"
+            role="tab"
+            [class.is-on]="activeId === n.id"
+            [attr.aria-selected]="activeId === n.id"
+            (click)="selectNode(n.id, $event)"
+          >
+            {{ txt(n.label) }}
+          </button>
+        </div>
+
+        <aside class="map-card" *ngIf="activeNode as city">
+          <div class="map-card-top">
+            <div>
+              <p class="map-card-role">{{ txt(city.role) }}</p>
+              <h3 class="map-card-city">{{ txt(city.label) }}</h3>
+            </div>
+            <button type="button" class="map-card-close" (click)="clearNode($event)" [attr.aria-label]="'MAP.RESET' | translate">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <p class="map-card-note">{{ txt(city.note) }}</p>
+          <div class="map-card-meta" *ngIf="city.days">
+            <span class="map-card-meta-k">{{ 'MAP.TRANSIT' | translate }}</span>
+            <span class="map-card-meta-v">{{ txt(city.days) }}</span>
+          </div>
+        </aside>
       </div>
     </div>
   </section>

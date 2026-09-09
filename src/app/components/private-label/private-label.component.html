@@ -10,11 +10,11 @@
     </h1>
     <p class="pl-hero-lead pl-hero-fade">{{ 'PRIVATE.SUB' | translate }}</p>
     <div class="pl-hero-actions pl-hero-fade">
-      <a routerLink="/quote" class="btn btn-gold">
+      <a href="#pl-form" class="btn btn-gold">
         {{ 'PRIVATE.START' | translate }}
         <i class="bi bi-arrow-left rtl:rotate-180"></i>
       </a>
-      <a routerLink="/quote" class="btn btn-ghost">{{ 'PRIVATE.TALK' | translate }}</a>
+      <a href="#pl-form" class="btn btn-ghost">{{ 'PRIVATE.TALK' | translate }}</a>
     </div>
     <div class="pl-stats">
       <article *ngFor="let item of stats" class="pl-stat">
@@ -155,13 +155,74 @@
   </div>
 </section>
 
+<section id="pl-form" class="page-panel bg-cream scroll-mt-28">
+  <div class="arin-wrap">
+    <div class="pl-form-layout">
+      <div class="pl-rise max-w-xl">
+        <p class="film-kicker !text-gold">{{ 'PRIVATE.FORM_K' | translate }}</p>
+        <h2 class="film-display text-forest">{{ 'PRIVATE.FORM_T' | translate }}</h2>
+        <p class="mt-4 text-base leading-8 text-olive">{{ 'PRIVATE.FORM_B' | translate }}</p>
+      </div>
+
+      <form *ngIf="!sent" class="pl-form pl-rise" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="pl-form-grid">
+          <label class="pl-field" [class.is-bad]="bad('name')">
+            <span>{{ 'CONTACT_PAGE.NAME' | translate }}</span>
+            <input formControlName="name" autocomplete="name" />
+          </label>
+          <label class="pl-field">
+            <span>{{ 'CONTACT_PAGE.COMPANY' | translate }}</span>
+            <input formControlName="company" autocomplete="organization" />
+          </label>
+          <label class="pl-field" [class.is-bad]="bad('email')">
+            <span>{{ 'CONTACT_PAGE.EMAIL' | translate }}</span>
+            <input formControlName="email" type="email" dir="ltr" autocomplete="email" />
+          </label>
+          <label class="pl-field" [class.is-bad]="bad('phone')">
+            <span>{{ 'CONTACT_PAGE.PHONE' | translate }}</span>
+            <input formControlName="phone" type="tel" dir="ltr" autocomplete="tel" />
+          </label>
+          <div class="pl-field" [class.is-bad]="bad('category')">
+            <span>{{ 'PRIVATE.CATEGORY' | translate }}</span>
+            <app-select-menu
+              formControlName="category"
+              [placeholder]="'PRIVATE.CATEGORY' | translate"
+              [options]="categoryOptions"
+            ></app-select-menu>
+          </div>
+          <label class="pl-field" [class.is-bad]="bad('volume')">
+            <span>{{ 'PRIVATE.VOLUME' | translate }}</span>
+            <input formControlName="volume" [placeholder]="lang === 'ar' ? 'مثال: 15,000 عبوة' : 'e.g. 15,000 units'" />
+          </label>
+          <label class="pl-field pl-field-wide" [class.is-bad]="bad('message')">
+            <span>{{ 'CONTACT_PAGE.MESSAGE' | translate }}</span>
+            <textarea formControlName="message" rows="4"></textarea>
+          </label>
+        </div>
+
+        <p *ngIf="blocked && form.invalid" class="mt-4 text-sm text-terracotta">{{ 'COMMON.REQUIRED' | translate }}</p>
+        <button type="submit" class="btn btn-gold mt-6">
+          {{ 'COMMON.SEND' | translate }}
+          <i class="bi bi-arrow-left rtl:rotate-180"></i>
+        </button>
+      </form>
+
+      <div *ngIf="sent" class="pl-form-done pl-rise">
+        <span class="pl-form-done-mark"><i class="bi bi-check-lg" aria-hidden="true"></i></span>
+        <h3 class="font-display text-2xl font-bold text-forest">{{ 'PRIVATE.FORM_OK' | translate }}</h3>
+        <a routerLink="/contact" class="btn btn-ghost mt-6">{{ 'NAV.CONTACT' | translate }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="pl-close">
   <span class="pl-close-ring" aria-hidden="true"></span>
   <div class="arin-wrap pl-close-copy">
     <h2 class="film-display max-w-4xl">{{ 'PRIVATE.END_T' | translate }}</h2>
     <p class="mt-5 max-w-lg text-base leading-8 text-platinum">{{ 'PRIVATE.END_B' | translate }}</p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <a routerLink="/quote" class="btn btn-gold !px-8 !py-4 !text-sm">
+      <a href="#pl-form" class="btn btn-gold !px-8 !py-4 !text-sm">
         {{ 'PRIVATE.START' | translate }}
         <i class="bi bi-arrow-left rtl:rotate-180"></i>
       </a>

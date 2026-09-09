@@ -73,7 +73,6 @@ export const navItems: NavItem[] = [
   { path: '/about', label: { ar: 'من نحن', en: 'About' } },
   { path: '/services', label: { ar: 'خدماتنا', en: 'Services' } },
   { path: '/products', label: { ar: 'المنتجات', en: 'Products' } },
-  { path: '/private-label', label: { ar: 'علامتك التجارية', en: 'Private Label' } },
   { path: '/projects', label: { ar: 'مشاريعنا', en: 'Projects' } },
   { path: '/contact', label: { ar: 'تواصل معنا', en: 'Contact' } },
 ];
@@ -350,7 +349,12 @@ export interface ProductItem {
   specs: ProductSpec[];
 }
 
-export const productCategories = [
+export interface ProductCategory {
+  id: string;
+  name: L;
+}
+
+export const productCategories: ProductCategory[] = [
   { id: 'all', name: { ar: 'الكل', en: 'All' } as L },
   { id: 'food', name: { ar: 'المواد الغذائية', en: 'Food' } as L },
   { id: 'care', name: { ar: 'العناية الشخصية', en: 'Personal care' } as L },
@@ -962,15 +966,114 @@ export const privateLabelCategories = [
   { id: 'other', name: { ar: 'فئة أخرى', en: 'Other category' } as L },
 ];
 
-export const mapNodes = [
-  { id: 'rotterdam', label: { ar: 'روتردام', en: 'Rotterdam' }, x: 470, y: 128 },
-  { id: 'istanbul', label: { ar: 'إسطنبول', en: 'Istanbul' }, x: 540, y: 178 },
-  { id: 'cairo', label: { ar: 'القاهرة', en: 'Cairo' }, x: 528, y: 236, hub: true },
-  { id: 'jebelali', label: { ar: 'جبل علي', en: 'Jebel Ali' }, x: 640, y: 250 },
-  { id: 'mumbai', label: { ar: 'مومباي', en: 'Mumbai' }, x: 706, y: 268 },
-  { id: 'shanghai', label: { ar: 'شنغهاي', en: 'Shanghai' }, x: 850, y: 218 },
-  { id: 'santos', label: { ar: 'سانتوس', en: 'Santos' }, x: 250, y: 352 },
-  { id: 'mombasa', label: { ar: 'مومباسا', en: 'Mombasa' }, x: 570, y: 340 },
+export type MapNode = {
+  id: string;
+  label: L;
+  x: number;
+  y: number;
+  hub?: boolean;
+  role: L;
+  note: L;
+  days?: L;
+};
+
+export const mapNodes: MapNode[] = [
+  {
+    id: 'rotterdam',
+    label: { ar: 'روتردام', en: 'Rotterdam' },
+    x: 380,
+    y: 95,
+    role: { ar: 'بوابة أوروبا', en: 'Europe gateway' },
+    note: {
+      ar: 'مسار بحري للمصانع والموردين الأوروبيين نحو الموانئ المصرية.',
+      en: 'Sea lane linking European plants and suppliers into Egyptian ports.',
+    },
+    days: { ar: '10–14 يوم', en: '10–14 days' },
+  },
+  {
+    id: 'istanbul',
+    label: { ar: 'إسطنبول', en: 'Istanbul' },
+    x: 500,
+    y: 145,
+    role: { ar: 'جسر المتوسط', en: 'Mediterranean bridge' },
+    note: {
+      ar: 'نقطة وصل سريعة بين تركيا والمنطقة عبر خطوط برية وبحرية.',
+      en: 'A fast bridge between Turkey and the region by sea and land.',
+    },
+    days: { ar: '4–7 أيام', en: '4–7 days' },
+  },
+  {
+    id: 'cairo',
+    label: { ar: 'القاهرة', en: 'Cairo' },
+    x: 500,
+    y: 230,
+    hub: true,
+    role: { ar: 'مركز العمليات', en: 'Operations hub' },
+    note: {
+      ar: 'من هنا ننسّق كل مسار: المصدر، التوقيت، والدخول للسوق.',
+      en: 'From here we coordinate every lane: origin, timing, and market entry.',
+    },
+  },
+  {
+    id: 'jebelali',
+    label: { ar: 'جبل علي', en: 'Jebel Ali' },
+    x: 640,
+    y: 210,
+    role: { ar: 'محور الخليج', en: 'Gulf hub' },
+    note: {
+      ar: 'إعادة شحن وتجميع للبضائع القادمة من آسيا قبل الدخول لمصر.',
+      en: 'Transshipment and consolidation for Asia cargo before Egypt entry.',
+    },
+    days: { ar: '6–9 أيام', en: '6–9 days' },
+  },
+  {
+    id: 'mumbai',
+    label: { ar: 'مومباي', en: 'Mumbai' },
+    x: 720,
+    y: 255,
+    role: { ar: 'مصدر الهند', en: 'India origin' },
+    note: {
+      ar: 'خطوط توريد مباشرة للسلع والمواد عبر شبكة جبل علي أو مباشرة.',
+      en: 'Direct sourcing lanes for goods and materials via Jebel Ali or direct.',
+    },
+    days: { ar: '12–16 يوم', en: '12–16 days' },
+  },
+  {
+    id: 'shanghai',
+    label: { ar: 'شنغهاي', en: 'Shanghai' },
+    x: 820,
+    y: 165,
+    role: { ar: 'مصانع آسيا', en: 'Asia manufacturing' },
+    note: {
+      ar: 'أطول مسار وأكثره كثافة — نضبط التوقيت قبل أن يتحوّل لضغط.',
+      en: 'The longest and densest lane — timing is set before it becomes pressure.',
+    },
+    days: { ar: '14–18 يوم', en: '14–18 days' },
+  },
+  {
+    id: 'santos',
+    label: { ar: 'سانتوس', en: 'Santos' },
+    x: 200,
+    y: 320,
+    role: { ar: 'أمريكا الجنوبية', en: 'South America' },
+    note: {
+      ar: 'مسار متخصص للسلع الزراعية والمواد المختارة من البرازيل.',
+      en: 'A focused lane for agricultural goods and selected Brazilian materials.',
+    },
+    days: { ar: '22–28 يوم', en: '22–28 days' },
+  },
+  {
+    id: 'mombasa',
+    label: { ar: 'مومباسا', en: 'Mombasa' },
+    x: 560,
+    y: 345,
+    role: { ar: 'شرق أفريقيا', en: 'East Africa' },
+    note: {
+      ar: 'امتداد إقليمي للتجارة والتوريد عبر القرن الأفريقي.',
+      en: 'A regional extension for trade and supply across East Africa.',
+    },
+    days: { ar: '8–12 يوم', en: '8–12 days' },
+  },
 ];
 
 export const mapRoutes: [string, string][] = [

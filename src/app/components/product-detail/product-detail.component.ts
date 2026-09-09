@@ -7,7 +7,6 @@ import {
   Lang,
   L,
   ProductItem,
-  categoryName,
   getProduct,
   relatedProducts,
 } from '../../data/content';
@@ -47,7 +46,7 @@ export class ProductDetailComponent implements OnDestroy {
   }
 
   categoryLabel(): string {
-    return this.product ? categoryName(this.product.category, this.lang) : '';
+    return this.product ? this.adminData.categoryLabel(this.product.category, this.lang) : '';
   }
 
   availabilityKey(): string {

@@ -16,11 +16,12 @@
 
 .quote-board {
   position: relative;
-  z-index: 2;
+  z-index: 30;
   margin-top: -4.5rem;
   padding-top: 1.75rem;
   padding-bottom: 6rem;
   background: #f3efe6;
+  overflow: visible;
 }
 
 .quote-layout {
@@ -110,7 +111,7 @@
 
 .quote-desk {
   position: relative;
-  z-index: 2;
+  z-index: 20;
   overflow: visible;
   padding: 1.6rem 1.25rem 1.75rem;
   border: 1px solid rgba(195, 164, 98, 0.22);

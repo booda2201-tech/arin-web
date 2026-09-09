@@ -268,9 +268,10 @@
   position: absolute;
   inset: 0;
   background: url('/assets/images/house.jpg') 50% 65% / cover no-repeat;
-  filter: brightness(0.52) contrast(1.18) saturate(0.72);
+  filter: brightness(0.82) contrast(1.08) saturate(0.92);
   transform: scale(1.02);
   transition: transform 0.8s ease, filter 0.8s ease;
+  pointer-events: none;
 }
 
 .page-stage::after {
@@ -278,38 +279,38 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 50%, rgba(11, 15, 13, 0.45) 0%, rgba(11, 15, 13, 0.8) 72%, #0b0f0d 100%),
-    linear-gradient(to bottom, rgba(11, 15, 13, 0.88) 0%, transparent 26%, rgba(11, 15, 13, 0.75) 75%, #0b0f0d 100%),
-    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.12) 0%, transparent 65%);
+    radial-gradient(circle at 50% 48%, rgba(11, 15, 13, 0.18) 0%, rgba(11, 15, 13, 0.42) 70%, rgba(11, 15, 13, 0.72) 100%),
+    linear-gradient(to bottom, rgba(11, 15, 13, 0.55) 0%, transparent 30%, rgba(11, 15, 13, 0.42) 72%, rgba(11, 15, 13, 0.85) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.1) 0%, transparent 65%);
   pointer-events: none;
 }
 
 [dir="ltr"] .page-stage::after {
   background:
-    radial-gradient(circle at 50% 50%, rgba(11, 15, 13, 0.45) 0%, rgba(11, 15, 13, 0.8) 72%, #0b0f0d 100%),
-    linear-gradient(to bottom, rgba(11, 15, 13, 0.88) 0%, transparent 26%, rgba(11, 15, 13, 0.75) 75%, #0b0f0d 100%),
-    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.12) 0%, transparent 65%);
+    radial-gradient(circle at 50% 48%, rgba(11, 15, 13, 0.18) 0%, rgba(11, 15, 13, 0.42) 70%, rgba(11, 15, 13, 0.72) 100%),
+    linear-gradient(to bottom, rgba(11, 15, 13, 0.55) 0%, transparent 30%, rgba(11, 15, 13, 0.42) 72%, rgba(11, 15, 13, 0.85) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.1) 0%, transparent 65%);
 }
 
 /* Page-Specific Hero Background Images */
 .page-stage--about::before {
   background-image: url('https://images.unsplash.com/photo-1669101564304-1da32c23f8ec?auto=format&fit=crop&w=2560&q=85');
   background-position: 50% 32%;
-  filter: brightness(0.78) contrast(1.08) saturate(1.05);
+  filter: brightness(0.9) contrast(1.06) saturate(1.05);
 }
 
 .page-stage--about::after {
   background:
-    radial-gradient(circle at 50% 50%, rgba(11, 15, 13, 0.45) 0%, rgba(11, 15, 13, 0.8) 72%, #0b0f0d 100%),
-    linear-gradient(to bottom, rgba(11, 15, 13, 0.85) 0%, transparent 26%, rgba(11, 15, 13, 0.75) 75%, #0b0f0d 100%),
-    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.15) 0%, transparent 65%);
+    radial-gradient(circle at 50% 48%, rgba(11, 15, 13, 0.16) 0%, rgba(11, 15, 13, 0.38) 70%, rgba(11, 15, 13, 0.68) 100%),
+    linear-gradient(to bottom, rgba(11, 15, 13, 0.5) 0%, transparent 30%, rgba(11, 15, 13, 0.38) 72%, rgba(11, 15, 13, 0.82) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.12) 0%, transparent 65%);
 }
 
 [dir="ltr"] .page-stage--about::after {
   background:
-    radial-gradient(circle at 50% 50%, rgba(11, 15, 13, 0.45) 0%, rgba(11, 15, 13, 0.8) 72%, #0b0f0d 100%),
-    linear-gradient(to bottom, rgba(11, 15, 13, 0.85) 0%, transparent 26%, rgba(11, 15, 13, 0.75) 75%, #0b0f0d 100%),
-    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.15) 0%, transparent 65%);
+    radial-gradient(circle at 50% 48%, rgba(11, 15, 13, 0.16) 0%, rgba(11, 15, 13, 0.38) 70%, rgba(11, 15, 13, 0.68) 100%),
+    linear-gradient(to bottom, rgba(11, 15, 13, 0.5) 0%, transparent 30%, rgba(11, 15, 13, 0.38) 72%, rgba(11, 15, 13, 0.82) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(195, 164, 98, 0.12) 0%, transparent 65%);
 }
 
 .page-stage--services::before {

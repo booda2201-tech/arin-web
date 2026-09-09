@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { AuthService, User } from '../../services/auth.service';
 import { AdminDataService, FormSubmission } from '../../services/admin-data.service';
 import { LanguageService } from '../../services/language.service';
-import { ProductItem, productCategories, site } from '../../data/content';
+import { ProductItem, ProductCategory, site } from '../../data/content';
 import { SelectOption } from '../select-menu/select-menu.component';
 
 export type AdminTab = 'overview' | 'products' | 'quotes' | 'private-label' | 'contact';
@@ -25,24 +25,34 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   searchQuery = '';
   statusFilter: 'all' | 'new' | 'in_progress' | 'completed' = 'all';
   productCategoryFilter = 'all';
+  productPage = 1;
+  readonly productPageSize = 6;
+  readonly listPageSize = 6;
+  submissionsPage = 1;
+  quotesPage = 1;
+  privateLabelPage = 1;
+  contactPage = 1;
 
   // Data
   products: ProductItem[] = [];
   submissions: FormSubmission[] = [];
-  allCategories = productCategories;
-  categories = productCategories.filter((c) => c.id !== 'all');
-
-  get categoryOptions(): SelectOption[] {
-    return this.categories.map((c) => ({
-      value: c.id,
-      label: c.name[this.lang],
-    }));
-  }
+  categories: ProductCategory[] = [];
+  allCategories: ProductCategory[] = [];
+  categoryOptions: SelectOption[] = [];
 
   // Toast Notification
   toastMessage = '';
   toastType: 'success' | 'info' | 'error' = 'success';
   private toastTimer: any = null;
+
+  // Category manager
+  showCategoryPanel = false;
+  editingCategoryId: string | null = null;
+  categoryForm = this.fb.group({
+    id: [''],
+    nameAr: ['', Validators.required],
+    nameEn: ['', Validators.required],
+  });
 
   // Product Modal State
   showProductModal = false;
@@ -86,7 +96,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.currentUser = this.auth.currentUser;
 
     this.subs.add(
-      this.language.languageChanged$.subscribe((l) => (this.lang = l))
+      this.language.languageChanged$.subscribe((l) => {
+        this.lang = l;
+        this.refreshCategoryOptions();
+      })
     );
 
     this.subs.add(
@@ -94,7 +107,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     );
 
     this.subs.add(
-      this.adminData.submissions$.subscribe((subs) => (this.submissions = subs))
+      this.adminData.categories$.subscribe((cats) => {
+        this.categories = cats;
+        this.allCategories = this.adminData.getFilterCategories();
+        this.refreshCategoryOptions();
+        if (this.productCategoryFilter !== 'all' && !cats.some((c) => c.id === this.productCategoryFilter)) {
+          this.productCategoryFilter = 'all';
+        }
+      })
+    );
+
+    this.subs.add(
+      this.adminData.submissions$.subscribe((subs) => {
+        this.submissions = subs;
+        if (this.selectedSubmission) {
+          this.selectedSubmission =
+            subs.find((s) => s.id === this.selectedSubmission!.id) || null;
+        }
+      })
     );
   }
 
@@ -106,11 +136,51 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   get currentDateFormatted(): string {
-    return this.lang === 'ar' ? 'الثلاثاء، 8 سبتمبر 2026' : 'Tuesday, Sep 8, 2026';
+    try {
+      return new Intl.DateTimeFormat(this.lang === 'ar' ? 'ar-EG' : 'en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(new Date());
+    } catch {
+      return new Date().toLocaleDateString();
+    }
   }
 
   get firstName(): string {
     return this.currentUser?.name ? this.currentUser.name.split(' ')[0] : 'عبدالرحمن';
+  }
+
+  detailLabel(key: string): string {
+    const map: Record<string, string> = {
+      service: 'الخدمة',
+      product: 'المنتج',
+      quantity: 'الكمية',
+      destination: 'الوجهة',
+      mode: 'وسيلة الشحن',
+      notes: 'ملاحظات',
+      category: 'مجال التصنيع',
+      volume: 'الكمية المطلوبة',
+      message: 'ملخص الاحتياج',
+      interest: 'مجال الاهتمام',
+    };
+    return map[key] || key;
+  }
+
+  statusLabel(status: FormSubmission['status']): string {
+    if (status === 'new') return 'جديد';
+    if (status === 'in_progress') return 'قيد المتابعة';
+    return 'مكتمل';
+  }
+
+  cycleStatus(sub: FormSubmission, e?: Event): void {
+    if (e) {
+      e.stopPropagation();
+    }
+    const order: FormSubmission['status'][] = ['new', 'in_progress', 'completed'];
+    const next = order[(order.indexOf(sub.status) + 1) % order.length];
+    this.changeStatus(sub, next);
   }
 
   getWhatsAppUrl(phone: string): string {
@@ -118,23 +188,126 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return `https://wa.me/${cleaned}`;
   }
 
+  private refreshCategoryOptions(): void {
+    this.categoryOptions = this.categories.map((c) => ({
+      value: c.id,
+      label: c.name[this.lang],
+    }));
+  }
+
+  categoryProductCount(id: string): number {
+    return this.adminData.countProductsInCategory(id);
+  }
+
+  categoryLabel(id: string): string {
+    return this.adminData.categoryLabel(id, this.lang);
+  }
+
+  openCategoryPanel(): void {
+    this.showCategoryPanel = true;
+    this.cancelEditCategory();
+  }
+
+  closeCategoryPanel(): void {
+    this.showCategoryPanel = false;
+    this.cancelEditCategory();
+  }
+
+  startAddCategory(): void {
+    this.editingCategoryId = null;
+    this.categoryForm.reset({ id: '', nameAr: '', nameEn: '' });
+  }
+
+  startEditCategory(cat: ProductCategory): void {
+    this.editingCategoryId = cat.id;
+    this.categoryForm.patchValue({
+      id: cat.id,
+      nameAr: cat.name.ar,
+      nameEn: cat.name.en,
+    });
+  }
+
+  cancelEditCategory(): void {
+    this.editingCategoryId = null;
+    this.categoryForm.reset({ id: '', nameAr: '', nameEn: '' });
+  }
+
+  saveCategory(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      this.notify('أدخل اسم الفئة بالعربية والإنجليزية', 'error');
+      return;
+    }
+    const val = this.categoryForm.value;
+    if (this.editingCategoryId) {
+      const res = this.adminData.updateCategory(this.editingCategoryId, {
+        nameAr: val.nameAr || '',
+        nameEn: val.nameEn || '',
+      });
+      if (!res.ok) {
+        this.notify(res.message || 'تعذر التحديث', 'error');
+        return;
+      }
+      this.notify('تم تحديث الفئة بنجاح');
+    } else {
+      const res = this.adminData.addCategory({
+        id: val.id || undefined,
+        nameAr: val.nameAr || '',
+        nameEn: val.nameEn || '',
+      });
+      if (!res.ok) {
+        this.notify(res.message || 'تعذر الإضافة', 'error');
+        return;
+      }
+      this.notify(`تمت إضافة الفئة "${val.nameAr}"`);
+    }
+    this.cancelEditCategory();
+  }
+
+  deleteCategory(cat: ProductCategory): void {
+    const res = this.adminData.deleteCategory(cat.id);
+    if (!res.ok) {
+      this.notify(res.message || 'تعذر الحذف', 'error');
+      return;
+    }
+    if (this.editingCategoryId === cat.id) {
+      this.cancelEditCategory();
+    }
+    if (this.productCategoryFilter === cat.id) {
+      this.productCategoryFilter = 'all';
+    }
+    this.notify(`تم حذف الفئة "${cat.name.ar}"`, 'info');
+  }
+
   setTab(tab: AdminTab): void {
+    if (tab === 'private-label') {
+      this.currentTab = 'overview';
+      return;
+    }
     this.currentTab = tab;
     this.searchQuery = '';
     this.statusFilter = 'all';
+    if (tab !== 'products') {
+      this.closeCategoryPanel();
+    }
+  }
+
+  /** Submissions shown in the admin UI (private-label feature is hidden). */
+  get dashboardSubmissions(): FormSubmission[] {
+    return this.submissions.filter((s) => s.type !== 'private-label');
   }
 
   // Stats Calculations
   get newSubmissionsCount(): number {
-    return this.submissions.filter((s) => s.status === 'new').length;
+    return this.dashboardSubmissions.filter((s) => s.status === 'new').length;
   }
 
   get inProgressCount(): number {
-    return this.submissions.filter((s) => s.status === 'in_progress').length;
+    return this.dashboardSubmissions.filter((s) => s.status === 'in_progress').length;
   }
 
   get completedCount(): number {
-    return this.submissions.filter((s) => s.status === 'completed').length;
+    return this.dashboardSubmissions.filter((s) => s.status === 'completed').length;
   }
 
   get quotesList(): FormSubmission[] {
@@ -151,7 +324,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   // Filtered lists with Search & Status
   get filteredSubmissions(): FormSubmission[] {
-    return this.applySubmissionsFilter(this.submissions);
+    return this.applySubmissionsFilter(this.dashboardSubmissions);
   }
 
   get filteredQuotes(): FormSubmission[] {
@@ -186,6 +359,153 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  private safeListPage(page: number, totalItems: number): number {
+    const pages = Math.max(1, Math.ceil(totalItems / this.listPageSize));
+    return Math.min(Math.max(1, page), pages);
+  }
+
+  private paginateList(list: FormSubmission[], page: number): FormSubmission[] {
+    if (!list.length) {
+      return [];
+    }
+    const safe = this.safeListPage(page, list.length);
+    const start = (safe - 1) * this.listPageSize;
+    return list.slice(start, start + this.listPageSize);
+  }
+
+  private pageNumbersFor(totalItems: number): number[] {
+    const pages = Math.max(1, Math.ceil(totalItems / this.listPageSize));
+    return Array.from({ length: pages }, (_, i) => i + 1);
+  }
+
+  get pagedSubmissions(): FormSubmission[] {
+    return this.paginateList(this.filteredSubmissions, this.submissionsPage);
+  }
+  get safeSubmissionsPage(): number {
+    return this.safeListPage(this.submissionsPage, this.filteredSubmissions.length);
+  }
+  get submissionsTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredSubmissions.length / this.listPageSize));
+  }
+  get submissionsPageNumbers(): number[] {
+    return this.pageNumbersFor(this.filteredSubmissions.length);
+  }
+  get submissionsPageStart(): number {
+    return this.filteredSubmissions.length ? (this.safeSubmissionsPage - 1) * this.listPageSize + 1 : 0;
+  }
+  get submissionsPageEnd(): number {
+    return Math.min(this.safeSubmissionsPage * this.listPageSize, this.filteredSubmissions.length);
+  }
+
+  get pagedQuotes(): FormSubmission[] {
+    return this.paginateList(this.filteredQuotes, this.quotesPage);
+  }
+  get safeQuotesPage(): number {
+    return this.safeListPage(this.quotesPage, this.filteredQuotes.length);
+  }
+  get quotesTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredQuotes.length / this.listPageSize));
+  }
+  get quotesPageNumbers(): number[] {
+    return this.pageNumbersFor(this.filteredQuotes.length);
+  }
+  get quotesPageStart(): number {
+    return this.filteredQuotes.length ? (this.safeQuotesPage - 1) * this.listPageSize + 1 : 0;
+  }
+  get quotesPageEnd(): number {
+    return Math.min(this.safeQuotesPage * this.listPageSize, this.filteredQuotes.length);
+  }
+
+  get pagedPrivateLabel(): FormSubmission[] {
+    return this.paginateList(this.filteredPrivateLabel, this.privateLabelPage);
+  }
+  get safePrivateLabelPage(): number {
+    return this.safeListPage(this.privateLabelPage, this.filteredPrivateLabel.length);
+  }
+  get privateLabelTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredPrivateLabel.length / this.listPageSize));
+  }
+  get privateLabelPageNumbers(): number[] {
+    return this.pageNumbersFor(this.filteredPrivateLabel.length);
+  }
+  get privateLabelPageStart(): number {
+    return this.filteredPrivateLabel.length ? (this.safePrivateLabelPage - 1) * this.listPageSize + 1 : 0;
+  }
+  get privateLabelPageEnd(): number {
+    return Math.min(this.safePrivateLabelPage * this.listPageSize, this.filteredPrivateLabel.length);
+  }
+
+  get pagedContact(): FormSubmission[] {
+    return this.paginateList(this.filteredContact, this.contactPage);
+  }
+  get safeContactPage(): number {
+    return this.safeListPage(this.contactPage, this.filteredContact.length);
+  }
+  get contactTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredContact.length / this.listPageSize));
+  }
+  get contactPageNumbers(): number[] {
+    return this.pageNumbersFor(this.filteredContact.length);
+  }
+  get contactPageStart(): number {
+    return this.filteredContact.length ? (this.safeContactPage - 1) * this.listPageSize + 1 : 0;
+  }
+  get contactPageEnd(): number {
+    return Math.min(this.safeContactPage * this.listPageSize, this.filteredContact.length);
+  }
+
+  setStatusFilter(status: 'all' | 'new' | 'in_progress' | 'completed'): void {
+    this.statusFilter = status;
+    this.resetSubmissionPages();
+  }
+
+  private resetSubmissionPages(): void {
+    this.submissionsPage = 1;
+    this.quotesPage = 1;
+    this.privateLabelPage = 1;
+    this.contactPage = 1;
+  }
+
+  prevSubmissionsPage(): void {
+    if (this.safeSubmissionsPage > 1) this.submissionsPage = this.safeSubmissionsPage - 1;
+  }
+  nextSubmissionsPage(): void {
+    if (this.safeSubmissionsPage < this.submissionsTotalPages) this.submissionsPage = this.safeSubmissionsPage + 1;
+  }
+  goToSubmissionsPage(page: number): void {
+    if (page >= 1 && page <= this.submissionsTotalPages) this.submissionsPage = page;
+  }
+
+  prevQuotesPage(): void {
+    if (this.safeQuotesPage > 1) this.quotesPage = this.safeQuotesPage - 1;
+  }
+  nextQuotesPage(): void {
+    if (this.safeQuotesPage < this.quotesTotalPages) this.quotesPage = this.safeQuotesPage + 1;
+  }
+  goToQuotesPage(page: number): void {
+    if (page >= 1 && page <= this.quotesTotalPages) this.quotesPage = page;
+  }
+
+  prevPrivateLabelPage(): void {
+    if (this.safePrivateLabelPage > 1) this.privateLabelPage = this.safePrivateLabelPage - 1;
+  }
+  nextPrivateLabelPage(): void {
+    if (this.safePrivateLabelPage < this.privateLabelTotalPages) this.privateLabelPage = this.safePrivateLabelPage + 1;
+  }
+  goToPrivateLabelPage(page: number): void {
+    if (page >= 1 && page <= this.privateLabelTotalPages) this.privateLabelPage = page;
+  }
+
+  prevContactPage(): void {
+    if (this.safeContactPage > 1) this.contactPage = this.safeContactPage - 1;
+  }
+  nextContactPage(): void {
+    if (this.safeContactPage < this.contactTotalPages) this.contactPage = this.safeContactPage + 1;
+  }
+  goToContactPage(page: number): void {
+    if (page >= 1 && page <= this.contactTotalPages) this.contactPage = page;
+  }
+
   get filteredProducts(): ProductItem[] {
     let list = this.products;
     if (this.productCategoryFilter !== 'all') {
@@ -203,6 +523,70 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       );
     }
     return list;
+  }
+
+  get productTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredProducts.length / this.productPageSize));
+  }
+
+  get productPageNumbers(): number[] {
+    return Array.from({ length: this.productTotalPages }, (_, i) => i + 1);
+  }
+
+  get safeProductPage(): number {
+    return Math.min(Math.max(1, this.productPage), this.productTotalPages);
+  }
+
+  get pagedProducts(): ProductItem[] {
+    const list = this.filteredProducts;
+    if (!list.length) {
+      return [];
+    }
+    const start = (this.safeProductPage - 1) * this.productPageSize;
+    return list.slice(start, start + this.productPageSize);
+  }
+
+  get productPageStart(): number {
+    if (!this.filteredProducts.length) {
+      return 0;
+    }
+    return (this.safeProductPage - 1) * this.productPageSize + 1;
+  }
+
+  get productPageEnd(): number {
+    return Math.min(this.safeProductPage * this.productPageSize, this.filteredProducts.length);
+  }
+
+  setProductCategory(catId: string): void {
+    this.productCategoryFilter = catId;
+    this.productPage = 1;
+  }
+
+  onProductSearchChange(): void {
+    this.productPage = 1;
+    this.resetSubmissionPages();
+  }
+
+  onListSearchChange(): void {
+    this.resetSubmissionPages();
+    this.productPage = 1;
+  }
+  prevProductPage(): void {
+    if (this.safeProductPage > 1) {
+      this.productPage = this.safeProductPage - 1;
+    }
+  }
+
+  nextProductPage(): void {
+    if (this.safeProductPage < this.productTotalPages) {
+      this.productPage = this.safeProductPage + 1;
+    }
+  }
+
+  goToProductPage(page: number): void {
+    if (page >= 1 && page <= this.productTotalPages) {
+      this.productPage = page;
+    }
   }
 
   // Status Management
@@ -332,11 +716,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   openAddProduct(): void {
     this.editingProductSlug = null;
     const defaultImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80';
+    const defaultCat = this.categories[0]?.id || 'food';
     this.modalImages = [defaultImg];
     this.newImageUrl = '';
     this.cancelEditModalImage();
     this.productForm.reset({
-      category: 'food',
+      category: defaultCat,
       availability: 'in-supply',
       moqAr: 'حاوية 20 قدم أو حسب الاتفاق',
       moqEn: '20ft container or by contract',

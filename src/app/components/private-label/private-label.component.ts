@@ -1,13 +1,16 @@
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
+import { AdminDataService } from '../../services/admin-data.service';
 import {
   images,
   labSteps,
   Lang,
   L,
+  privateLabelCategories,
   privateLabelDeliverables,
   privateLabelFaq,
   privateLabelLines,
@@ -15,6 +18,7 @@ import {
   privateLabelSeals,
   privateLabelStats,
 } from '../../data/content';
+import { SelectOption } from '../select-menu/select-menu.component';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,19 +38,38 @@ export class PrivateLabelComponent implements AfterViewInit, OnDestroy {
   faqs = privateLabelFaq;
   lang: Lang = this.language.current;
   openFaq = 0;
+  sent = false;
+  blocked = false;
+  categoryOptions: SelectOption[] = [];
 
-  private sub: Subscription;
+  form = this.fb.group({
+    name: ['', Validators.required],
+    company: [''],
+    email: ['', [Validators.required, Validators.email]],
+    phone: ['', Validators.required],
+    category: ['', Validators.required],
+    volume: ['', Validators.required],
+    message: ['', Validators.required],
+  });
+
+  private sub = new Subscription();
   private ctx?: ReturnType<typeof gsap.context>;
 
   constructor(
     public language: LanguageService,
+    private adminData: AdminDataService,
+    private fb: FormBuilder,
     private host: ElementRef<HTMLElement>,
     private zone: NgZone
   ) {
-    this.sub = this.language.languageChanged$.subscribe((lang) => {
-      this.lang = lang;
-      this.zone.runOutsideAngular(() => setTimeout(() => ScrollTrigger.refresh(), 80));
-    });
+    this.refreshCategoryOptions();
+    this.sub.add(
+      this.language.languageChanged$.subscribe((lang) => {
+        this.lang = lang;
+        this.refreshCategoryOptions();
+        this.zone.runOutsideAngular(() => setTimeout(() => ScrollTrigger.refresh(), 80));
+      })
+    );
   }
 
   ngAfterViewInit(): void {
@@ -67,6 +90,46 @@ export class PrivateLabelComponent implements AfterViewInit, OnDestroy {
 
   toggleFaq(index: number): void {
     this.openFaq = this.openFaq === index ? -1 : index;
+  }
+
+  bad(name: string): boolean {
+    const control = this.form.get(name);
+    return !!control && control.invalid && (control.touched || this.blocked);
+  }
+
+  submit(): void {
+    this.blocked = true;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const val = this.form.value;
+    const cat = privateLabelCategories.find((c) => c.id === val.category);
+
+    this.adminData.addSubmission({
+      type: 'private-label',
+      name: val.name || '',
+      company: val.company || '',
+      email: val.email || '',
+      phone: val.phone || '',
+      status: 'new',
+      details: {
+        category: cat ? cat.name[this.lang] : val.category || '',
+        volume: val.volume || '',
+        message: val.message || '',
+      },
+    });
+
+    this.sent = true;
+    this.blocked = false;
+  }
+
+  private refreshCategoryOptions(): void {
+    this.categoryOptions = privateLabelCategories.map((c) => ({
+      value: c.id,
+      label: c.name[this.lang],
+    }));
   }
 
   private bootMotion(): void {
