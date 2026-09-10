@@ -37,6 +37,9 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
       this.hidden = false;
       this.lastY = 0;
       this.close();
+      this.zone.runOutsideAngular(() => {
+        requestAnimationFrame(() => this.updateScrollState());
+      });
     });
   }
 

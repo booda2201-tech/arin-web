@@ -1,7 +1,7 @@
 <header
   class="site-nav fixed inset-x-0 top-0 z-50"
-  [class.nav-solid]="scrolled || open || !isHome()"
-  [class.nav-transparent]="!scrolled && !open && isHome()"
+  [class.nav-solid]="scrolled || open"
+  [class.nav-transparent]="!scrolled && !open"
   [class.is-open]="open"
   [class.is-hidden]="hidden && !open"
 >
