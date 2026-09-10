@@ -60,22 +60,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.showPassword = !this.showPassword;
   }
 
-  fillAdmin(): void {
-    this.form.patchValue({
-      email: 'admin@arin.com',
-      password: 'admin',
-    });
-    this.errorMessage = '';
-  }
-
-  fillUser(): void {
-    this.form.patchValue({
-      email: 'client@arin.com',
-      password: 'user123',
-    });
-    this.errorMessage = '';
-  }
-
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

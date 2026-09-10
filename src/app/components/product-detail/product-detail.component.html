@@ -6,9 +6,31 @@
     </a>
 
     <div class="product-layout">
-      <div class="product-gallery-box" data-aos="fade-up">
-        <div class="page-still product-still relative overflow-hidden group">
-          <img [src]="currentImage" [alt]="txt(p.name)" class="w-full h-full object-cover transition duration-300" />
+      <div
+        class="product-gallery-box"
+        data-aos="fade-up"
+        (mouseenter)="pauseAutoplay()"
+        (mouseleave)="resumeAutoplay()"
+        (focusin)="pauseAutoplay()"
+        (focusout)="resumeAutoplay()"
+      >
+        <div
+          class="page-still product-still relative overflow-hidden group"
+          [class.is-sliding-next]="slideDir === 1"
+          [class.is-sliding-prev]="slideDir === -1"
+        >
+          <div class="gallery-stage">
+            <img
+              *ngFor="let img of allImages; let i = index"
+              [src]="img"
+              [alt]="txt(p.name)"
+              class="gallery-slide"
+              [class.is-active]="i === activeImageIndex"
+              [class.enter-next]="i === activeImageIndex && slideDir === 1"
+              [class.enter-prev]="i === activeImageIndex && slideDir === -1"
+              [attr.data-anim-key]="i === activeImageIndex ? slideAnimKey : null"
+            />
+          </div>
 
           <!-- Next / Prev Controls -->
           <div *ngIf="allImages.length > 1" class="gallery-arrows">
@@ -33,7 +55,7 @@
           <!-- Counter Badge -->
           <div *ngIf="allImages.length > 1" class="gallery-counter-badge">
             <i class="bi bi-camera me-1"></i>
-            <span>{{ activeImageIndex + 1 }} / {{ allImages.length }}</span>
+            <span dir="ltr">{{ activeImageIndex + 1 }} / {{ allImages.length }}</span>
           </div>
         </div>
 

@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://arin.somee.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "warn"
+  }
+}

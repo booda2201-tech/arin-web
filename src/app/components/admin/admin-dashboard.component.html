@@ -1078,151 +1078,91 @@
           </div>
         </div>
 
-        <!-- Product Images & Media Gallery Section (Multi-image management) -->
+        <!-- Multi-image gallery — drag & drop -->
         <div class="product-gallery-section">
           <div class="gallery-header-row">
             <div>
               <label class="input-label !mb-0.5 text-gold font-bold">
                 <i class="bi bi-images ml-1.5"></i>
-                <span>صور ومعرض المنتج (صور متعددة) *</span>
+                <span>صور المنتج *</span>
               </label>
               <p class="gallery-subtext">
-                يمكنك إضافة عدة صور للمنتج، تعيين الصورة الرئيسية، وتعديل أي رابط أو رفعه مباشرة من جهازك.
+                اسحب الصور هنا أو اضغط للاختيار. الصورة الأولى هي صورة الغلاف. يمكن إضافة أكثر من صورة.
               </p>
             </div>
-            <span class="gallery-counter font-mono">
-              {{ modalImages.length }} {{ modalImages.length === 1 ? 'صورة' : 'صور' }}
-            </span>
+            <span class="gallery-counter font-mono">{{ galleryItems.length }} صورة</span>
           </div>
 
-          <!-- Add Image Toolbar -->
-          <div class="add-image-toolbar">
-            <div class="add-url-group">
-              <i class="bi bi-link-45deg add-url-icon"></i>
-              <input
-                type="text"
-                [(ngModel)]="newImageUrl"
-                [ngModelOptions]="{standalone: true}"
-                dir="ltr"
-                placeholder="أدخل رابط صورة (URL) مثل: https://..."
-                class="input-field !text-xs !py-2 !pr-8"
-                (keydown.enter)="$event.preventDefault(); addImageUrl()"
-              />
-              <button
-                type="button"
-                class="btn btn-gold !py-2 !px-4 !text-xs whitespace-nowrap"
-                (click)="addImageUrl()"
+          <div
+            class="image-dropzone multi"
+            [class.has-image]="galleryItems.length > 0"
+            [class.is-dragging]="imageDragOver"
+            (dragover)="onImageDragOver($event)"
+            (dragleave)="onImageDragLeave($event)"
+            (drop)="onImageDrop($event)"
+            (click)="galleryItems.length ? null : imageFileInput.click()"
+          >
+            <input
+              #imageFileInput
+              type="file"
+              accept="image/*"
+              multiple
+              class="sr-only"
+              (change)="onImageFileSelected($event)"
+            />
+
+            <div *ngIf="galleryItems.length; else emptyDrop" class="gallery-thumbs-grid" (click)="$event.stopPropagation()">
+              <div
+                *ngFor="let item of galleryItems; let i = index"
+                class="thumb-item group"
+                [class.is-primary]="i === 0"
               >
-                <i class="bi bi-plus-lg"></i>
-                <span>إضافة رابط</span>
-              </button>
-            </div>
-
-            <!-- Upload File Button -->
-            <label class="upload-file-btn" title="اختر صورة أو عدة صور من جهازك">
-              <i class="bi bi-cloud-arrow-up-fill"></i>
-              <span>رفع من الجهاز</span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                class="sr-only"
-                (change)="onImageFileSelected($event)"
-              />
-            </label>
-          </div>
-
-          <!-- Inline Edit Image Bar -->
-          <div *ngIf="editingImageIndex !== null" class="edit-image-banner">
-            <span class="text-xs text-gold font-bold">تعديل رابط الصورة رقم {{ editingImageIndex + 1 }}:</span>
-            <div class="flex items-center gap-2 mt-1">
-              <input
-                type="text"
-                [(ngModel)]="editedImageUrl"
-                [ngModelOptions]="{standalone: true}"
-                dir="ltr"
-                class="input-field !text-xs !py-1.5 flex-1"
-                placeholder="https://..."
-                (keydown.enter)="$event.preventDefault(); saveEditedModalImage(editingImageIndex)"
-              />
-              <button
-                type="button"
-                class="btn btn-gold !py-1.5 !px-3 !text-xs"
-                (click)="saveEditedModalImage(editingImageIndex)"
-              >
-                حفظ
-              </button>
-              <button
-                type="button"
-                class="btn btn-ghost !py-1.5 !px-2.5 !text-xs"
-                (click)="cancelEditModalImage()"
-              >
-                إلغاء
-              </button>
-            </div>
-          </div>
-
-          <!-- Thumbnails Grid -->
-          <div class="gallery-thumbs-grid">
-            <div
-              *ngFor="let img of modalImages; let i = index"
-              class="thumb-item group"
-              [class.is-primary]="i === 0"
-            >
-              <div class="thumb-img-box">
-                <img [src]="img" [alt]="'صورة ' + (i + 1)" />
-                <div class="thumb-overlay"></div>
-
-                <!-- Primary Badge -->
-                <span *ngIf="i === 0" class="primary-badge">
-                  <i class="bi bi-star-fill"></i>
-                  <span>الرئيسية</span>
-                </span>
-
-                <!-- Action buttons on hover -->
-                <div class="thumb-actions">
-                  <button
-                    *ngIf="i !== 0"
-                    type="button"
-                    class="thumb-action-btn is-star"
-                    (click)="setPrimaryModalImage(i, $event)"
-                    title="تعيين كصورة رئيسية للمنتج"
-                  >
+                <div class="thumb-img-box">
+                  <img [src]="item.preview" [alt]="'صورة ' + (i + 1)" />
+                  <div class="thumb-overlay"></div>
+                  <span *ngIf="i === 0" class="primary-badge">
                     <i class="bi bi-star-fill"></i>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="thumb-action-btn"
-                    (click)="startEditModalImage(i, $event)"
-                    title="تعديل رابط الصورة"
-                  >
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="thumb-action-btn is-delete"
-                    (click)="removeModalImage(i, $event)"
-                    title="حذف الصورة"
-                  >
-                    <i class="bi bi-trash3"></i>
-                  </button>
+                    <span>الغلاف</span>
+                  </span>
+                  <div class="thumb-actions">
+                    <button
+                      *ngIf="i !== 0"
+                      type="button"
+                      class="thumb-action-btn is-star"
+                      (click)="setPrimaryGalleryImage(i, $event)"
+                      title="تعيين كغلاف"
+                    >
+                      <i class="bi bi-star-fill"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="thumb-action-btn is-delete"
+                      (click)="removeGalleryImage(i, $event)"
+                      title="حذف"
+                    >
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="thumb-footer">
+                  <span class="thumb-num font-mono">#{{ i + 1 }}</span>
+                  <span *ngIf="i === 0" class="thumb-role text-gold font-bold">غلاف</span>
                 </div>
               </div>
 
-              <div class="thumb-footer">
-                <span class="thumb-num font-mono">#{{ i + 1 }}</span>
-                <span *ngIf="i === 0" class="thumb-role text-gold font-bold">صورة الغلاف</span>
-                <span *ngIf="i > 0" class="thumb-role text-platinum">معرض إضافي</span>
-              </div>
+              <button type="button" class="thumb-add-more" (click)="imageFileInput.click()">
+                <i class="bi bi-plus-lg"></i>
+                <span>إضافة صور</span>
+              </button>
             </div>
 
-            <!-- Empty State if no images -->
-            <div *ngIf="modalImages.length === 0" class="col-span-full p-4 text-center border border-dashed border-gold/30 rounded-xl">
-              <i class="bi bi-images text-2xl text-gold/40"></i>
-              <p class="text-xs text-platinum mt-1">لم تقم بإضافة أي صورة للمنتج بعد. أدخل رابطاً أعلاه أو ارفع من جهازك.</p>
-            </div>
+            <ng-template #emptyDrop>
+              <div class="dropzone-empty" (click)="imageFileInput.click()">
+                <i class="bi bi-cloud-arrow-up text-3xl text-gold/70"></i>
+                <p class="mt-2 text-sm text-cream font-medium">اسحب الصور وأفلتها هنا</p>
+                <p class="mt-1 text-xs text-platinum">يمكن اختيار أكثر من صورة · PNG, JPG, WEBP</p>
+              </div>
+            </ng-template>
           </div>
         </div>
 

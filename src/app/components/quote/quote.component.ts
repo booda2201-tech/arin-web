@@ -147,24 +147,29 @@ export class QuoteComponent implements AfterViewInit, OnDestroy {
 
   submit(): void {
     const val = this.form.value;
-    this.adminData.addSubmission({
-      type: 'quote',
-      name: val.name || '',
-      company: val.company || '',
-      email: val.email || '',
-      phone: val.phone || '',
-      status: 'new',
-      details: {
-        service: this.serviceLabel(),
-        product: this.productLabel(),
-        quantity: val.quantity || '',
+    const product = this.products.find((p) => p.slug === val.product);
+    this.adminData
+      .createQuoteRequest({
+        fullName: val.name || '',
+        email: val.email || '',
+        phone: val.phone || '',
+        companyName: val.company || '',
+        serviceName: this.serviceLabel(),
+        productId: product?.id || null,
+        productName: this.productLabel(),
+        estimatedQuantity: val.quantity || '',
         destination: val.destination || '',
-        mode: this.modeKey,
-        notes: val.notes || '',
-      },
-    });
-    this.reference = 'ARIN-' + Math.floor(1000 + Math.random() * 9000);
-    this.status = 'done';
+        shippingMethod: this.adminData.shippingMethodFromLabel(val.mode || 'sea'),
+        specNotes: val.notes || '',
+      })
+      .subscribe((res) => {
+        if (!res.ok) {
+          alert(res.message || 'تعذر إرسال الطلب، حاول مرة أخرى.');
+          return;
+        }
+        this.reference = 'ARIN-' + Math.floor(1000 + Math.random() * 9000);
+        this.status = 'done';
+      });
   }
 
   serviceLabel(): string {

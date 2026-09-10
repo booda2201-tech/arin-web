@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -23,6 +23,7 @@ import { SelectMenuComponent } from './components/select-menu/select-menu.compon
 import { LoginComponent } from './components/login/login.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { AuthInterceptor } from './services/auth.interceptor';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -62,6 +63,9 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
       defaultLanguage: 'ar',
     }),
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

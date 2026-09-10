@@ -57,10 +57,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // Product Modal State
   showProductModal = false;
   editingProductSlug: string | null = null;
-  modalImages: string[] = [];
-  newImageUrl = '';
-  editingImageIndex: number | null = null;
-  editedImageUrl = '';
+  /** Stable API GUID for the product being edited (survives slug/recreate edge cases). */
+  editingProductId: string | null = null;
+  /** Gallery slots: remote URL and/or newly picked File */
+  galleryItems: { preview: string; file?: File; remoteUrl?: string }[] = [];
+  imageDragOver = false;
+  private galleryDirty = false;
 
   productForm = this.fb.group({
     slug: ['', Validators.required],
@@ -113,6 +115,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.refreshCategoryOptions();
         if (this.productCategoryFilter !== 'all' && !cats.some((c) => c.id === this.productCategoryFilter)) {
           this.productCategoryFilter = 'all';
+        }
+        const currentCat = this.productForm.value.category;
+        if (cats.length && (!currentCat || currentCat === 'food' || !cats.some((c) => c.id === currentCat))) {
+          this.productForm.patchValue({ category: cats[0].id }, { emitEvent: false });
         }
       })
     );
@@ -239,44 +245,45 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       return;
     }
     const val = this.categoryForm.value;
-    if (this.editingCategoryId) {
-      const res = this.adminData.updateCategory(this.editingCategoryId, {
-        nameAr: val.nameAr || '',
-        nameEn: val.nameEn || '',
-      });
+    const req$ = this.editingCategoryId
+      ? this.adminData.updateCategory(this.editingCategoryId, {
+          nameAr: val.nameAr || '',
+          nameEn: val.nameEn || '',
+        })
+      : this.adminData.addCategory({
+          id: val.id || undefined,
+          nameAr: val.nameAr || '',
+          nameEn: val.nameEn || '',
+        });
+
+    req$.subscribe((res) => {
       if (!res.ok) {
-        this.notify(res.message || 'تعذر التحديث', 'error');
+        this.notify(res.message || 'تعذر حفظ الفئة', 'error');
         return;
       }
-      this.notify('تم تحديث الفئة بنجاح');
-    } else {
-      const res = this.adminData.addCategory({
-        id: val.id || undefined,
-        nameAr: val.nameAr || '',
-        nameEn: val.nameEn || '',
-      });
-      if (!res.ok) {
-        this.notify(res.message || 'تعذر الإضافة', 'error');
-        return;
-      }
-      this.notify(`تمت إضافة الفئة "${val.nameAr}"`);
-    }
-    this.cancelEditCategory();
+      this.notify(
+        this.editingCategoryId
+          ? 'تم تحديث الفئة بنجاح'
+          : `تمت إضافة الفئة "${val.nameAr}"`
+      );
+      this.cancelEditCategory();
+    });
   }
 
   deleteCategory(cat: ProductCategory): void {
-    const res = this.adminData.deleteCategory(cat.id);
-    if (!res.ok) {
-      this.notify(res.message || 'تعذر الحذف', 'error');
-      return;
-    }
-    if (this.editingCategoryId === cat.id) {
-      this.cancelEditCategory();
-    }
-    if (this.productCategoryFilter === cat.id) {
-      this.productCategoryFilter = 'all';
-    }
-    this.notify(`تم حذف الفئة "${cat.name.ar}"`, 'info');
+    this.adminData.deleteCategory(cat.id).subscribe((res) => {
+      if (!res.ok) {
+        this.notify(res.message || 'تعذر الحذف', 'error');
+        return;
+      }
+      if (this.editingCategoryId === cat.id) {
+        this.cancelEditCategory();
+      }
+      if (this.productCategoryFilter === cat.id) {
+        this.productCategoryFilter = 'all';
+      }
+      this.notify(`تم حذف الفئة "${cat.name.ar}"`, 'info');
+    });
   }
 
   setTab(tab: AdminTab): void {
@@ -591,12 +598,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   // Status Management
   changeStatus(sub: FormSubmission, status: FormSubmission['status']): void {
-    this.adminData.updateSubmissionStatus(sub.id, status);
-    if (this.selectedSubmission?.id === sub.id) {
-      this.selectedSubmission.status = status;
-    }
-    const statusArabic = status === 'new' ? 'جديد' : status === 'in_progress' ? 'قيد المتابعة' : 'مكتمل';
-    this.notify(`تم تحديث حالة الطلب (${sub.id}) إلى: ${statusArabic}`);
+    this.adminData.updateSubmissionStatus(sub.id, status).subscribe((res) => {
+      if (!res.ok) {
+        this.notify(res.message || 'تعذر تحديث الحالة', 'error');
+        return;
+      }
+      if (this.selectedSubmission?.id === sub.id) {
+        this.selectedSubmission = { ...this.selectedSubmission, status };
+      }
+      const statusArabic =
+        status === 'new' ? 'جديد' : status === 'in_progress' ? 'قيد المتابعة' : 'مكتمل';
+      this.notify(`تم تحديث حالة الطلب (${sub.id}) إلى: ${statusArabic}`);
+    });
   }
 
   deleteSub(id: string, e?: Event): void {
@@ -604,11 +617,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       e.stopPropagation();
     }
     if (confirm('هل أنت متأكد من رغبتك في حذف هذا الطلب نهائياً؟')) {
-      this.adminData.deleteSubmission(id);
-      if (this.selectedSubmission?.id === id) {
-        this.selectedSubmission = null;
-      }
-      this.notify('تم حذف الطلب بنجاح', 'info');
+      this.adminData.deleteSubmission(id).subscribe((res) => {
+        if (!res.ok) {
+          this.notify(res.message || 'تعذر الحذف', 'error');
+          return;
+        }
+        if (this.selectedSubmission?.id === id) {
+          this.selectedSubmission = null;
+        }
+        this.notify('تم حذف الطلب بنجاح', 'info');
+      });
     }
   }
 
@@ -620,112 +638,129 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.selectedSubmission = null;
   }
 
-  // Product CRUD & Image Management
-  addImageUrl(): void {
-    const url = this.newImageUrl.trim();
-    if (!url) {
-      this.notify('يرجى إدخال رابط الصورة أولاً', 'error');
-      return;
+  // Product gallery — multi image drag & drop
+  onImageDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.imageDragOver = true;
+  }
+
+  onImageDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.imageDragOver = false;
+  }
+
+  onImageDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.imageDragOver = false;
+    const files = event.dataTransfer?.files;
+    if (files?.length) {
+      this.addGalleryFiles(Array.from(files));
     }
-    if (this.modalImages.includes(url)) {
-      this.notify('هذه الصورة مضافة بالفعل', 'info');
-      return;
-    }
-    this.modalImages.push(url);
-    this.newImageUrl = '';
-    this.syncFormImage();
-    this.notify('تمت إضافة الصورة للمنتج بنجاح');
   }
 
   onImageFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-
-    const files = Array.from(input.files);
-    let loaded = 0;
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          this.modalImages.push(result);
-          loaded++;
-          if (loaded === files.length) {
-            this.syncFormImage();
-            this.notify(`تم رفع ${files.length} صورة بنجاح`);
-          }
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    if (input.files?.length) {
+      this.addGalleryFiles(Array.from(input.files));
+    }
     input.value = '';
   }
 
-  removeModalImage(index: number, e?: Event): void {
+  removeGalleryImage(index: number, e?: Event): void {
     if (e) {
       e.stopPropagation();
     }
-    if (this.modalImages.length <= 1) {
-      this.notify('يجب الإبقاء على صورة واحدة على الأقل للمنتج', 'error');
+    const item = this.galleryItems[index];
+    if (item?.preview?.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(item.preview);
+      } catch {
+        /* ignore */
+      }
+    }
+    this.galleryItems.splice(index, 1);
+    this.galleryDirty = true;
+    this.syncGalleryToForm();
+  }
+
+  setPrimaryGalleryImage(index: number, e?: Event): void {
+    if (e) {
+      e.stopPropagation();
+    }
+    if (index <= 0) {
       return;
     }
-    this.modalImages.splice(index, 1);
-    this.syncFormImage();
-    this.notify('تم حذف الصورة من المعرض', 'info');
+    const [selected] = this.galleryItems.splice(index, 1);
+    this.galleryItems.unshift(selected);
+    this.galleryDirty = true;
+    this.syncGalleryToForm();
+    this.notify('تم تعيين صورة الغلاف');
   }
 
-  setPrimaryModalImage(index: number, e?: Event): void {
-    if (e) {
-      e.stopPropagation();
+  private addGalleryFiles(files: File[]): void {
+    let added = 0;
+    files.forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        return;
+      }
+      this.galleryItems.push({
+        preview: URL.createObjectURL(file),
+        file,
+      });
+      added++;
+    });
+    if (!added) {
+      this.notify('اختر ملفات صور صالحة', 'error');
+      return;
     }
-    if (index === 0) return;
-    const [selected] = this.modalImages.splice(index, 1);
-    this.modalImages.unshift(selected);
-    this.syncFormImage();
-    this.notify('تم تعيين الصورة كصورة رئيسية للمنتج');
+    this.galleryDirty = true;
+    this.syncGalleryToForm();
+    this.notify(`تمت إضافة ${added} صورة`);
   }
 
-  startEditModalImage(index: number, e?: Event): void {
-    if (e) {
-      e.stopPropagation();
-    }
-    this.editingImageIndex = index;
-    this.editedImageUrl = this.modalImages[index];
-  }
-
-  saveEditedModalImage(index: number): void {
-    const trimmed = this.editedImageUrl.trim();
-    if (trimmed) {
-      this.modalImages[index] = trimmed;
-      this.syncFormImage();
-      this.notify('تم تحديث رابط الصورة بنجاح');
-    }
-    this.cancelEditModalImage();
-  }
-
-  cancelEditModalImage(): void {
-    this.editingImageIndex = null;
-    this.editedImageUrl = '';
-  }
-
-  private syncFormImage(): void {
-    const primary = this.modalImages[0] || '';
+  private syncGalleryToForm(): void {
+    const primary = this.galleryItems[0]?.preview || '';
     this.productForm.patchValue({ image: primary });
+  }
+
+  private resetGallery(): void {
+    this.galleryItems.forEach((item) => {
+      if (item.preview?.startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(item.preview);
+        } catch {
+          /* ignore */
+        }
+      }
+    });
+    this.galleryItems = [];
+    this.galleryDirty = false;
+    this.imageDragOver = false;
   }
 
   openAddProduct(): void {
     this.editingProductSlug = null;
-    const defaultImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80';
-    const defaultCat = this.categories[0]?.id || 'food';
-    this.modalImages = [defaultImg];
-    this.newImageUrl = '';
-    this.cancelEditModalImage();
+    this.editingProductId = null;
+    const defaultCat = this.categories[0]?.id || '';
+    this.resetGallery();
     this.productForm.reset({
       category: defaultCat,
       availability: 'in-supply',
       moqAr: 'حاوية 20 قدم أو حسب الاتفاق',
       moqEn: '20ft container or by contract',
-      image: defaultImg,
+      image: '',
+      slug: '',
+      nameAr: '',
+      nameEn: '',
+      originAr: '',
+      originEn: '',
+      packagingAr: '',
+      packagingEn: '',
+      notesAr: '',
+      notesEn: '',
     });
     this.showProductModal = true;
   }
@@ -735,9 +770,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       e.stopPropagation();
     }
     this.editingProductSlug = p.slug;
-    this.modalImages = p.images && p.images.length ? [...p.images] : (p.image ? [p.image] : []);
-    this.newImageUrl = '';
-    this.cancelEditModalImage();
+    this.editingProductId = p.id || null;
+    this.resetGallery();
+    const imgs = (p.images?.length ? p.images : p.image ? [p.image] : [])
+      .flatMap((u) => String(u).split(/,(?=https?:\/\/)/i))
+      .map((s) => s.trim())
+      .filter((s) => /^https?:\/\//i.test(s));
+    this.galleryItems = imgs.map((url) => ({ preview: url, remoteUrl: url }));
+    this.galleryDirty = false;
     this.productForm.patchValue({
       slug: p.slug,
       category: p.category,
@@ -750,7 +790,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       moqAr: p.moq?.ar || 'حاوية 20 قدم أو حسب الاتفاق',
       moqEn: p.moq?.en || '20ft container or by contract',
       availability: p.availability || 'in-supply',
-      image: this.modalImages[0] || p.image || '',
+      image: imgs[0] || '',
       notesAr: p.notes?.ar || '',
       notesEn: p.notes?.en || '',
     });
@@ -760,38 +800,47 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   closeProductModal(): void {
     this.showProductModal = false;
     this.editingProductSlug = null;
-    this.cancelEditModalImage();
+    this.editingProductId = null;
+    this.resetGallery();
   }
 
   saveProduct(): void {
-    if (this.modalImages.length === 0 && !this.productForm.value.image) {
-      this.notify('يرجى إضافة صورة واحدة على الأقل للمنتج', 'error');
-      return;
-    }
-    if (this.modalImages.length > 0 && !this.productForm.value.image) {
-      this.syncFormImage();
-    }
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
       return;
     }
+    if (!this.galleryItems.length) {
+      this.notify('أضف صورة واحدة على الأقل للمنتج', 'error');
+      return;
+    }
 
     const val = this.productForm.value;
-    const existing = this.editingProductSlug
-      ? this.products.find((p) => p.slug === this.editingProductSlug)
-      : null;
+    const existing =
+      (this.editingProductId
+        ? this.products.find((p) => p.id === this.editingProductId)
+        : null) ||
+      (this.editingProductSlug
+        ? this.products.find((p) => p.slug === this.editingProductSlug)
+        : null);
 
-    const finalImages = this.modalImages.length ? [...this.modalImages] : (val.image ? [val.image] : []);
-    const primaryImage = finalImages[0] || val.image || '';
+    const remoteUrls = this.galleryItems
+      .map((g) => g.remoteUrl)
+      .filter((u): u is string => !!u && /^https?:\/\//i.test(u));
+    const files = this.galleryItems.map((g) => g.file).filter((f): f is File => !!f);
+    const gallerySlots = this.galleryItems.map((g) => ({
+      file: g.file,
+      remoteUrl: g.remoteUrl,
+    }));
 
     const itemData: ProductItem = {
+      id: existing?.id || this.editingProductId || undefined,
       slug: (val.slug || '').trim().toLowerCase().replace(/\s+/g, '-'),
-      category: val.category || 'food',
+      category: val.category || '',
       name: { ar: val.nameAr || '', en: val.nameEn || '' },
       origin: { ar: val.originAr || '', en: val.originEn || '' },
       packaging: { ar: val.packagingAr || '', en: val.packagingEn || '' },
-      image: primaryImage,
-      images: finalImages,
+      image: remoteUrls[0] || existing?.image || '',
+      images: remoteUrls.length ? remoteUrls : existing?.images || [],
       notes: { ar: val.notesAr || '', en: val.notesEn || '' },
       description: existing?.description || {
         ar: val.nameAr || '',
@@ -808,15 +857,37 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       ],
     };
 
-    if (this.editingProductSlug) {
-      this.adminData.updateProduct(this.editingProductSlug, itemData);
-      this.notify(`تم تحديث بيانات وصور المنتج "${itemData.name.ar}" بنجاح`);
+    if (this.editingProductSlug || this.editingProductId) {
+      this.adminData
+        .updateProduct(this.editingProductSlug || itemData.slug, itemData, {
+          productId: this.editingProductId || existing?.id,
+          imageFiles: files,
+          keepImageUrls: remoteUrls,
+          gallerySlots,
+          replaceGallery: this.galleryDirty || files.length > 0,
+        })
+        .subscribe((res) => {
+          if (!res.ok) {
+            this.notify(res.message || 'تعذر تحديث المنتج', 'error');
+            return;
+          }
+          this.notify(`تم تحديث المنتج "${itemData.name.ar}" بنجاح`);
+          this.closeProductModal();
+        });
     } else {
-      this.adminData.addProduct(itemData);
-      this.notify(`تم إضافة المنتج "${itemData.name.ar}" إلى الكتالوج بنجاح`);
+      if (!files.length) {
+        this.notify('أضف صورًا من جهازك قبل إضافة المنتج', 'error');
+        return;
+      }
+      this.adminData.addProduct(itemData, files).subscribe((res) => {
+        if (!res.ok) {
+          this.notify(res.message || 'تعذر إضافة المنتج', 'error');
+          return;
+        }
+        this.notify(`تم إضافة المنتج "${itemData.name.ar}" إلى الكتالوج بنجاح`);
+        this.closeProductModal();
+      });
     }
-
-    this.closeProductModal();
   }
 
   deleteProd(slug: string, e?: Event): void {
@@ -826,8 +897,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const found = this.products.find((p) => p.slug === slug);
     const title = found ? found.name.ar : slug;
     if (confirm(`هل أنت متأكد من حذف المنتج "${title}" نهائياً من الموقع؟`)) {
-      this.adminData.deleteProduct(slug);
-      this.notify(`تم حذف المنتج "${title}" بنجاح`, 'info');
+      this.adminData.deleteProduct(slug, found?.id).subscribe((res) => {
+        if (!res.ok) {
+          this.notify(res.message || 'تعذر حذف المنتج', 'error');
+          return;
+        }
+        this.notify(`تم حذف المنتج "${title}" بنجاح`, 'info');
+      });
     }
   }
 

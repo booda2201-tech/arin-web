@@ -64,18 +64,21 @@ export class ContactComponent implements OnDestroy {
     }
     const val = this.form.value;
     const foundInterest = this.interestOptions.find((o) => o.value === val.interest);
-    this.adminData.addSubmission({
-      type: 'contact',
-      name: val.name || '',
-      company: val.company || '',
-      email: val.email || '',
-      phone: val.phone || '',
-      status: 'new',
-      details: {
-        interest: foundInterest ? foundInterest.label : (val.interest || 'استفسار عام'),
+    this.adminData
+      .createContactMessage({
+        fullName: val.name || '',
+        email: val.email || '',
+        phone: val.phone || '',
+        companyName: val.company || '',
+        interestField: foundInterest ? foundInterest.label : val.interest || 'استفسار عام',
         message: val.message || '',
-      },
-    });
-    this.sent = true;
+      })
+      .subscribe((res) => {
+        if (res.ok) {
+          this.sent = true;
+        } else {
+          alert(res.message || 'تعذر إرسال الرسالة، حاول مرة أخرى.');
+        }
+      });
   }
 }

@@ -34,6 +34,7 @@ export class ProductsComponent implements OnDestroy {
         }
       })
     );
+    this.adminData.refreshCatalog().subscribe();
   }
 
   ngOnDestroy(): void {

@@ -335,6 +335,8 @@ export interface ProductSpec {
 }
 
 export interface ProductItem {
+  /** Backend product id (GUID) when loaded from API */
+  id?: string;
   slug: string;
   category: string;
   name: L;

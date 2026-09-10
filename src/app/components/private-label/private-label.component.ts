@@ -107,22 +107,25 @@ export class PrivateLabelComponent implements AfterViewInit, OnDestroy {
     const val = this.form.value;
     const cat = privateLabelCategories.find((c) => c.id === val.category);
 
-    this.adminData.addSubmission({
-      type: 'private-label',
-      name: val.name || '',
-      company: val.company || '',
-      email: val.email || '',
-      phone: val.phone || '',
-      status: 'new',
-      details: {
-        category: cat ? cat.name[this.lang] : val.category || '',
-        volume: val.volume || '',
-        message: val.message || '',
-      },
-    });
-
-    this.sent = true;
-    this.blocked = false;
+    this.adminData
+      .createPrivateLabelRequest({
+        fullName: val.name || '',
+        email: val.email || '',
+        phone: val.phone || '',
+        companyName: val.company || '',
+        manufacturingField: cat ? cat.name[this.lang] : val.category || '',
+        estimatedQuantity: val.volume || '',
+        requirementSummary: val.message || '',
+      })
+      .subscribe((res) => {
+        if (!res.ok) {
+          alert(res.message || 'تعذر إرسال الطلب');
+          this.blocked = false;
+          return;
+        }
+        this.sent = true;
+        this.blocked = false;
+      });
   }
 
   private refreshCategoryOptions(): void {
